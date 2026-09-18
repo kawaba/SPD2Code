@@ -1,77 +1,77 @@
-# SPD‚©‚çPythonAJavaAC‚Ìƒ\[ƒXƒR[ƒh‚ð¶¬‚·‚éƒ‹[ƒ‹
+# SPDã‹ã‚‰ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã™ã‚‹ãƒ«ãƒ¼ãƒ«
 
-AIƒG[ƒWƒFƒ“ƒg‚ªASPD‚©‚çƒvƒƒOƒ‰ƒ€Œ¾Œê‚Ìƒ\[ƒXƒR[ƒh‚ð¶¬‚·‚é‚½‚ß‚Ìƒ‹[ƒ‹‚Å‚·B
+AIã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆãŒã€SPDã‹ã‚‰ãƒ—ãƒ­ã‚°ãƒ©ãƒ è¨€èªžã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã‚’ç”Ÿæˆã™ã‚‹ãŸã‚ã®ãƒ«ãƒ¼ãƒ«ã§ã™ã€‚
 
-## ‘ÎÛ‚Æ‚·‚éAIƒG[ƒWƒFƒ“ƒg
+## å¯¾è±¡ã¨ã™ã‚‹AIã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆ
 
-EGitHub Copilot
+ãƒ»GitHub Copilot
 
-EGemini Gem
+ãƒ»Gemini Gem
 
 
-## ƒtƒHƒ‹ƒ_‚Æƒtƒ@ƒCƒ‹
-@ŠeŒ¾Œê•Ê‚ÌƒtƒHƒ‹ƒ_‚É‚ÍAGemini_GemƒtƒHƒ‹ƒ_‚ÆGitHub-CopilotƒtƒHƒ‹ƒ_‚ª‚ ‚èAŽŸ‚Ì‚æ‚¤‚Èƒ‹[ƒ‹ƒtƒ@ƒCƒ‹‚ª’u‚©‚ê‚Ä‚¢‚Ü‚·B
+## ãƒ•ã‚©ãƒ«ãƒ€ã¨ãƒ•ã‚¡ã‚¤ãƒ«
+ã€€å„è¨€èªžåˆ¥ã®ãƒ•ã‚©ãƒ«ãƒ€ã«ã¯ã€Gemini_Gemãƒ•ã‚©ãƒ«ãƒ€ã¨GitHub-Copilotãƒ•ã‚©ãƒ«ãƒ€ãŒã‚ã‚Šã€æ¬¡ã®ã‚ˆã†ãªãƒ«ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãŒç½®ã‹ã‚Œã¦ã„ã¾ã™ã€‚
 
       SPD2Code
-      „ 
-      „¥„ŸC
-      „   „¥„ŸGemin_Gem „Ÿ„Ÿ„Ÿ„ŸƒJƒXƒ^ƒ€ŽwŽ¦.md
-      „   „ 
-      „   „¤„ŸGitHub-Copilot„Ÿ„Ÿcopilot-instructions.md
-      „ 
-      „¥„ŸJava
-      „   „¥„ŸGemin_Gem „¦„Ÿ„Ÿ„ŸƒJƒXƒ^ƒ€ŽwŽ¦.md
-      „   „             „¥„Ÿ„Ÿ„ŸƒKƒCƒhƒ‰ƒCƒ“.txt
-      „   „             „¤„Ÿ„Ÿ„Ÿpom.xml
-      „   „ 
-      „   „¤„ŸGitHub-Copilot„Ÿ„Ÿcopilot-instructions.md
-      „ 
-      „¤„ŸPython
-          „¥„ŸGemin_Gem „¦„Ÿ„Ÿ„ŸƒJƒXƒ^ƒ€ŽwŽ¦.md
-          „             „¤„Ÿ„Ÿ„Ÿspd-pattern-python-code.md
-          „ 
-          „¤„ŸGitHub-Copilot„Ÿ„Ÿcopilot-instructions.md
+      â”‚
+      â”œâ”€C
+      â”‚  â”œâ”€Gemin_Gem â”€â”€â”€â”€ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.md
+      â”‚  â”‚
+      â”‚  â””â”€GitHub-Copilotâ”€â”€copilot-instructions.md
+      â”‚
+      â”œâ”€Java
+      â”‚  â”œâ”€Gemin_Gem â”¬â”€â”€â”€ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.md
+      â”‚  â”‚            â”œâ”€â”€â”€ã‚¬ã‚¤ãƒ‰ãƒ©ã‚¤ãƒ³.txt
+      â”‚  â”‚            â””â”€â”€â”€pom.xml
+      â”‚  â”‚
+      â”‚  â””â”€GitHub-Copilotâ”€â”€copilot-instructions.md
+      â”‚
+      â””â”€Python
+          â”œâ”€Gemin_Gem â”¬â”€â”€â”€ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.md
+          â”‚            â””â”€â”€â”€spd-pattern-python-code.md
+          â”‚
+          â””â”€GitHub-Copilotâ”€â”€copilot-instructions.md
 
-## ƒ‹[ƒ‹ƒtƒ@ƒCƒ‹‚ÌŽg‚¢•û
+## ãƒ«ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ä½¿ã„æ–¹
 
-‚Ç‚Ìƒtƒ@ƒCƒ‹‚àUTF-8‚ÅƒGƒ“ƒR[ƒh‚µ‚Ä‚¢‚Ü‚·B“à—e‚ðŠm”F‚µ‚½‚¢ê‡‚ÍAWindows‚Å‚ÍUTF-8‘Î‰ž‚ÌƒGƒfƒBƒ^‚ÅŠJ‚¢‚Ä‚­‚¾‚³‚¢iƒƒ‚’ ‚ª‚¢‚¢‚ÆŽv‚¢‚Ü‚·jB
-Copilot‚Å‚ÍAì‹Æ‚µ‚Ä‚¢‚éƒ[ƒNƒXƒy[ƒX‚É.github‚Æ‚¢‚¤–¼‘O‚ÌƒtƒHƒ‹ƒ_‚ðì‚Á‚ÄA‚»‚Ì’†‚Écopilot-instructions.mdƒtƒ@ƒCƒ‹‚ð’u‚«‚Ü‚·Bƒ[ƒNƒXƒy[ƒX‚²‚Æ‚É—LŒø‚É‚È‚è‚Ü‚·B
+ã©ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚‚UTF-8ã§ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã—ã¦ã„ã¾ã™ã€‚å†…å®¹ã‚’ç¢ºèªã—ãŸã„å ´åˆã¯ã€Windowsã§ã¯UTF-8å¯¾å¿œã®ã‚¨ãƒ‡ã‚£ã‚¿ã§é–‹ã„ã¦ãã ã•ã„ï¼ˆãƒ¡ãƒ¢å¸³ãŒã„ã„ã¨æ€ã„ã¾ã™ï¼‰ã€‚
+Copilotã§ã¯ã€ä½œæ¥­ã—ã¦ã„ã‚‹ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã«.githubã¨ã„ã†åå‰ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œã£ã¦ã€ãã®ä¸­ã«copilot-instructions.mdãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç½®ãã¾ã™ã€‚ãƒ¯ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã”ã¨ã«æœ‰åŠ¹ã«ãªã‚Šã¾ã™ã€‚
 
-Gemini‚ÌGem‚Å‚ÍAGemì¬Žž‚É•\Ž¦‚³‚ê‚éuƒJƒXƒ^ƒ€ŽwŽ¦v—“‚ÉAƒJƒXƒ^ƒ€ŽwŽ¦.mdƒtƒ@ƒCƒ‹‚Ì“à—e‚ðAƒeƒLƒXƒg‚Æ‚µ‚Ä“\‚è•t‚¯‚Ü‚·Bƒƒ‚’ ‚È‚Ç‚ÅŠJ‚¢‚ÄA‚·‚×‚Ä‘I‘ð¨ƒRƒs[‚Æ‚µ‚ÄACTRL+V‚ÅƒJƒXƒ^ƒ€ŽwŽ¦—“‚É“\‚è•t‚¯‚é‚Æ‚¢‚¢‚Å‚µ‚å‚¤B‚»‚êˆÈŠO‚ÍA’mŽ¯—“‚Éƒtƒ@ƒCƒ‹‚Æ‚µ‚ÄƒAƒbƒvƒ[ƒh‚µ‚Ü‚·B
+Geminiã®Gemã§ã¯ã€Gemä½œæˆæ™‚ã«è¡¨ç¤ºã•ã‚Œã‚‹ã€Œã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤ºã€æ¬„ã«ã€ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.mdãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’ã€ãƒ†ã‚­ã‚¹ãƒˆã¨ã—ã¦è²¼ã‚Šä»˜ã‘ã¾ã™ã€‚ãƒ¡ãƒ¢å¸³ãªã©ã§é–‹ã„ã¦ã€ã™ã¹ã¦é¸æŠžâ†’ã‚³ãƒ”ãƒ¼ã¨ã—ã¦ã€CTRL+Vã§ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤ºæ¬„ã«è²¼ã‚Šä»˜ã‘ã‚‹ã¨ã„ã„ã§ã—ã‚‡ã†ã€‚ãã‚Œä»¥å¤–ã¯ã€çŸ¥è­˜æ¬„ã«ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ã€‚
 
-| Œ¾Œê | AI | ƒtƒ@ƒCƒ‹–¼ | Ý’u•û–@ |
+| è¨€èªž | AI | ãƒ•ã‚¡ã‚¤ãƒ«å | è¨­ç½®æ–¹æ³• |
 |---|---|---|---|
-| C | Copilot | copilot-instructions.md | workspace/.github/ ƒtƒHƒ‹ƒ_‚É’u‚­ |
-| | Gem | ƒJƒXƒ^ƒ€ŽwŽ¦.md | ƒJƒXƒ^ƒ€ŽwŽ¦—“‚ÉƒeƒLƒXƒg‚ð“\‚è•t‚¯‚é |
+| C | Copilot | copilot-instructions.md | workspace/.github/ ãƒ•ã‚©ãƒ«ãƒ€ã«ç½®ã |
+| | Gem | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.md | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤ºæ¬„ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’è²¼ã‚Šä»˜ã‘ã‚‹ |
 
-**•\2**
+**è¡¨2**
 
-| Œ¾Œê | AI | ƒtƒ@ƒCƒ‹–¼ | Ý’u•û–@ |
+| è¨€èªž | AI | ãƒ•ã‚¡ã‚¤ãƒ«å | è¨­ç½®æ–¹æ³• |
 |---|---|---|---|
-| Java | Copilot | copilot-instructions.md | workspace/project/.github/ ƒtƒHƒ‹ƒ_‚É’u‚­ |
-| | Gem | ƒJƒXƒ^ƒ€ŽwŽ¦.md | ƒJƒXƒ^ƒ€ŽwŽ¦—“‚ÉƒeƒLƒXƒg‚ð“\‚è•t‚¯‚é |
-| | Gem | ƒKƒCƒhƒ‰ƒCƒ“.txt / pom.xml | ’mŽ¯—“‚Éƒtƒ@ƒCƒ‹‚ðƒAƒbƒvƒ[ƒh |
+| Java | Copilot | copilot-instructions.md | workspace/project/.github/ ãƒ•ã‚©ãƒ«ãƒ€ã«ç½®ã |
+| | Gem | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º.md | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤ºæ¬„ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’è²¼ã‚Šä»˜ã‘ã‚‹ |
+| | Gem | ã‚¬ã‚¤ãƒ‰ãƒ©ã‚¤ãƒ³.txt / pom.xml | çŸ¥è­˜æ¬„ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ |
 
-**•\3**
+**è¡¨3**
 
-| Œ¾Œê | AI | ƒtƒ@ƒCƒ‹–¼ | Ý’u•û–@ |
+| è¨€èªž | AI | ãƒ•ã‚¡ã‚¤ãƒ«å | è¨­ç½®æ–¹æ³• |
 |---|---|---|---|
-| Python | Copilot | copilot-instructions.md | workspace/.github/ ƒtƒHƒ‹ƒ_‚É’u‚­ |
-| | Gem | ƒJƒXƒ^ƒ€ŽwŽ¦ | ƒJƒXƒ^ƒ€ŽwŽ¦—“‚ÉƒeƒLƒXƒg‚ð“\‚è•t‚¯‚é |
-| | Gem | spd-pattern-python-code.md | ’mŽ¯—“‚Éƒtƒ@ƒCƒ‹‚ðƒAƒbƒvƒ[ƒh |
+| Python | Copilot | copilot-instructions.md | workspace/.github/ ãƒ•ã‚©ãƒ«ãƒ€ã«ç½®ã |
+| | Gem | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤º | ã‚«ã‚¹ã‚¿ãƒ æŒ‡ç¤ºæ¬„ã«ãƒ†ã‚­ã‚¹ãƒˆã‚’è²¼ã‚Šä»˜ã‘ã‚‹ |
+| | Gem | spd-pattern-python-code.md | çŸ¥è­˜æ¬„ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ |
 
-i’jpom.xmlƒtƒ@ƒCƒ‹‚ÍƒTƒ“ƒvƒ‹‚Å‚·BJava SEƒx[ƒX‚ÌƒvƒƒOƒ‰ƒ€‚ðƒRƒ“ƒpƒCƒ‹EƒŠƒ“ƒN‚Å‚«‚Ü‚·BAIƒG[ƒWƒFƒ“ƒg‚Íimport•¶‚ðŽ©“®¶¬‚·‚é‚½‚ß‚ÉApom.xmlƒtƒ@ƒCƒ‹‚ð“Ç‚Ý‚Ü‚·B
+ï¼ˆæ³¨ï¼‰pom.xmlãƒ•ã‚¡ã‚¤ãƒ«ã¯ã‚µãƒ³ãƒ—ãƒ«ã§ã™ã€‚Java SEãƒ™ãƒ¼ã‚¹ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãƒ»ãƒªãƒ³ã‚¯ã§ãã¾ã™ã€‚AIã‚¨ãƒ¼ã‚¸ã‚§ãƒ³ãƒˆã¯importæ–‡ã‚’è‡ªå‹•ç”Ÿæˆã™ã‚‹ãŸã‚ã«ã€pom.xmlãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿ã¾ã™ã€‚
 
-## ƒ‹[ƒ‹ƒtƒ@ƒCƒ‹‚ðƒZƒbƒgƒAƒbƒvÏ‚Ý‚ÌŠJ”­ŠÂ‹«
-Ž©•ª‚Åƒ‹[ƒ‹ƒtƒ@[ƒ‹‚ðÝ’u‚·‚é‚Ì‚Å‚Í‚È‚­AÝ’uÏ‚Ý‚ÌŠJ”­ŠÂ‹«‚ª•K—v‚Èê‡‚ÍAˆÈ‰º‚ÌŽ©“®ƒZƒbƒgƒAƒbƒvƒXƒNƒŠƒvƒg‚ð—˜—p‚·‚é‚ÆŠÈ’P‚Å‚·B
-10•ª‘OŒã‚Åƒ|[ƒ^ƒuƒ‹‚ÈŠJ”­ŠÂ‹«‚ðŽ©“®ƒZƒbƒgƒAƒbƒv‚µ‚Ü‚·B
+## ãƒ«ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—æ¸ˆã¿ã®é–‹ç™ºç’°å¢ƒ
+è‡ªåˆ†ã§ãƒ«ãƒ¼ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¨­ç½®ã™ã‚‹ã®ã§ã¯ãªãã€è¨­ç½®æ¸ˆã¿ã®é–‹ç™ºç’°å¢ƒãŒå¿…è¦ãªå ´åˆã¯ã€ä»¥ä¸‹ã®è‡ªå‹•ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’åˆ©ç”¨ã™ã‚‹ã¨ç°¡å˜ã§ã™ã€‚
+10åˆ†å‰å¾Œã§ãƒãƒ¼ã‚¿ãƒ–ãƒ«ãªé–‹ç™ºç’°å¢ƒã‚’è‡ªå‹•ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã—ã¾ã™ã€‚
 
-PythonFWindows—pF[autosetup-vscode-python-book](https://github.com/kawaba/autosetup-vscode-python-book)
+Pythonï¼šWindowsç”¨ï¼š[autosetup-vscode-python-book](https://github.com/kawaba/autosetup-vscode-python-book)
 
-PythonFMac—pF[autosetup-vscode-python-book-mac](https://github.com/kawaba/autosetup-vscode-python-book-mac)
+Pythonï¼šMacç”¨ï¼š[autosetup-vscode-python-book-mac](https://github.com/kawaba/autosetup-vscode-python-book-mac)
 
-JavaF[auto-setup-eclipse](https://github.com/kawaba/auto-setup-eclipse)
+Javaï¼š[auto-setup-eclipse](https://github.com/kawaba/auto-setup-eclipse)
 
-CF[portable-c-vscode](https://github.com/kawaba/portable-c-vscode)
+Cï¼š[portable-c-vscode](https://github.com/kawaba/portable-c-vscode)
 
 
