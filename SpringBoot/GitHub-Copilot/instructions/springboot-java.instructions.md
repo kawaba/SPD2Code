@@ -3,7 +3,7 @@ applyTo: "**/*.java, **/src/main/resources/templates/**/*.html"
 description: SPDからSpring Boot（MVC + JPA）のコードを生成する規約。コントローラー・サービス・リポジトリ・エンティティ・フォームの記法と生成規則。
 ---
 
-<!-- ===== SPRINGBOOT-JAVA v1.6.0 / 2026-09-27 =====
+<!-- ===== SPRINGBOOT-JAVA v1.8.0 / 2026-09-28 =====
      このファイルは Spring Boot 版ワークスペース固有である。SE版・要件定義版には存在しない。
      テンプレート（.html）編集時にも読み込まれるのは、コントローラーとテンプレートが
      互いに依存するためである（copilot-instructions.md `## 11`）。 -->
@@ -56,7 +56,7 @@ Controller  →  Service  →  Repository  →  （DB）
 - `メソッド:`・`検索メソッド` の各枝は、**1つずつ独立に判定する**（`## 0.3.5`）。
 - コントローラーの `メソッド:` は、`マッピング` があってもなくても**通常のメソッドとして判定する**。
   `処理` の枝が無ければ、`## 0.3.3` の条件Aにより未完成である。
-- `依存：なし`・`関連：なし`・`検証：なし` は、`## 0.3.3` の `なし` と同じく**記入済み**として扱う。
+- `依存：なし`・`関連：なし` は、`## 0.3.3` の `なし` と同じく**記入済み**として扱う。
 - `依存` の別名 `インジェクション`（`## 20.2`）も、骨格の枝として `依存` と同じに扱う。
 
 ### マーカーの `@`
@@ -310,11 +310,13 @@ public MemberController(MemberService memberService) {
       ├─更新 ← BookForm
       ├─削除
       ├─総件数
-      └─ページング
+      ├─ページング
+      ├─詰め替え ← BookForm
+      └─フォームへ詰め替え → BookForm
 ```
 
 `BookRepository` が `対象：Book`・`主キー：Long` の場合、各項目から次のメソッドを生成する
-（表の `E` は対象の型、`K` は主キーの型、`F` は `←` で指定したフォームの型、`repo` はリポジトリの変数名）。
+（表の `E` は対象の型、`K` は主キーの型、`F` は `←`・`→` で指定したフォームの型、`repo` はリポジトリの変数名）。
 
 | 項目 | 生成するメソッド | 本体 | トランザクション |
 |---|---|---|---|
@@ -325,9 +327,13 @@ public MemberController(MemberService memberService) {
 | `削除` | `void deleteById(K id)` | `repo.deleteById(id);` | `@Transactional` |
 | `総件数` | `long countAll()` | `return repo.count();` | `@Transactional(readOnly = true)` |
 | `ページング` | `Page<E> findAll(Pageable pageable)` | `return repo.findAll(pageable);` | `@Transactional(readOnly = true)` |
+| `詰め替え ← F` | `private void copyFormToEntity(F f, E e)` | 下記「詰め替えメソッド」 | 付けない |
+| `フォームへ詰め替え → F` | `public void copyEntityToForm(E e, F f)` | 下記「詰め替えメソッド」 | 付けない |
 
 - **書かれた項目だけを生成する。** 上の表に無い項目名があれば、不整合として指摘する。
+  `詰め替え`・`フォームへ詰め替え` も、`新規作成`・`更新` があるからといって**暗黙に生成してはならない。**
 - `F f` の変数名は、型名の先頭を小文字にしたもの（`BookForm bookForm`）とする（`## 20.2` のフォームと同じ）。
+  `E e` の変数名も同じく、型名の先頭を小文字にしたもの（`Book book`）とする。
 - `主キーで検索` の `orElseThrow()` は引数なしとする（見つからなければ `NoSuchElementException`）。
 - 自動生成したメソッドには、上の表のトランザクションを付ける。
   **`トランザクション` ノードが無ければ付けない、という規則（上の「生成規則」）の例外である。**
@@ -352,6 +358,10 @@ public MemberController(MemberService memberService) {
   このような場合は、`メソッド：` で処理を書いてもらう。
 - `更新` では、フォームに**エンティティの主キーと同じ名前・同じ型のフィールド**が必要である。
   無い場合は生成せず、【確認事項】に載せること。
+- 同じフォーム型の `詰め替え ← F` がある場合は、コピーを本体に書かず、`copyFormToEntity(f, e);` の呼び出し1行にする
+  （下の2つ目の例）。無い場合は、コピーを本体に直接書く（下の1つ目の例）。
+
+`詰め替え` が無い場合：
 
 ```java
 // 自動生成：新規作成
@@ -370,6 +380,63 @@ public Book update(BookForm bookForm) {
     book.setTitle(bookForm.getTitle());
     book.setPrice(bookForm.getPrice());
     return bookRepository.save(book);
+}
+```
+
+`詰め替え ← BookForm` がある場合：
+
+```java
+// 自動生成：新規作成
+@Transactional
+public Book create(BookForm bookForm) {
+    var book = new Book();
+    copyFormToEntity(bookForm, book);
+    return bookRepository.save(book);
+}
+
+// 自動生成：更新
+@Transactional
+public Book update(BookForm bookForm) {
+    var book = bookRepository.findById(bookForm.getId()).orElseThrow();
+    copyFormToEntity(bookForm, book);
+    return bookRepository.save(book);
+}
+```
+
+**詰め替えメソッド（`詰め替え`・`フォームへ詰め替え`）**
+
+- `詰め替え ← F` はフォームからエンティティへ、`フォームへ詰め替え → F` はエンティティからフォームへ、
+  **名前と型が同じフィールド**をゲッター・セッターで1つずつコピーするメソッドを生成する。
+  `←`・`→` のフォーム型は必須である。無い場合は、その項目を生成せず不整合として指摘する。
+- **どちらも、コピー先を引数で受け取り、戻り値は `void` とする。**
+  `詰め替え` は、`更新` でDBから読んだエンティティに上書きするため、新しいインスタンスを返す形にしない
+  （フォームに無いフィールドや関連が消えるため）。`フォームへ詰め替え` は、オーバーロード（下記）で
+  戻り値の型だけが違うメソッドにならないよう、同じ形にそろえる。
+- `copyFormToEntity` は**主キーをコピーしない**（`新規作成` の自動採番と `更新` の検索を壊さないため）。
+  `copyEntityToForm` は**主キーもコピーする**（編集画面から `更新` に主キーを渡すため）。
+- **フォームのフィールドのうち、エンティティに同じ名前・同じ型のフィールドが無いものが1つでもあれば**、
+  その項目は生成せず、`## 0.8` の報告の【確認事項】に載せること（「フォームからの詰め替え」と同じ）。
+  エンティティにだけあるフィールドは、どちらの向きでもコピーしない。
+- `copyFormToEntity` はサービスの中からだけ呼ぶため `private` とし、`copyEntityToForm` は
+  コントローラー（編集画面の表示）から呼ぶため `public` とする。どちらも DB にアクセスしないので、
+  `@Transactional` を付けない。
+- **フォーム型が違えば、同じ項目を複数書ける。** 同名のメソッドをオーバーロードとして生成する
+  （`詰め替え ← BookCreateForm` と `詰め替え ← BookUpdateForm` → `copyFormToEntity` が2つ）。
+  同じ項目に同じフォーム型が2回書かれていた場合は、不整合として指摘する。
+- `詰め替え`・`フォームへ詰め替え` は、自動生成の他のメソッドの後に、この順で置く。
+
+```java
+// 自動生成：詰め替え
+private void copyFormToEntity(BookForm bookForm, Book book) {
+    book.setTitle(bookForm.getTitle());
+    book.setPrice(bookForm.getPrice());
+}
+
+// 自動生成：フォームへ詰め替え
+public void copyEntityToForm(Book book, BookForm bookForm) {
+    bookForm.setId(book.getId());
+    bookForm.setTitle(book.getTitle());
+    bookForm.setPrice(book.getPrice());
 }
 ```
 
@@ -497,32 +564,46 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 ### 記法
 
 ```
-フォーム：MemberForm
+フォーム：BookForm
 │
-├─目的：会員登録画面の入力項目
+├─目的：書籍の入力フォーム
 │
 ├─フィールド
-│  ├─名前：String name
-│  ├─メール：String email
-│  └─年齢：Integer age
-│
-├─検証
-│  ├─name：必須、20文字以内
-│  ├─email：必須、メール形式
-│  └─age：0以上150以下
+│    ├─主キー：Long id
+│    ├─表題：String title　　　　　＠必須("表題を入力してください")、20文字以内
+│    ├─発行日：LocalDate issuedOn　＠過去の日付
+│    ├─価格：Integer price　　　　 ＠正の数
+│    ├─ISBN：String isbn　　　　　 ＠"^[0-9-]{10,17}$"に一致
+│    └─メディア：List<String> mediaTypes　＠必須
 │
 └─自動生成
-     ├─コンストラクタ：引数なし
-     ├─ゲッター
-     └─セッター
+      ├─コンストラクタ：引数なし
+      ├─ゲッター
+      └─セッター
 ```
+
+**フィールドの検証は、そのフィールドの行の末尾に書く。**
+
+- 変数名の後に `@`（全角 `＠` でもよい。`## 20.1`）を書き、その右に検証を並べる。
+  検証が無いフィールドには `@` を書かない。
+- 検証の区切りは `、` または `,` とする。1行の中で混在してもよい。
+- `@` の前後と区切りの前後の空白は、半角・全角・個数を問わず無視する。位置をそろえるために空白を入れてよい。
+- **エンティティのマーカー（`## 20.5`）は型の前に書くが、フォームの検証は変数名の後に書く。**
+  エンティティのマーカーは1語ずつアノテーションに対応するが、検証は「20文字以内」のような句であり、
+  区切って並べる方が読みやすいためである。
+- **正規表現は `"` で囲む**（`"^[0-9-]{10,17}$"に一致`）。引用符の中の `、`・`,` は区切りとみなさない。
+- **メッセージは、検証の直後の `()` の中に `"` で囲んで書く**（`必須("表題を入力してください")`）。
+  括弧は全角 `（）` でもよい。引用符の中の `、`・`,`・括弧は区切りとみなさない。
+- **`検証` の枝は廃止した。** フォームに `検証` の枝が書かれていた場合は生成せず、
+  検証を各フィールドの行の末尾へ移すよう `## 0.8` の報告の【確認事項】に載せること。
 
 ### 検証の対応表
 
 | SPDの記述 | 生成されるアノテーション |
 |---|---|
 | `必須`（`String` の場合） | `@NotBlank` |
-| `必須`（`String` 以外） | `@NotNull` |
+| `必須`（`List`・`Set`・`Map` の場合） | `@NotEmpty` |
+| `必須`（上記以外） | `@NotNull` |
 | `N文字以内` | `@Size(max = N)` |
 | `N文字以上` | `@Size(min = N)` |
 | `N文字以上M文字以内` | `@Size(min = N, max = M)` |
@@ -533,13 +614,61 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 | `正の数` | `@Positive` |
 | `過去の日付` | `@Past` |
 | `未来の日付` | `@Future` |
-| `<正規表現>に一致` | `@Pattern(regexp = "…")` |
+| `"<正規表現>"に一致` | `@Pattern(regexp = "…")` |
 
 - 対応表に無い表現は、**推測でアノテーションを作らず**、`## 0.8` の報告の
   【確認事項】に載せること。
-- メッセージ（`message = "…"`）は、SPDに明示された場合だけ付ける。
+- コレクションの `必須` を `@NotNull` にしてはならない。チェックボックスを1つも選ばずに送信すると、
+  Spring は `null` ではなく空のコレクションを設定するため、`@NotNull` では検証が働かない。
+- 正規表現は、Javaの文字列リテラルとして正しくなるよう、`\` を `\\` に、`"` を `\"` にして `regexp` に書く
+  （`"^\d{3}$"に一致` → `@Pattern(regexp = "^\\d{3}$")`）。
+- **メッセージ（`message = "…"`）は、SPDに明示された場合だけ付ける。**
+  `必須("表題を入力してください")` → `@NotBlank(message = "表題を入力してください")`。
+  1つの検証から2つのアノテーションができる場合（`N以上M以下`）は、両方に同じメッセージを付ける。
+- 1つのフィールドに複数の検証がある場合、アノテーションは**SPDに書かれた順**に並べる。
 - **フォームに永続化アノテーション（`@Entity`・`@Column` など）を付けてはならない。**
 - 検証アノテーションは `jakarta.validation.constraints.*` を使う（`javax.*` ではない）。
+
+### 日付・時刻のフィールド
+
+**フォームの `java.time` のフィールドには、検証の有無にかかわらず `@DateTimeFormat` を必ず付ける。**
+付けないと、`<input type="date">` などが送る ISO 形式の値（`2026-09-28`）を変換できず、バインドエラーになる。
+
+| 型 | 生成されるアノテーション | 対応する入力欄 |
+|---|---|---|
+| `LocalDate` | `@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)` | `<input type="date">` |
+| `LocalDateTime` | `@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)` | `<input type="datetime-local">` |
+| `LocalTime` | `@DateTimeFormat(iso = DateTimeFormat.ISO.TIME)` | `<input type="time">` |
+
+- `@DateTimeFormat` は `org.springframework.format.annotation.DateTimeFormat` を使う。
+- 検証アノテーションの後、フィールド宣言の直前に置く。
+- エンティティには付けない（エンティティは画面から直接バインドしないため）。
+- `Date`・`Calendar` の扱いはエンティティと同じく、生成せずに報告する（`## 20.5`）。
+
+### 生成例
+
+上の `BookForm` のフィールド部分：
+
+```java
+private Long id; // 主キー
+
+@NotBlank(message = "表題を入力してください")
+@Size(max = 20)
+private String title; // 表題
+
+@Past
+@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+private LocalDate issuedOn; // 発行日
+
+@Positive
+private Integer price; // 価格
+
+@Pattern(regexp = "^[0-9-]{10,17}$")
+private String isbn; // ISBN
+
+@NotEmpty
+private List<String> mediaTypes; // メディア
+```
 
 ---
 
@@ -609,6 +738,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
    | ページング | `org.springframework.data.domain.Page`、`org.springframework.data.domain.Pageable` |
    | エンティティ | `jakarta.persistence.*` |
    | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*` |
+   | 日付・時刻の入力 | `org.springframework.format.annotation.DateTimeFormat` |
    | ログ | `org.slf4j.Logger`、`org.slf4j.LoggerFactory` |
 
 3. **Java 標準ライブラリ**（`java.*`）
@@ -649,6 +779,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] `トランザクション` ノードが無いのに `@Transactional` を勝手に付けていないか（`## 20.3`）
 - [ ] `@Transactional` を `org.springframework.transaction.annotation` から取ったか（`## 20.3`）
 - [ ] サービスの `自動生成` は、書かれた項目だけを表どおりのシグネチャ・トランザクションで生成したか。リポジトリが `依存` にあることを確かめたか。`新規作成`・`更新` で、同名・同型でないフィールドを推測で詰め替えていないか（`## 20.3`）
+- [ ] `詰め替え`・`フォームへ詰め替え` を、書かれていないのに暗黙に生成していないか。`copyFormToEntity` は `private void`・主キーを除いてコピー、`copyEntityToForm` は `public void`・主キーも含めてコピーとし、同じフォーム型の `詰め替え` があるとき `新規作成`・`更新` からそれを呼び出したか（`## 20.3`）
 - [ ] リポジトリを `interface` として生成し、`@Repository` を付けていないか（`## 20.4`）
 - [ ] 命名規約に合わないリポジトリメソッドに、推測で `@Query` を補っていないか（`## 20.4`）
 - [ ] エンティティに `@主キー` があったか。引数なしコンストラクタを補い、行コメントで明示したか（`## 20.5`）
@@ -657,6 +788,9 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] 日付・時刻のフィールドに `@Temporal` を付けていないか。`Date`・`Calendar` が書かれていた場合、生成せずに報告したか（`## 20.5`）
 - [ ] フォームに永続化アノテーションを付けていないか。検証を `jakarta.validation.constraints.*` から取ったか（`## 20.6`）
 - [ ] 検証の対応表に無い表現を、推測でアノテーション化していないか（`## 20.6`）
+- [ ] フォームの検証をフィールドの行末（`@` の右）から読んだか。正規表現・メッセージの引用符の中の `、`・`,` で区切っていないか。`検証` の枝が書かれていた場合、生成せずに報告したか（`## 20.6`）
+- [ ] コレクションの `必須` を `@NotEmpty` にしたか。メッセージはSPDに明示された場合だけ付けたか（`## 20.6`）
+- [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
 - [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
 - [ ] 各Javaファイルの冒頭に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
@@ -683,9 +817,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 フォーム：MemberForm
 ├─目的：会員登録画面の入力項目
 ├─フィールド
-│  └─名前：String name
-├─検証
-│  └─name：必須、20文字以内
+│  └─名前：String name　＠必須、20文字以内
 └─自動生成
      ├─コンストラクタ：引数なし
      ├─ゲッター
@@ -1023,3 +1155,5 @@ public class MemberForm {
 | 1.4.0 | 2026-09-26 | パスを明示した `マッピング` には末尾に `/` を付けた別名を加えず、そのパスだけを書く規則を追加（`{"", "/"}` はパス省略時と `/` だけの場合に限る。`## 20.2`）。チェックリストに対応する項目を追加し22項目に（`## 20.8`）。Javaコードのインデントを半角スペース4つとし、アノテーションを宣言と同じ深さに置く規則を追加（`## 20.7`） |
 | 1.5.0 | 2026-09-26 | コントローラーの `フォーム` 引数の変数名を、型名の先頭を小文字にしたもの（`memberForm`）に統一し、`@ModelAttribute` を付けずに生成する規則に変更（`## 20.2`）。従来の `@ModelAttribute MemberForm form` では Model の属性名が型名由来の `memberForm` になり、テンプレートの `${form}` と一致しない不具合があったため。別の変数名が書かれた場合は生成せず報告する。生成例（`## 20.2`・`## 20.9`）を修正し、`ModelAttribute` のインポートを削除。チェックリストに1項目追加し23項目に（`## 20.8`） |
 | 1.6.0 | 2026-09-27 | マーカーの `@` は半角・全角（`＠`）のどちらで書いてもよく、生成するアノテーションは必ず半角とする規約を追加（`## 20.1`）。要素が文字列・ラッパークラス・埋め込み型のコレクションを表すフィールドのマーカー `@値コレクション`（→ `@ElementCollection`）を追加し、テーブル名・列名は既定に任せ、他のマーカーとは組み合わせない規則を追加（`## 20.5`）。日付・時刻のフィールドは `java.time` の型でアノテーションを付けずに書き、`Date`・`Calendar` は生成せず報告する規則を追加（`@Temporal` は `java.time` の型には不要で、Hibernate 6 では付けるとエラーになるため。`## 20.5`）。チェックリストに2項目追加し25項目に（`## 20.8`）。`インジェクション` を `依存` の別名として受理する規則を追加（`## 20.1`・`## 20.2`）。サービスの `自動生成：<リポジトリ型名>` を新設し、`全件検索`・`主キーで検索`・`新規作成 ← フォーム`・`更新 ← フォーム`・`削除`・`総件数`・`ページング` から、リポジトリを呼び出すだけのメソッドを決まったシグネチャとトランザクションで生成する規則を追加（`新規作成`・`更新` は同名・同型のフィールドだけを詰め替え、対応しないフィールドがあれば生成せず報告。`## 20.3`）。サービスの骨格の枝に `自動生成` を追加（`## 20.1`）。インポート表に `Page`・`Pageable` を追加（`## 20.7`）。チェックリストに1項目追加し26項目に（`## 20.8`） |
+| 1.7.0 | 2026-09-28 | サービスの `自動生成` に `詰め替え ← フォーム`（→ `private void copyFormToEntity(F f, E e)`）と `フォームへ詰め替え → フォーム`（→ `public void copyEntityToForm(E e, F f)`）を追加（`## 20.3`）。どちらも同名・同型のフィールドだけをコピーし、`copyFormToEntity` は主キーを除き、`copyEntityToForm` は主キーも含める。書かれた場合だけ生成し、`新規作成`・`更新` から暗黙には生成しない。同じフォーム型の `詰め替え` があれば、`新規作成`・`更新` はコピーを直接書かずにそれを呼び出す。フォーム型が違えば複数書け、オーバーロードとして生成する（そのため、どちらもコピー先を引数で受け取る `void` の形にそろえた）。チェックリストに1項目追加し27項目に（`## 20.8`） |
+| 1.8.0 | 2026-09-28 | フォームの検証を、`検証` の枝ではなく各フィールドの行末に `@`（`＠`）に続けて `、`・`,` 区切りで書く記法に変更し、`検証` の枝を廃止（書かれていた場合は生成せず報告。`## 20.1`・`## 20.6`）。エンティティのマーカーは前置、フォームの検証は後置であることを明記。正規表現は `"` で囲み、メッセージは検証の直後の `()` に `"` で囲んで書く規則を追加。`@` や区切りの前後の空白（全角を含む）は無視する。コレクションの `必須` を `@NotEmpty` に対応させた（空のコレクションがバインドされ、`@NotNull` では働かないため）。フォームの `java.time` のフィールドに、型に応じた `@DateTimeFormat(iso = …)` を必ず付ける規則を追加し、インポート表に `DateTimeFormat` を追加（`## 20.7`）。完全な変換例（`## 20.9`）のフォームを新しい記法に書き換え。チェックリストに3項目追加し30項目に（`## 20.8`） |
