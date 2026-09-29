@@ -1,9 +1,9 @@
 ---
 applyTo: "**/src/main/resources/templates/**/*.html, **/*.java"
-description: SPDのテンプレート定義（`テンプレート:`）からThymeleafテンプレートを生成する規約。構成ノードとth属性の対応表、フォーム・繰り返し・条件表示・レイアウト。
+description: SPDのテンプレート定義（`テンプレート:`）からThymeleafテンプレートを生成する規約。構成ノードとth属性の対応表、行定義・列定義の表、フォーム・繰り返し・条件表示・レイアウト。
 ---
 
-<!-- ===== THYMELEAF v1.3.0 / 2026-09-26 =====
+<!-- ===== THYMELEAF v2.0.0 / 2026-09-29 =====
      このファイルは Spring Boot 版ワークスペース固有である。
      `.java` 編集時にも読み込まれるのは、コントローラーが渡す属性名とテンプレートが
      参照する名前を一致させる必要があるためである（copilot-instructions.md `## 11`）。 -->
@@ -34,7 +34,32 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 
 - `構成` の枝が無い、または中身が空／`★` マーカーを含む場合、そのテンプレートは**未完成**である。
   テンプレートファイルを生成せず、`## 0.8` の報告に載せること。
-- `受取り：なし`・`レイアウト：なし` は、記入済みとして扱う。
+- `受け取り：なし`・`レイアウト：なし` は、記入済みとして扱う。
+
+### 記号の表記
+
+- マーカーの `@` は半角・全角（`＠`）のどちらでもよい（`springboot-java` の `## 20.1` と同じ）。
+- **山括弧 `<…>` は半角・全角（`＜…＞`）のどちらでもよい。** 表の種類（`表＜行定義＞`）と入力の種類（`発行日<date>`）の
+  2か所で使う。山括弧の前後の空白は無視する（`タイプ <checkbox>` と `タイプ<checkbox>` は同じ）。
+- `←`・`→`・`：` の前後の空白は無視する。`：` は半角 `:` でもよい。
+
+### 旧記法の読み替え
+
+v2.0.0 で改めた記法は、旧記法で書かれていても**黙って新しい記法に読み替える。** 報告の対象にはしない。
+
+| 旧記法 | 新しい記法 |
+|---|---|
+| `受取り` | `受け取り` |
+| `受け取り` の子の `<名前>：<型>`（`memberList：List<Member>`） | `<説明>：<型> <名前>`（`## 30.2`） |
+| `表：memberListの各要素をmとする` | `表＜列定義＞：memberListの各要素をmとする` |
+| `列：番号 ← m.id` | `番号 ← m.id`（`## 30.4`） |
+| `入力欄：名前 ← name` | `名前 ← name`（`## 30.5`） |
+| `入力欄：年齢 ← age　※数値`・`※日付`・`※メール`・`※パスワード` | `年齢<number> ← age`・`<date>`・`<email>`・`<password>` |
+| `複数行入力：備考 ← note` | `備考<textarea> ← note` |
+| `チェック：公開する ← published` | `公開する<checkbox> ← published` |
+| `エラー：name` | 読み飛ばす（入力項目には常にエラー表示を付けるため。`## 30.5`） |
+| 入力項目の前の `@検証` | 読み飛ばす（同上） |
+| `文字列：…` | `文字：…` |
 
 ---
 
@@ -44,21 +69,22 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 テンプレート：member/list
 │
 ├─目的：会員の一覧を表示する
-├─レイアウト：layout/base
+├─レイアウト：なし
 ├─タイトル：会員一覧
+├─css：css/style.css
 │
-├─受取り
-│  ├─members：List<Member>
-│  └─message：String　※任意
+├─受け取り
+│  ├─会員リスト：List<Member> memberList
+│  └─メッセージ：String message　※任意
 │
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
      │  └─通知：message
-     ├─表：membersの各要素をmとする
-     │  ├─列：番号 ← m.id
-     │  ├─列：名前 ← m.name
-     │  └─列：操作
+     ├─表＜列定義＞：memberListの各要素をmとする
+     │  ├─番号 ← m.id
+     │  ├─名前 ← m.name
+     │  └─操作
      │        └─リンク：編集 → /members/{m.id}/edit
      └─リンク：新規登録 → /members/new
 ```
@@ -69,16 +95,37 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 | `目的：…` | ファイル冒頭のコメントに記載 |
 | `レイアウト：…` | 使用する共通レイアウト。`なし` なら単独のHTMLとして生成（`## 30.6`） |
 | `タイトル：…` | `<title>` の内容 |
-| `受取り` | コントローラーから渡される Model 属性と、その型 |
-| `構成` | 画面の中身（`## 30.3`） |
+| `css：…` | 読み込むスタイルシート（下記） |
+| `受け取り` | コントローラーから渡される Model 属性 |
+| `構成` | 画面の中身（`## 30.3`〜`## 30.5`） |
 
 - **`レイアウト` の行が無い場合は、`レイアウト：なし` として扱う。**
   ワークスペースにレイアウトファイルがあっても、推測で適用してはならない。
 
-- **`受取り` に書かれた名前は、対応するコントローラーの `処理` で「〜をテンプレートへ渡す」とした名前と一致していなければならない**（`## 11.2`）。
+### `受け取り`
+
+`<説明>：<型> <名前>` の形で書く（`spd-core` の引数・フィールドと同じ形）。
+
+- **型は参考情報である。** 生成には使わない（テンプレートは型を宣言しないため）。
+- **`<名前>` は、対応するコントローラーの `処理` で「〜をテンプレートに渡す」とした名前と一致していなければならない**（`## 11.2`）。
+  フォームオブジェクトは、型名の先頭を小文字にした名前（`bookForm`）になる（`## 11.3`）。
   一致しない名前をテンプレートで参照しようとした場合は、推測で補わず
   `## 0.8` の報告の【見つからない名前】に載せること。
-- `※任意` と書かれた受取りは、`th:if` で存在を確認してから使う。
+- `※任意` と書かれた受け取りは、`th:if` で存在を確認してから使う。
+  フラッシュメッセージ（`message`）は、リダイレクトの直後にしか存在しないので `※任意` にする。
+
+### `css`
+
+| SPDの記述 | 生成 |
+|---|---|
+| `css：css/style.css` | `<link rel="stylesheet" th:href="@{/css/style.css}">` |
+
+- パスは `src/main/resources/static/` からの相対である。先頭の `/` はあっても無くてもよい。
+- `<head>` の中、`<meta name="viewport" …>` の後・`<title>` の前に置く。
+- 複数のファイルを読み込む場合は、`css` の子に1行ずつ並べる。書かれた順に `<link>` を置く。
+- ノード名は `CSS` と書いてもよい。
+- `レイアウト` が `なし` 以外の場合は、画面側の `<head>` がレイアウトに置き換えられて失われるため、
+  `<link>` を生成せず、`## 0.8` の報告の【確認事項】に載せること（CSS はレイアウト側に書く）。
 
 ---
 
@@ -99,6 +146,7 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 | `小見出し：基本情報` | `<h2>基本情報</h2>` |
 | `段落：…` | `<p>…</p>` |
 | `文字：名前 ← m.name` | `<span th:text="${m.name}">名前</span>` |
+| `文字：\|`（`←` なし） | `\|`（本文にそのまま書く。タグで囲まない） |
 | `通知：message` | `<div class="message" th:text="${message}">通知</div>` |
 | `リンク：新規登録 → /members/new` | `<a th:href="@{/members/new}">新規登録</a>` |
 | `ボタン：登録する` | `<button type="submit">登録する</button>` |
@@ -107,6 +155,9 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 - **`見出し` の階層**は、`構成` 直下を `<h1>`、その1段下を `<h2>` とする。
 - `← 値` が付いた見出し・段落は、`th:text` で出力する
   （`見出し：会員一覧 ← title` → `<h1 th:text="${title}">会員一覧</h1>`）。
+- **`リンク` の子に `ボタン` を置いてはならない**（`<a>` の中に `<button>` を入れるのは不正なHTMLである）。
+  書かれていた場合は生成せず、【確認事項】に載せること。ボタンの形で別の画面へ移るには、
+  `GET` のフォーム（`## 30.5` の「フォームの形」）を使う。
 
 ### パスの書き方
 
@@ -119,20 +170,31 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 | `→ /members?keyword={keyword}` | `th:href="@{/members(keyword=${keyword})}"` |
 
 - **パス変数は `{名前}` のプレースホルダと `(名前=${式})` の組で書く。**
+  プレースホルダの名前は、式の最後の名前（`m.id` → `id`）とする。
   文字列連結（`@{'/members/' + ${m.id}}`）は生成しない。
+- フォームの送信先（`th:action`）も同じ書き方にする。
+- パスは、コントローラーの `ベースパス` を含めた絶対パスで書く。コントローラーの `ベースパス` ＋ `マッピング` と
+  一致しない場合は、【確認事項】に載せること（`## 11.4`）。
 
 ---
 
 ## 30.4 繰り返しと条件表示
 
-### 表
+### 表（列定義）
+
+**`表＜列定義＞：<リスト>の各要素を<変数>とする`** は、リストの要素ごとに1行を作る表である。
+**子の各枝が1つの列**を表す。
 
 ```
-├─表：membersの各要素をmとする
-│  ├─列：番号 ← m.id
-│  ├─列：名前 ← m.name
-│  └─列：操作
-│        └─リンク：編集 → /members/{m.id}/edit
+├─表＜列定義＞：memberListの各要素をmとする
+│  ├─番号 ← m.id
+│  ├─名前 ← m.name
+│  ├─入会日 ← m.joinedOn："yyyy年MM月dd日"
+│  └─操作
+│        ├─リンク：編集 → /members/{m.id}/edit
+│        ├─文字：|
+│        └─フォーム：→ POST /members/{m.id}/delete
+│              └─ボタン：削除
 ```
 
 ```html
@@ -141,34 +203,61 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
     <tr>
       <th>番号</th>
       <th>名前</th>
+      <th>入会日</th>
       <th>操作</th>
     </tr>
   </thead>
   <tbody>
-    <tr th:each="m : ${members}">
+    <tr th:each="m : ${memberList}">
       <td th:text="${m.id}">1</td>
       <td th:text="${m.name}">名前</td>
+      <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">2026年01月01日</td>
       <td>
         <a th:href="@{/members/{id}/edit(id=${m.id})}">編集</a>
+        |
+        <form th:action="@{/members/{id}/delete(id=${m.id})}" method="post">
+          <button type="submit">削除</button>
+        </form>
       </td>
     </tr>
   </tbody>
 </table>
 ```
 
-- `列：<見出し> ← <値>` の形である。見出しは `<thead>` へ、値は `<tbody>` の `<td>` へ振り分ける。
-- `←` の無い `列` は、子ノードの内容を `<td>` の中に置く。
+- 列は `<見出し> ← <値>[：<書式>]` の形である。見出しは `<thead>` へ、値は `<tbody>` の `<td>` へ振り分ける。
+- `←` の無い列は、子ノードの内容を `<td>` の中に置く。
 - **`th:each` は `<tr>` に付ける。** `<tbody>` や `<table>` に付けてはならない。
+- **`＜列定義＞` には「〜の各要素を〜とする」が必須である。** 無い場合は生成せず、【確認事項】に載せること。
+- 旧記法の `表：…の各要素を…とする` と `列：` は、黙って読み替える（`## 30.1`）。
+- 列の中のフォーム（削除ボタンなど）は、`<td>` の中に置く。`<form>` はブロック要素なので、リンクと横に並べる場合は
+  CSS（`form { display: inline; }` など）で調整する。テンプレートに `style` 属性を書いてはならない。
+
+### 値の書式
+
+列の値（および `文字：… ← 値`）の後に `：<書式>` を付けると、書式を指定して表示する。
+**書式は次の表にあるものだけ**である。
+
+| SPDの書式 | 生成される式（`x` は値） |
+|---|---|
+| `"yyyy年MM月dd日"`（引用符で囲んだ日付・時刻のパターン） | `${x == null ? '' : #temporals.format(x, 'yyyy年MM月dd日')}` |
+| `3桁区切り` | `${x == null ? '' : #numbers.formatInteger(x, 1, 'COMMA')}` |
+| `円表示` | `${x == null ? '' : #numbers.formatInteger(x, 1, 'COMMA') + '円'}` |
+| `"<区切り>"で連結`（コレクション） | `${x == null ? '' : #strings.listJoin(x, '<区切り>')}` |
+
+- **日付・時刻のパターンと区切りの文字列は、`"` で囲む。** パターンの中の `:`（`HH:mm`）を区切りと誤らないためである。
+- 書式を付けた値は、**必ず上の表のとおり `null` のとき空欄にする。** 必須でないフィールドは `null` になり得るためである。
+- 表に無い書式は、推測で式を作らず【確認事項】に載せること。
+  特に `通貨表示`（`#numbers.formatCurrency`）は、閲覧者のブラウザのロケールで記号や桁が変わるため使わない。
 
 ### 一覧
 
 ```
-├─一覧：membersの各要素をmとする
+├─一覧：memberListの各要素をmとする
 │  └─項目：m.name
 ```
 ```html
 <ul>
-  <li th:each="m : ${members}" th:text="${m.name}">名前</li>
+  <li th:each="m : ${memberList}" th:text="${m.name}">名前</li>
 </ul>
 ```
 
@@ -177,8 +266,8 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 | SPDの記述 | 生成 |
 |---|---|
 | `条件表示：messageがある` | `th:if="${message}"` |
-| `条件表示：membersが空である` | `th:if="${#lists.isEmpty(members)}"` |
-| `条件表示：membersが空でない` | `th:if="${not #lists.isEmpty(members)}"` |
+| `条件表示：memberListが空である` | `th:if="${#lists.isEmpty(memberList)}"` |
+| `条件表示：memberListが空でない` | `th:if="${not #lists.isEmpty(memberList)}"` |
 | `条件表示：m.ageが20以上` | `th:if="${m.age >= 20}"` |
 | `そうでなければ` | 直前の条件の `th:unless`（同じ条件式） |
 
@@ -189,77 +278,169 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 
 ## 30.5 フォーム
 
-### 記法
+### フォームの形
+
+`フォーム：[<オブジェクト名>] → [<HTTPメソッド>] <パス>` と書く。
+
+| SPDの記述 | 生成 |
+|---|---|
+| `フォーム：memberForm → POST /members` | `<form th:object="${memberForm}" th:action="@{/members}" method="post">` |
+| `フォーム：→ POST /members/{m.id}/delete` | `<form th:action="@{/members/{id}/delete(id=${m.id})}" method="post">` |
+| `フォーム：→ GET /members` | `<form th:action="@{/members}" method="get">` |
+
+- **オブジェクト名は、フォームクラスの型名の先頭の1文字を小文字にしたもの**（`MemberForm` → `memberForm`）とし、
+  `受け取り` にも同じ名前で書く。コントローラーが渡す属性名がこの名前になるためである（`## 11.3`）。
+- **オブジェクト名を省略したフォーム**は `th:object` を持たない。ボタンだけを置き、削除（`POST`）や
+  画面の移動（`GET`）に使う。入力項目を置いた場合は生成せず、【確認事項】に載せること。
+- HTTPメソッドを省略した場合は `post` とする。
+- フォームの中に別のフォームを置いてはならない（HTMLでは入れ子にできない）。
+
+### 入力項目
+
+フォームの中の入力項目は、**`<ラベル>[<種類>] ← <フィールド名>`** と書く。種類を省略すると `text` である。
 
 ```
 テンプレート：member/form
 │
 ├─目的：会員を登録する
-├─レイアウト：layout/base
 ├─タイトル：会員登録
+├─css：css/style.css
 │
-├─受取り
-│  └─memberForm：MemberForm
+├─受け取り
+│  └─入力内容：MemberForm memberForm
 │
 └─構成
      ├─見出し：会員登録
-     └─フォーム：memberForm → POST /members
-          ├─入力欄：名前 ← name
-          ├─エラー：name
-          ├─入力欄：年齢 ← age　※数値
-          ├─エラー：age
-          └─ボタン：登録する
+     ├─フォーム：memberForm → POST /members
+     │    ├─表＜行定義＞
+     │    │    ├─名前 ← name
+     │    │    ├─入会日<date> ← joinedOn
+     │    │    ├─会員種別<radio> ← kind
+     │    │    │    ├─一般：general
+     │    │    │    └─学生：student
+     │    │    └─メディア<checkbox> ← mediaTypes
+     │    │         ├─印刷本：print
+     │    │         └─電子書籍：ebook
+     │    ├─番号<hidden> ← id
+     │    └─ボタン：登録する
+     │
+     └─フォーム：→ GET /members
+          └─ボタン：戻る
 ```
 
-### 生成
+**種類の対応表**
+
+| SPDの種類 | 生成 |
+|---|---|
+| （省略） | `<input type="text" th:field="*{f}">` |
+| `<number>`・`<date>`・`<time>`・`<datetime-local>`・`<email>`・`<password>`・`<tel>`・`<url>` | `<input type="…" th:field="*{f}">` |
+| `<hidden>` | `<input type="hidden" th:field="*{f}">`（ラベルもエラー表示も付けない） |
+| `<textarea>` | `<textarea th:field="*{f}"></textarea>` |
+| `<checkbox>`（子なし） | `<input type="checkbox" th:field="*{f}">`（`boolean` のフィールド） |
+| `<checkbox>`（子あり） | 子の選択肢ごとに `<label><input type="checkbox" th:field="*{f}" value="…"> 表示名</label>` |
+| `<radio>`（子あり） | 子の選択肢ごとに `<label><input type="radio" th:field="*{f}" value="…"> 表示名</label>` |
+| `<select>`（子あり） | `<select th:field="*{f}">` ＋ 子の選択肢ごとに `<option value="…">表示名</option>` |
+
+- **選択肢は、子の枝に `<表示名>：<値>` と書く。** `<radio>`・`<select>` は選択肢が必須である。
+- 表に無い種類は、推測せず【確認事項】に載せること。
+- 選択肢をコントローラーから受け取る選択欄は、従来どおり `選択欄：所属 ← departmentId、選択肢 ← departments` と書く（下記）。
+
+**入力項目に共通の規則**
+
+- **`th:object` を指定したフォームの中では、必ず `*{…}` を使う。** `${memberForm.name}` と書かない。
+- **`th:field` は `id`・`name`・`value` を自動生成する。** これらを手で書いてはならない
+  （選択肢の `value` は例外。`th:field` はチェックボックス・ラジオボタン・選択肢の値を作らないため）。
+- **`<hidden>` 以外のすべての入力項目に、エラー表示を付ける。** 入力欄（選択肢がある場合は最後の選択肢）の直後に置く。
+  ```html
+  <span class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">エラー</span>
+  ```
+  検証アノテーションが無いフィールドでも、型変換のエラー（日付・数値の変換失敗）は起こるためである。
+  `class="error-msg"` は固定で付ける（`## 30.7` の「CSSクラスを勝手に付けない」の例外）。見た目は CSS で定める。
+- ラベルは書かれたとおりに出す（`：` などを補わない）。
+- 選択肢の無い入力項目は、`<label for="<フィールド名>">` でラベルを付ける（`th:field` が作る `id` はフィールド名と同じ）。
+  選択肢のある `<checkbox>`・`<radio>` と、子の無い `<checkbox>` は、`th:field` が `id` に連番を付けるため
+  `for` を使わず、選択肢ごとに `<label>` で入力を包む。項目のラベルは文字だけで出す。
+
+### 表（行定義）
+
+**`表＜行定義＞`** は、**子の各枝が1つの行**を表す表である。繰り返しは無い。
+フォームの入力項目を、左にラベル・右に入力欄の形で並べるときに使う。
 
 ```html
 <form th:object="${memberForm}" th:action="@{/members}" method="post">
-  <div>
-    <label for="name">名前</label>
-    <input type="text" id="name" th:field="*{name}">
-    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">エラー</span>
-  </div>
-  <div>
-    <label for="age">年齢</label>
-    <input type="number" id="age" th:field="*{age}">
-    <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}">エラー</span>
-  </div>
+  <input type="hidden" th:field="*{id}">
+  <table>
+    <tr>
+      <td><label for="name">名前</label></td>
+      <td>
+        <input type="text" th:field="*{name}">
+        <span class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">エラー</span>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="joinedOn">入会日</label></td>
+      <td>
+        <input type="date" th:field="*{joinedOn}">
+        <span class="error-msg" th:if="${#fields.hasErrors('joinedOn')}" th:errors="*{joinedOn}">エラー</span>
+      </td>
+    </tr>
+    <tr>
+      <td>会員種別</td>
+      <td>
+        <label><input type="radio" th:field="*{kind}" value="general"> 一般</label>
+        <label><input type="radio" th:field="*{kind}" value="student"> 学生</label>
+        <span class="error-msg" th:if="${#fields.hasErrors('kind')}" th:errors="*{kind}">エラー</span>
+      </td>
+    </tr>
+    <tr>
+      <td>メディア</td>
+      <td>
+        <label><input type="checkbox" th:field="*{mediaTypes}" value="print"> 印刷本</label>
+        <label><input type="checkbox" th:field="*{mediaTypes}" value="ebook"> 電子書籍</label>
+        <span class="error-msg" th:if="${#fields.hasErrors('mediaTypes')}" th:errors="*{mediaTypes}">エラー</span>
+      </td>
+    </tr>
+  </table>
   <button type="submit">登録する</button>
+</form>
+
+<form th:action="@{/members}" method="get">
+  <button type="submit">戻る</button>
 </form>
 ```
 
-### 規則
+- 各行は `<tr><td>ラベル</td><td>入力欄とエラー表示</td></tr>` とする。
+- **`＜行定義＞` には「〜の各要素を〜とする」を書かない。** 書かれていた場合は生成せず、【確認事項】に載せること。
+- `<hidden>` の項目は行を作らない。`＜行定義＞` の中に書かれていても、`<table>` の直前に置く。
+- `表＜行定義＞` を使わず、入力項目を `フォーム` の直下に書いた場合は、1項目を1つの `<div>` にまとめる
+  （`<div><label …>…</label> 入力欄 エラー表示</div>`）。
+
+### ボタン
 
 | SPDの記述 | 生成 |
 |---|---|
-| `フォーム：memberForm → POST /members` | `<form th:object="${memberForm}" th:action="@{/members}" method="post">` |
-| `入力欄：名前 ← name` | `<label>` + `<input type="text" th:field="*{name}">` |
-| `入力欄：年齢 ← age　※数値` | `type="number"` |
-| `入力欄：入会日 ← joinedOn　※日付` | `type="date"` |
-| `入力欄：メール ← email　※メール` | `type="email"` |
-| `入力欄：パスワード ← password　※パスワード` | `type="password"` |
-| `複数行入力：備考 ← note` | `<textarea th:field="*{note}"></textarea>` |
-| `チェック：公開する ← published` | `<input type="checkbox" th:field="*{published}">` |
-| `選択欄：所属 ← departmentId、選択肢 ← departments` | `<select th:field="*{departmentId}">` + `<option th:each>` |
-| `エラー：name` | `<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">` |
+| `ボタン：登録する`・`ボタン<submit>：登録する` | `<button type="submit">登録する</button>` |
+| `ボタン<reset>：クリア` | `<button type="reset">クリア</button>` |
 
-- **`フォーム` のオブジェクト名は、フォームクラスの型名の先頭の1文字を小文字にしたもの**（`MemberForm` → `memberForm`）とし、
-  `受取り` にも同じ名前で書く。コントローラーが渡す属性名がこの名前になるためである（`## 11.3`）。
-- **`th:object` を指定したフォームの中では、必ず `*{…}` を使う。** `${memberForm.name}` と書かない。
-- **`th:field` は `id`・`name`・`value` を自動生成する。** これらを手で書いてはならない。
-- `<label for="…">` の値は、`th:field` が生成する id（フィールド名と同じ）に合わせる。
-- `メソッド` の指定が無いフォームは `method="post"` を既定とする。
-- **`選択欄` の生成例**
+- 上記以外の種類（`<button>` など）は、JavaScript が無いと動かないため生成せず、【確認事項】に載せること。
 
+### 選択肢を受け取る選択欄
+
+```
+選択欄：所属 ← departmentId、選択肢 ← departments
+```
 ```html
-<select id="departmentId" th:field="*{departmentId}">
+<label for="departmentId">所属</label>
+<select th:field="*{departmentId}">
   <option value="">選択してください</option>
   <option th:each="d : ${departments}"
           th:value="${d.id}"
           th:text="${d.name}">部署名</option>
 </select>
+<span class="error-msg" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}">エラー</span>
 ```
+
+- `＜行定義＞` の中に書いた場合は、ラベルを左のセルに、`<select>` とエラー表示を右のセルに置く。
 
 ---
 
@@ -308,6 +489,7 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 
 - **`レイアウト：なし` の場合**（`レイアウト` の行が無い場合も含む。`## 30.2`）は、フラグメントを使わず、`<head>`・`<body>` を持つ
   完全なHTMLとして生成する。`構成` の内容は `<body>` の直下に置く。
+- レイアウトを使う画面の `css` は生成しない（`## 30.2`）。CSS はレイアウト側の `<head>` に書く。
 - レイアウトファイルそのものを生成するのは、SPDに `テンプレート：layout/base` が
   与えられた場合だけである。**存在しないレイアウトを勝手に作ってはならない。**
   参照先が見つからない場合は `## 0.8` の報告の【見つからない名前】に載せること。
@@ -323,6 +505,7 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 - `<meta charset="UTF-8">` を必ず入れる。
 - その直後に `<meta name="viewport" content="width=device-width, initial-scale=1">` を必ず入れる。
   スマートフォンで縮小表示されないためである。`構成` に書かれていなくても生成する。
+- `css` があれば、その後に `<link rel="stylesheet" …>` を置く（`## 30.2`）。
 - インデントは半角スペース2つとする。
 
 ### エスケープ
@@ -334,7 +517,8 @@ description: SPDのテンプレート定義（`テンプレート:`）からThym
 ### 生成しないもの
 
 - **CSSフレームワーク（Bootstrap等）のクラス名を勝手に付けない。**
-  SPDに指定がある場合だけ付ける。
+  SPDに指定がある場合だけ付ける。例外は、エラー表示の `class="error-msg"`（`## 30.5`）と
+  通知の `class="message"`（`## 30.3`）だけである。
 - **JavaScriptを勝手に追加しない。**
 - `構成` に書かれていない要素（ナビゲーション・フッター・装飾用の `<div>`）を追加しない。
 
@@ -361,14 +545,20 @@ Thymeleafのコメントとして残す。**
 ## 30.8 生成時のチェックリスト（Thymeleaf）
 
 - [ ] テンプレートを `templates/<テンプレート名>.html` に生成したか。テンプレート名をそのまま使ったか（`## 11.1`）
-- [ ] `受取り` の名前と、コントローラーの「〜をテンプレートへ渡す」の名前が一致しているか（`## 11.2`）
+- [ ] 旧記法（`受取り`・`列：`・`入力欄：`・`エラー：`・`@検証` など）を黙って読み替えたか（`## 30.1`）
+- [ ] `受け取り` の名前と、コントローラーの「〜をテンプレートに渡す」の名前が一致しているか。型を生成に使っていないか（`## 11.2`・`## 30.2`）
+- [ ] `css` を `<head>` に `th:href="@{…}"` で読み込んだか。レイアウトを使う画面では生成せずに報告したか（`## 30.2`）
 - [ ] 静的な文字列に `th:text` を付けていないか。`th:text` にプレビュー用のダミーを残したか（`## 30.3`）
 - [ ] すべてのパスを `@{…}` で囲んだか。素の `href`／`action` を書いていないか（`## 30.3`）
 - [ ] パス変数を `{名前}` + `(名前=${式})` の形にしたか。文字列連結にしていないか（`## 30.3`）
-- [ ] `th:each` を `<tr>`／`<li>` に付けたか。`<tbody>`／`<table>` に付けていないか（`## 30.4`）
+- [ ] リンク・フォームのパスが、コントローラーの `ベースパス` ＋ `マッピング` と一致しているか（`## 11.4`）
+- [ ] `＜列定義＞` に「各要素」の句があり、`＜行定義＞` に無いことを確かめたか。`th:each` を `<tr>`／`<li>` に付けたか（`## 30.4`・`## 30.5`）
+- [ ] 値の書式を表のとおりに生成し、`null` のとき空欄にしたか。表に無い書式（`通貨表示` など）を推測で作っていないか（`## 30.4`）
 - [ ] `th:object` の中で `*{…}` を使ったか。`${memberForm.…}` と書いていないか（`## 30.5`）
-- [ ] `th:field` があるのに `id`／`name`／`value` を手で書いていないか（`## 30.5`）
-- [ ] 各入力欄に対応する `エラー` を、`#fields.hasErrors` + `th:errors` で出したか（`## 30.5`）
+- [ ] `th:field` があるのに `id`／`name`／`value` を手で書いていないか（選択肢の `value` を除く）（`## 30.5`）
+- [ ] `<hidden>` 以外のすべての入力項目に、`class="error-msg"` のエラー表示を付けたか（`## 30.5`）
+- [ ] 選択肢を `<表示名>：<値>` から生成し、`<label>` で入力を包んだか（`## 30.5`）
+- [ ] フォームを入れ子にしていないか。`リンク` の中に `ボタン` を入れていないか（`## 30.3`・`## 30.5`）
 - [ ] `th:utext` を生成していないか（`## 30.7`）
 - [ ] 存在しないレイアウトを勝手に作っていないか（`## 30.6`）
 - [ ] `構成` に無い要素・CSSクラス・JavaScriptを追加していないか（`## 30.7`）
@@ -387,22 +577,27 @@ Thymeleafのコメントとして残す。**
 ├─目的：会員の一覧を表示する
 ├─レイアウト：なし
 ├─タイトル：会員一覧
+├─css：css/style.css
 │
-├─受取り
-│  ├─members：List<Member>
-│  └─message：String　※任意
+├─受け取り
+│  ├─会員リスト：List<Member> memberList
+│  └─メッセージ：String message　※任意
 │
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
      │  └─通知：message
-     ├─条件表示：membersが空である
+     ├─条件表示：memberListが空である
      │  └─段落：会員が登録されていません。
-     ├─表：membersの各要素をmとする
-     │  ├─列：番号 ← m.id
-     │  ├─列：名前 ← m.name
-     │  └─列：操作
-     │        └─リンク：編集 → /members/{m.id}/edit
+     ├─表＜列定義＞：memberListの各要素をmとする
+     │  ├─番号 ← m.id
+     │  ├─名前 ← m.name
+     │  ├─入会日 ← m.joinedOn："yyyy年MM月dd日"
+     │  └─操作
+     │        ├─リンク：編集 → /members/{m.id}/edit
+     │        ├─文字：|
+     │        └─フォーム：→ POST /members/{m.id}/delete
+     │              └─ボタン：削除
      └─リンク：新規登録 → /members/new
 ```
 
@@ -415,22 +610,27 @@ Thymeleafのコメントとして残す。**
 ├─目的：会員の一覧を表示する
 ├─レイアウト：なし
 ├─タイトル：会員一覧
+├─css：css/style.css
 │
-├─受取り
-│  ├─members：List<Member>
-│  └─message：String　※任意
+├─受け取り
+│  ├─会員リスト：List<Member> memberList
+│  └─メッセージ：String message　※任意
 │
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
      │  └─通知：message
-     ├─条件表示：membersが空である
+     ├─条件表示：memberListが空である
      │  └─段落：会員が登録されていません。
-     ├─表：membersの各要素をmとする
-     │  ├─列：番号 ← m.id
-     │  ├─列：名前 ← m.name
-     │  └─列：操作
-     │        └─リンク：編集 → /members/{m.id}/edit
+     ├─表＜列定義＞：memberListの各要素をmとする
+     │  ├─番号 ← m.id
+     │  ├─名前 ← m.name
+     │  ├─入会日 ← m.joinedOn："yyyy年MM月dd日"
+     │  └─操作
+     │        ├─リンク：編集 → /members/{m.id}/edit
+     │        ├─文字：|
+     │        └─フォーム：→ POST /members/{m.id}/delete
+     │              └─ボタン：削除
      └─リンク：新規登録 → /members/new
 */-->
 <!doctype html>
@@ -438,6 +638,7 @@ Thymeleafのコメントとして残す。**
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
   <title>会員一覧</title>
 </head>
 <body>
@@ -445,22 +646,28 @@ Thymeleafのコメントとして残す。**
 
   <div class="message" th:if="${message}" th:text="${message}">通知</div>
 
-  <p th:if="${#lists.isEmpty(members)}">会員が登録されていません。</p>
+  <p th:if="${#lists.isEmpty(memberList)}">会員が登録されていません。</p>
 
   <table>
     <thead>
       <tr>
         <th>番号</th>
         <th>名前</th>
+        <th>入会日</th>
         <th>操作</th>
       </tr>
     </thead>
     <tbody>
-      <tr th:each="m : ${members}">
+      <tr th:each="m : ${memberList}">
         <td th:text="${m.id}">1</td>
         <td th:text="${m.name}">名前</td>
+        <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">2026年01月01日</td>
         <td>
           <a th:href="@{/members/{id}/edit(id=${m.id})}">編集</a>
+          |
+          <form th:action="@{/members/{id}/delete(id=${m.id})}" method="post">
+            <button type="submit">削除</button>
+          </form>
         </td>
       </tr>
     </tbody>
@@ -483,3 +690,4 @@ Thymeleafのコメントとして残す。**
 | 1.1.0 | 2026-09-26 | SPDのタイトル `画面:` を `テンプレート:` に改称（コントローラの `テンプレート` ノードと同じ語にそろえるため）。「画面名」「画面SPD」「画面定義」の呼び方も「テンプレート名」「テンプレートSPD」「テンプレート定義」に変更（`## 30.1`・`## 30.2`・`## 30.6`〜`## 30.9`）。地の文の「画面」は変更していない |
 | 1.2.0 | 2026-09-26 | コントローラーの `受渡し` ノード廃止（`springboot-java.instructions.md` v1.2.0）に合わせ、`受取り` と照合する名前を、コントローラーの `処理` の「〜をテンプレートへ渡す」の名前に変更（`## 30.2`・`## 30.8`）。地の文の「コントローラ」を「コントローラー」に統一 |
 | 1.3.0 | 2026-09-26 | フォームのオブジェクト名を、フォームクラスの型名の先頭を小文字にしたもの（`memberForm`）に統一する規則を追加（`## 30.5`・`## 11.3`）。`## 30.5` の記法例・生成例・対応表・チェックリスト（`## 30.8`）の `form` を `memberForm` に変更 |
+| 2.0.0 | 2026-09-29 | **受け取り**：ノード名を `受取り` から `受け取り` に改め、子を `<説明>：<型> <名前>` の形に変更（型は参考情報）。**`css` ノード**を新設し、`<head>` に `<link rel="stylesheet" th:href="@{…}">` を生成（レイアウトを使う画面では生成せず報告。`## 30.2`）。**表**：`表＜列定義＞`（各要素ごとに1行、子の各枝が列。`列：` を不要に）と `表＜行定義＞`（繰り返しなし、子の各枝が行）を新設（`## 30.4`・`## 30.5`）。列の値の書式（引用符で囲んだ日付パターン・`3桁区切り`・`円表示`・`"…"で連結`）を追加し、`null` のとき空欄にする。ロケールに依存する `通貨表示` は採用しない。**入力項目**：`<ラベル>[<種類>] ← <フィールド名>` の記法に変更し、種類を `<number>`・`<date>`・`<textarea>`・`<checkbox>`・`<radio>`・`<select>`・`<hidden>` などで表す。選択肢は子に `<表示名>：<値>` と書く。`<hidden>` 以外のすべての入力項目に `class="error-msg"` のエラー表示を付ける（`@検証`・`エラー：` は不要に）。選択肢は `<label>` で包む。`th:field` のある要素に `id` を手で書いていた生成例を修正（`## 30.5`）。**フォーム**：オブジェクト名を省略したフォーム（削除の `POST`・画面移動の `GET`）を追加し、`ボタン<reset>` を追加。`リンク` の中の `ボタン`、フォームの入れ子を禁止（`## 30.3`・`## 30.5`）。`文字：` の `←` なしの静的な文字を追加（`## 30.3`）。山括弧は全角・半角のどちらでもよいことを明記し、旧記法を黙って読み替える表を追加（`## 30.1`）。パスとコントローラーのマッピングの照合を追加（`## 30.3`）。チェックリストを20項目に（`## 30.8`）。完全な変換例（`## 30.9`）を新しい記法に書き換え |
