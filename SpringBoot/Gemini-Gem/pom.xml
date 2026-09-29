@@ -15,9 +15,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>jp.kwebs</groupId>
-	<artifactId>bookstore2</artifactId>
+	<artifactId>bookstore</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bookstore2</name>
+	<name>bookstore</name>
 	<description/>
 	<url/>
 	<licenses>
