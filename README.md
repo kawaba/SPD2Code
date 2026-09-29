@@ -27,11 +27,24 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
       │  │
       │  └─GitHub-Copilot──copilot-instructions.md
       │
-      └─Python
-          ├─Gemin_Gem ┬───カスタム指示.md
-          │            └───spd-pattern-python-code.md
+      ├─Python
+      │  ├─Gemin_Gem ┬───カスタム指示.md
+      │  │            └───spd-pattern-python-code.md
+      │  │
+      │  └─GitHub-Copilot──copilot-instructions.md
+      │
+      └─SpringBoot
+          ├─Gemini-Gem ┬───カスタム指示.md
+          │             ├───ガイドライン-共通.txt
+          │             ├───ガイドライン-SpringBoot.txt
+          │             ├───ガイドライン-Thymeleaf.txt
+          │             ├───pom.xml
+          │             └───build（ナレッジを作る変換スクリプト）
           │
-          └─GitHub-Copilot──copilot-instructions.md
+          └─GitHub-Copilot┬──copilot-instructions.md
+                           └──instructions ┬─spd-core.instructions.md
+                                           ├─springboot-java.instructions.md
+                                           └─thymeleaf.instructions.md
 
 ## ルールファイルの使い方
 
@@ -62,6 +75,16 @@ GeminiのGemでは、Gem作成時に表示される「カスタム指示」欄�
 | Python | Copilot | copilot-instructions.md | workspace/.github/ フォルダに置く |
 | | Gem | カスタム指示 | カスタム指示欄にテキストを貼り付ける |
 | | Gem | spd-pattern-python-code.md | 知識欄にファイルをアップロード |
+
+**表4**
+
+| 言語 | AI | ファイル名 | 設置方法 |
+|---|---|---|---|
+| Spring Boot | Copilot | copilot-instructions.md / instructions フォルダ | workspace/project/.github/ フォルダに置く |
+| | Gem | カスタム指示.md | カスタム指示欄にテキストを貼り付ける（先頭の `<!-- … -->` を除く） |
+| | Gem | ガイドライン-共通.txt / ガイドライン-SpringBoot.txt / ガイドライン-Thymeleaf.txt / pom.xml | 知識欄にファイルをアップロード |
+
+Spring Boot の Gem は、1回に1ファイルずつ生成し、生成済みのファイルをチャットに添付して次のファイルを作る使い方を想定しています。詳しくは `SpringBoot/Gemini-Gem/ファイルの使い方（Shift-JIS）.txt` を見てください。Gem のファイルは、Copilot 版の規約から `SpringBoot/Gemini-Gem/build/build-gem.ps1` で作っています。
 
 （注）pom.xmlファイルはサンプルです。Java SEベースのプログラムをコンパイル・リンクできます。AIエージェントはimport文を自動生成するために、pom.xmlファイルを読みます。
 
