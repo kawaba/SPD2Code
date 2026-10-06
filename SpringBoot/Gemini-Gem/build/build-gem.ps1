@@ -124,6 +124,21 @@ function Edit-GemSpecific([string]$text) {
     return $text
 }
 
+# springboot-java の、パッケージ名が無い場合の扱いを Gem 用に置き換える（`## 10.4`）
+function Edit-GemSpringBoot([string]$text) {
+    $pairs = @(
+        @("- **基底パッケージも分からない場合は、そのSPDからコードを生成せず、パッケージ名を尋ねる。**`n  推測でパッケージ名を作ってはならない（1ファイルずつ生成したときに、ファイルごとにパッケージがずれるため）。`n  尋ねるときは、SPDのタイトル行の前に ``※jp.kwebs.<アーティファクト名>.entity`` の形で書くよう案内する。",
+          "- **Gem では、SPDにパッケージ名が無い場合は ``package`` 文を書かずに生成する。** 生成を止めて尋ねてはならない。`n  同じプロジェクトのクラスの import とファイルのパスの書き方は、``ガイドライン-共通.txt`` の ``## 10.4``・``## 10.5`` に従う。"),
+        @('無い場合に基底パッケージから決め、それも分からないときは生成せずに尋ねたか（`## 20.7`）',
+          '無い場合に `package` 文を書かずに生成し、パッケージの分からない同じプロジェクトのクラスの import を推測で書かなかったか（`## 10.4`）')
+    )
+    foreach ($p in $pairs) {
+        if (-not $text.Contains($p[0])) { throw "置き換える文が見つかりません: $($p[0].Substring(0, [Math]::Min(40, $p[0].Length)))" }
+        $text = $text.Replace($p[0], $p[1])
+    }
+    return $text
+}
+
 function Expand-Header([string]$name, [hashtable]$vars) {
     $h = Read-Text (Join-Path $buildDir $name)
     foreach ($k in $vars.Keys) { $h = $h.Replace("{{$k}}", $vars[$k]) }
@@ -154,7 +169,7 @@ Write-Text (Join-Path $gemDir 'ガイドライン-共通.txt') $c
 
 # ---- ガイドライン-SpringBoot.txt ----
 $s = Remove-History (Remove-ManagementComments (Remove-FrontMatter $springboot))
-$s = (Expand-Header 'header-springboot.md' $vars) + (Rename-References $s.TrimStart("`n"))
+$s = (Expand-Header 'header-springboot.md' $vars) + (Edit-GemSpringBoot (Rename-References $s.TrimStart("`n")))
 Write-Text (Join-Path $gemDir 'ガイドライン-SpringBoot.txt') $s
 
 # ---- ガイドライン-Thymeleaf.txt ----
@@ -186,7 +201,7 @@ function Get-SectionText([string]$text, [string]$heading) {
 
 $sources = @{
     core       = Remove-ManagementComments (Remove-FrontMatter $core)
-    springboot = Remove-ManagementComments (Remove-FrontMatter $springboot)
+    springboot = Edit-GemSpringBoot (Remove-ManagementComments (Remove-FrontMatter $springboot))
     thymeleaf  = Remove-ManagementComments (Remove-FrontMatter $thymeleaf)
 }
 $ci = Expand-Header 'custom-template.md' $vars
