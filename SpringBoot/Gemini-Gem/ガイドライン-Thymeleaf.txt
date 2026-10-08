@@ -1,7 +1,7 @@
 ﻿# Gemini Gem用 ガイドライン（Thymeleaf）— `## 30.x`
 
 > **このファイルは自動生成したものである。直接編集しないこと。**
-> 元：`SpringBoot/GitHub-Copilot/instructions/thymeleaf.instructions.md`（THYMELEAF v4.1.0）
+> 元：`SpringBoot/GitHub-Copilot/instructions/thymeleaf.instructions.md`（THYMELEAF v4.2.0）
 > 変換：`SpringBoot/Gemini-Gem/build/build-gem.ps1`
 > `## 0`〜`## 11` と `## 9.x` は `ガイドライン-共通.txt`、`## 20.x` は `ガイドライン-SpringBoot.txt` にある。
 > 「ワークスペース」などの読み替えは、`ガイドライン-共通.txt` の冒頭の「読み替え」に従う。
@@ -62,7 +62,7 @@
 ### 規約に無い書き方
 
 **この規約に無い書き方で書かれたノードは、推測で読み替えず、生成せずに【確認事項】に載せること。**
-以前の版の記法（`名前 ⇒ name`・`ボタン：登録する`・`選択欄：…`・`入力欄：…`・`列：…` など）も、これに当たる。
+以前の版の記法（`名前 ⇒ name`・`ボタン：登録する`・`選択欄：…`・`入力欄：…`・`列：…`・`通知：message` など）も、これに当たる。
 報告では、該当するノードと、この規約での書き方を示す。
 
 ---
@@ -84,7 +84,7 @@
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
-     │  └─通知：message
+     │  └─通知 ← message
      ├─表＜列定義＞：memberListの各要素をmとする
      │  ├─番号 ← m.id
      │  ├─名前 ← m.name
@@ -153,13 +153,14 @@
 | `段落：…` | `<p>…</p>` |
 | `文字：名前 ← m.name` | `<span th:text="${m.name}">名前</span>` |
 | `文字：\|`（`←` なし） | `\|`（本文にそのまま書く。タグで囲まない） |
-| `通知：message` | `<div class="message" th:text="${message}">通知</div>` |
+| `通知 ← message` | `<div class="message" th:text="${message}">通知</div>` |
 | `リンク：新規登録 → /members/new` | `<a th:href="@{/members/new}">新規登録</a>` |
 | `区切り` | `<hr>` |
 
 - **`見出し` の階層**は、`構成` 直下を `<h1>`、その1段下を `<h2>` とする。
 - `← 値` が付いた見出し・段落は、`th:text` で出力する
   （`見出し：会員一覧 ← title` → `<h1 th:text="${title}">会員一覧</h1>`）。
+- `通知` も、ほかの出力と同じく `←` で値を書く（`通知 ← message`）。
 - ボタン（`登録する＜submit＞`）はフォームの中にだけ書ける（`## 30.5` の「ボタン」）。
   ボタンの形で別の画面へ移るには、`GET` のフォーム（`## 30.5` の「フォームの形」）を使う。
 
@@ -295,13 +296,15 @@
 
 ```
 ├─一覧：memberListの各要素をmとする
-│  └─項目：m.name
+│  └─項目 ← m.name
 ```
 ```html
 <ul>
   <li th:each="m : ${memberList}" th:text="${m.name}">名前</li>
 </ul>
 ```
+
+- 子は `項目 ← <値>[：<書式・クラス名>]` の1行とする（書式とクラス名は上の「値の書式」「CSSクラスの指定」と同じ）。
 
 ### 条件表示
 
@@ -762,7 +765,7 @@ Thymeleafのコメントとして残す。**
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
-     │  └─通知：message
+     │  └─通知 ← message
      ├─条件表示：memberListが空である
      │  └─段落：会員が登録されていません。
      ├─表＜列定義＞：memberListの各要素をmとする
@@ -795,7 +798,7 @@ Thymeleafのコメントとして残す。**
 └─構成
      ├─見出し：会員一覧
      ├─条件表示：messageがある
-     │  └─通知：message
+     │  └─通知 ← message
      ├─条件表示：memberListが空である
      │  └─段落：会員が登録されていません。
      ├─表＜列定義＞：memberListの各要素をmとする
