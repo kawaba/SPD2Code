@@ -11,7 +11,7 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
 
 
 ## フォルダとファイル
-　各言語別のフォルダには、Gemin_Gemフォルダ（Python と Spring Boot は Gemini-skill フォルダ）とGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
+　各言語別のフォルダには、Gemini-skillフォルダ（C は Gemin_Gem フォルダ）とGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
 
       SPD2Code
       │
@@ -21,9 +21,10 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
       │  └─GitHub-Copilot──copilot-instructions.md
       │
       ├─Java
-      │  ├─Gemin_Gem ┬───カスタム指示.md
-      │  │            ├───ガイドライン.txt
-      │  │            └───pom.xml
+      │  ├─Gemini-skill ┬─SKILL.md
+      │  │               ├─Geminiのskillとして設置する方法.md
+      │  │               ├─ガイドライン.txt
+      │  │               └─pom.xml
       │  │
       │  └─GitHub-Copilot──copilot-instructions.md
       │
@@ -54,7 +55,7 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
 どのファイルもUTF-8でエンコードしています。内容を確認したい場合は、WindowsではUTF-8対応のエディタで開いてください（メモ帳がいいと思います）。
 Copilotでは、作業しているワークスペースに.githubという名前のフォルダを作って、その中にcopilot-instructions.mdファイルを置きます。ワークスペースごとに有効になります。
 
-GeminiのGemでは、Gem作成時に表示される「カスタム指示」欄に、カスタム指示.mdファイルの内容を、テキストとして貼り付けます。メモ帳などで開いて、すべて選択→コピーとして、CTRL+Vでカスタム指示欄に貼り付けるといいでしょう。それ以外は、知識欄にファイルとしてアップロードします。
+C の GeminiのGemでは、Gem作成時に表示される「カスタム指示」欄に、カスタム指示.mdファイルの内容を、テキストとして貼り付けます。メモ帳などで開いて、すべて選択→コピーとして、CTRL+Vでカスタム指示欄に貼り付けるといいでしょう。それ以外は、知識欄にファイルとしてアップロードします。
 
 **表1**
 
@@ -68,8 +69,9 @@ GeminiのGemでは、Gem作成時に表示される「カスタム指示」欄�
 | 言語 | AI | ファイル名 | 設置方法 |
 |---|---|---|---|
 | Java | Copilot | copilot-instructions.md | workspace/project/.github/ フォルダに置く |
-| | Gem | カスタム指示.md | カスタム指示欄にテキストを貼り付ける |
-| | Gem | ガイドライン.txt / pom.xml | 知識欄にファイルをアップロード |
+| | Gemini SKILL | SKILL.md / ガイドライン.txt / pom.xml | `Geminiのskillとして設置する方法.md` の手順で、3ファイルをまとめてスキルとして登録する |
+
+登録の詳細は `Java/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。
 
 **表3**
 
