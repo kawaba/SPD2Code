@@ -1,10 +1,11 @@
 ﻿# build-gem.ps1
-# GitHub Copilot 版の規約（SpringBoot/GitHub-Copilot）から、Gemini Gem のナレッジ3ファイルを作る。
+# GitHub Copilot 版の規約（SpringBoot/GitHub-Copilot）から、Gemini スキルの SKILL.md とナレッジ3ファイルを作る。
 #
-# 使い方（SpringBoot/Gemini-Gem/build フォルダーで）:
+# 使い方（SpringBoot/Gemini-skill/build フォルダーで）:
 #   powershell -ExecutionPolicy Bypass -File build-gem.ps1
 #
-# 出力（SpringBoot/Gemini-Gem フォルダー）:
+# 出力（SpringBoot/Gemini-skill フォルダー）:
+#   SKILL.md                    ← custom-template.md（先頭の HTML コメントを除く。BOM なし）
 #   ガイドライン-共通.txt       ← copilot-instructions.md ＋ spd-core.instructions.md
 #   ガイドライン-SpringBoot.txt ← springboot-java.instructions.md
 #   ガイドライン-Thymeleaf.txt  ← thymeleaf.instructions.md
@@ -32,9 +33,10 @@ function Read-Text([string]$path) {
     return ([IO.File]::ReadAllText($path, $utf8)) -replace "`r`n", "`n"
 }
 
-function Write-Text([string]$path, [string]$text) {
+function Write-Text([string]$path, [string]$text, [switch]$NoBom) {
     $text = ($text.TrimEnd("`n") + "`n") -replace "`n", "`r`n"
-    [IO.File]::WriteAllText($path, $text, $utf8Bom)
+    $enc = if ($NoBom) { $utf8 } else { $utf8Bom }
+    [IO.File]::WriteAllText($path, $text, $enc)
 }
 
 function Get-Match([string]$text, [string]$pattern, [string]$what) {
@@ -177,7 +179,7 @@ $t = Remove-History (Remove-ManagementComments (Remove-FrontMatter $thymeleaf))
 $t = (Expand-Header 'header-thymeleaf.md' $vars) + (Rename-References $t.TrimStart("`n"))
 Write-Text (Join-Path $gemDir 'ガイドライン-Thymeleaf.txt') $t
 
-# ---- カスタム指示.md ----
+# ---- SKILL.md ----
 # custom-template.md の {{SECTION:<元>:<見出し>}} を、元の規約のその節で置き換える
 function Get-SectionText([string]$text, [string]$heading) {
     $lines = $text -split "`n"
@@ -209,10 +211,11 @@ $ci = [regex]::Replace($ci, '\{\{SECTION:(\w+):([^}]+)\}\}', {
     param($m)
     Get-SectionText $sources[$m.Groups[1].Value] $m.Groups[2].Value
 })
-Write-Text (Join-Path $gemDir 'カスタム指示.md') $ci
-
-$pasted = [regex]::Replace($ci, '\A<!--.*?-->\s*', '', 'Singleline')
-Write-Host ("カスタム指示.md：貼り付ける部分は {0} 文字" -f $pasted.Length)
+# テンプレート用のメモ（先頭の HTML コメント）を除く。--- で始まらないと SKILL.md として読まれない
+$ci = [regex]::Replace($ci, '\A<!--.*?-->\s*', '', 'Singleline')
+if (-not $ci.StartsWith("---`n")) { throw 'SKILL.md が --- で始まっていません（custom-template.md を確認）' }
+Write-Text (Join-Path $gemDir 'SKILL.md') $ci -NoBom
+Write-Host ("SKILL.md：{0} 文字" -f $ci.Length)
 
 Write-Host ("作成しました: 共通 v{0}（SPD-CORE v{1}）/ SpringBoot v{2} / Thymeleaf v{3}" -f `
     $vars.COMMON, $vars.CORE, $vars.SPRINGBOOT, $vars.THYMELEAF)

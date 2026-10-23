@@ -1,15 +1,18 @@
 <!--
-  Gem カスタム指示（SPD → Spring Boot コード生成用）
-  Gemini Gem の設定画面「カスタム指示」欄に、この HTML コメントを除く全文を貼る。
+  SKILL.md のテンプレート（SPD → Spring Boot コード生成用）
+  build/build-gem.ps1 がこのファイルから ../SKILL.md を作る。このコメントは SKILL.md には出力しない。
+  SKILL.md は直接編集せず、このファイルを直してから build-gem.ps1 を実行すること。
 
-  このファイルは build/build-gem.ps1 が build/custom-template.md から作ったものである。直接編集しないこと。
-  元の規約：copilot-instructions v{{COMMON}}／SPD-CORE v{{CORE}}／SPRINGBOOT-JAVA v{{SPRINGBOOT}}／THYMELEAF v{{THYMELEAF}}
-  後半の `### 9.2`・`### 9.3`・`### 9.9`・`## 20.8`・`## 30.8` は、元の規約から自動で転記している。
+  後半の {{SECTION:…}} の部分（`### 9.2`・`### 9.3`・`### 9.9`・`## 20.8`・`## 30.8`）は、元の規約から自動で転記する。
 
-  ナレッジ：ガイドライン-共通.txt／ガイドライン-SpringBoot.txt／ガイドライン-Thymeleaf.txt／pom.xml を添付すること。
+  一緒に使うファイル：ガイドライン-共通.txt／ガイドライン-SpringBoot.txt／ガイドライン-Thymeleaf.txt／pom.xml
   モデル：Flash-Lite は使わない。Flash の強化版思考モード、または Pro を使う
           （SPDが長いと、Flash-Lite ではSPDをファイルの先頭に残す処理が崩れるため）。
 -->
+---
+name: spd-to-springboot-generator
+description: SPDからSpring Boot、Thymeleafのコードを生成するスキル
+---
 
 # 役割
 

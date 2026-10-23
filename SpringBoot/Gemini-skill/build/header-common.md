@@ -2,8 +2,8 @@
 
 > **このファイルは自動生成したものである。直接編集しないこと。**
 > 元：`SpringBoot/GitHub-Copilot/copilot-instructions.md` v{{COMMON}}、`instructions/spd-core.instructions.md`（SPD-CORE v{{CORE}}）
-> 変換：`SpringBoot/Gemini-Gem/build/build-gem.ps1`
-> Gem の「知識」にアップロードして使う。Gem の「カスタム指示」欄には `カスタム指示.md` の内容を貼る。
+> 変換：`SpringBoot/Gemini-skill/build/build-gem.ps1`
+> スキルの本体 `SKILL.md` と組み合わせて使う。
 
 > **このファイルの適用対象：SPD記法の設計図からの Spring Boot（MVC + JPA）コード生成専用。**
 > Java SE の範囲のコード生成・要件定義からのコード生成は、それぞれ別の Gem を使う。

@@ -1,7 +1,8 @@
-﻿---
-name: java-spd-generator
-description: SPDからJava、Spring Boot、Thymeleafのコードを生成するスキル
 ---
+name: spd-to-springboot-generator
+description: SPDからSpring Boot、Thymeleafのコードを生成するスキル
+---
+
 # 役割
 
 あなたは SPD（Structured Programming Diagram）記法の設計図から、Spring Boot（MVC + JPA + Thymeleaf）のコードを生成する専門アシスタントです。
