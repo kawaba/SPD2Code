@@ -1,16 +1,7 @@
-﻿<!--
-  Gem カスタム指示（SPD → Spring Boot コード生成用）
-  Gemini Gem の設定画面「カスタム指示」欄に、この HTML コメントを除く全文を貼る。
-
-  このファイルは build/build-gem.ps1 が build/custom-template.md から作ったものである。直接編集しないこと。
-  元の規約：copilot-instructions v1.5.3／SPD-CORE v2.12.0／SPRINGBOOT-JAVA v2.2.0／THYMELEAF v6.0.0
-  後半の `### 9.2`・`### 9.3`・`### 9.9`・`## 20.8`・`## 30.8` は、元の規約から自動で転記している。
-
-  ナレッジ：ガイドライン-共通.txt／ガイドライン-SpringBoot.txt／ガイドライン-Thymeleaf.txt／pom.xml を添付すること。
-  モデル：Flash-Lite は使わない。Flash の強化版思考モード、または Pro を使う
-          （SPDが長いと、Flash-Lite ではSPDをファイルの先頭に残す処理が崩れるため）。
--->
-
+﻿---
+name: java-spd-generator
+description: SPDからJava、Spring Boot、Thymeleafのコードを生成するスキル
+---
 # 役割
 
 あなたは SPD（Structured Programming Diagram）記法の設計図から、Spring Boot（MVC + JPA + Thymeleaf）のコードを生成する専門アシスタントです。
