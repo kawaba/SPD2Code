@@ -183,12 +183,12 @@ requirements-to-python-generator/   # 要件定義からのコード生成スキ
 </ul>
 <hr />
 <h2>2. スキルの作成・登録手順</h2>
-<p>2つのスキルを1つずつ作成します。どちらの指示書も <code>SKILL.md</code> という名前なので、<strong>スキルごとに新しいチャットを開いて</strong>作成してください。1つのチャットに両方のファイルを添付すると、どちらの <code>SKILL.md</code> かをAIが区別できません。</p>
+<p>ウェブでGeminiを開いて、2つのスキルを1つずつ登録します。どちらのカスタム指示も <code>SKILL.md</code> という名前なので、<strong>スキルごとに新しいチャットを開いて</strong>作成してください。1つのチャットに両方のファイルを添付すると、どちらの <code>SKILL.md</code> かをAIが区別できません。</p>
 <h3>2.1 SPDからのコード生成スキル</h3>
-<p><code>spd-to-python-generator</code> フォルダの2つのファイルをAI環境に登録し、カスタムスキルとして保存します。</p>
+<p><code>spd-to-python-generator</code> フォルダの2つのファイルをGeminiに登録し、カスタムスキルとして保存します。</p>
 <ol>
-<li><strong>AI環境へのアップロード</strong>
-新しいチャットを開き、<code>SKILL.md</code> と <code>spd-pattern-python-code.md</code> を同時にドラッグ＆ドロップ（または添付）します。</li>
+<li><strong>Geminiへのファイルのアップロード</strong>
+新しいチャットを開き、<code>SKILL.md</code> と <code>spd-pattern-python-code.md</code> を２つともアップロードします。</li>
 <li><strong>登録の指示</strong>
 チャット欄に以下のように入力して実行します。
 <blockquote>
@@ -199,10 +199,10 @@ requirements-to-python-generator/   # 要件定義からのコード生成スキ
 AI側でシステムツールが実行され、いつでも呼び出し可能なカスタムスキルとして登録されます。</li>
 </ol>
 <h3>2.2 要件定義からのコード生成スキル</h3>
-<p><code>requirements-to-python-generator</code> フォルダの <code>SKILL.md</code> をAI環境に登録し、カスタムスキルとして保存します。</p>
+<p><code>requirements-to-python-generator</code> フォルダの <code>SKILL.md</code> をGeminiに登録し、カスタムスキルとして保存します。</p>
 <ol>
-<li><strong>AI環境へのアップロード</strong>
-新しいチャットを開き、<code>SKILL.md</code> をドラッグ＆ドロップ（または添付）します。</li>
+<li><strong>Geminiへのファイルのアップロード</strong>
+新しいチャットを開き、<code>SKILL.md</code> をアップロードします。</li>
 <li><strong>登録の指示</strong>
 チャット欄に以下のように入力して実行します。
 <blockquote>
@@ -215,14 +215,13 @@ AI側でシステムツールが実行され、いつでも呼び出し可能な
 <hr />
 <h2>3. スキルの利用方法</h2>
 <p>作成したスキルは、日常の学習・開発作業の中で次のように呼び出して利用できます。</p>
-<h3>3.1 SPDからのコード生成スキル</h3>
+<h3>3.1 SPDからのコード生成</h3>
 <h4>基本的な使い方</h4>
-<p>チャットに、SPDのテキスト、または先頭のdocstringブロック（<code>&quot;&quot;&quot;</code> で囲んだブロック）にSPDを書いたPythonファイルを貼り付け（または添付し）、スキルを呼び出します。
-<code>main</code> 用と関数用など、複数のSPDをまとめて貼り付けてもかまいません。</p>
+<p>Geminiのチャット欄に、SPDを貼り付け、コードを生成するように依頼すると、自動的にスキルが呼び出されます。
+<code>main</code> 用とその他の関数用など、複数のSPDをまとめて貼り付けてもかまいません。</p>
 <blockquote>
 <p><strong>プロンプト例：</strong><br>
-「（SPDを貼り付けた後、）このSPDをもとに、Pythonのソースコードを生成してください」<br>
-「（Pythonファイルを添付した後、）先頭のSPDをもとに、Pythonのソースコードを生成してください」</p>
+「（SPDを貼り付けた後、）このSPDをもとに、Pythonのソースコードを生成してください」
 </blockquote>
 <h4>期待される動作</h4>
 <ol>
@@ -233,8 +232,8 @@ AI側でシステムツールが実行され、いつでも呼び出し可能な
 </ol>
 <h3>3.2 要件定義からのコード生成スキル</h3>
 <h4>基本的な使い方</h4>
-<p>チャットに、要件定義（目的、入力、出力、処理条件、制約など）を書いて、スキルを呼び出します。
-まず仕様書を作り、その内容を確認してから、仕様書をもとにコードを生成する2段階の使い方をおすすめします。</p>
+<p>チャットに、作成した要件定義（目的、入力、出力、処理条件、制約など）を貼り付け、仕様書の生成を依頼します。
+仕様書が生成されたらその内容を確認し、次は、その仕様書をもとにコードを生成するように依頼します。</p>
 <blockquote>
 <p><strong>プロンプト例：</strong><br>
 「（要件定義を書いた後、）この要件定義から仕様書を作成してください」<br>
