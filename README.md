@@ -11,7 +11,7 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
 
 
 ## フォルダとファイル
-　各言語別のフォルダには、Gemini_GemフォルダとGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
+　各言語別のフォルダには、Gemin_Gemフォルダ（Python と Spring Boot は Gemini-skill フォルダ）とGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
 
       SPD2Code
       │
@@ -28,8 +28,10 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
       │  └─GitHub-Copilot──copilot-instructions.md
       │
       ├─Python
-      │  ├─Gemin_Gem ┬───カスタム指示.md
-      │  │            └───spd-pattern-python-code.md
+      │  ├─Gemini-skill ┬─Geminiのskillとして設置する方法.md
+      │  │               ├─spd-to-python-generator ┬─SKILL.md
+      │  │               │                          └─spd-pattern-python-code.md
+      │  │               └─requirements-to-python-generator──SKILL.md
       │  │
       │  └─GitHub-Copilot──copilot-instructions.md
       │
@@ -74,8 +76,10 @@ GeminiのGemでは、Gem作成時に表示される「カスタム指示」欄�
 | 言語 | AI | ファイル名 | 設置方法 |
 |---|---|---|---|
 | Python | Copilot | copilot-instructions.md | workspace/.github/ フォルダに置く |
-| | Gem | カスタム指示 | カスタム指示欄にテキストを貼り付ける |
-| | Gem | spd-pattern-python-code.md | 知識欄にファイルをアップロード |
+| | Gemini SKILL | spd-to-python-generator フォルダの SKILL.md / spd-pattern-python-code.md | `Geminiのskillとして設置する方法.md` の手順で、2ファイルをまとめてスキルとして登録する（SPDからのコード生成） |
+| | Gemini SKILL | requirements-to-python-generator フォルダの SKILL.md | `Geminiのskillとして設置する方法.md` の手順で、スキルとして登録する（要件定義からの仕様書・コード生成） |
+
+Python の Gemini SKILL は2つあります。SPDからコードを生成するスキルと、要件定義から仕様書とコードを生成するスキルです。登録の詳細は `Python/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。
 
 **表4**
 
