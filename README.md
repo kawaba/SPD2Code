@@ -93,7 +93,7 @@ Python の Gemini SKILL は2つあります。SPDからコードを生成する�
 | Spring Boot | Copilot | copilot-instructions.md / instructions フォルダ | workspace/project/.github/ フォルダに置く |
 | | Gemini SKILL | SKILL.md / ガイドライン-共通.txt / ガイドライン-SpringBoot.txt / ガイドライン-Thymeleaf.txt / pom.xml | `Geminiのskillとして設置する方法.md` の手順で、5ファイルをまとめてスキルとして登録する |
 
-Spring Boot の Gemini SKILL は、1回に1ファイルずつ生成し、生成済みのファイルをチャットに添付して次のファイルを作る使い方を想定しています。登録と使い方の詳細は `SpringBoot/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。スキルのファイルは、Copilot 版の規約から `SpringBoot/Gemini-skill/build/build-gem.ps1` で作っています。
+Spring Boot の Gemini SKILL は、1回に1ファイルずつ生成し、生成済みのファイルをチャットに添付して次のファイルを作る使い方を想定しています。登録と使い方の詳細は `SpringBoot/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。スキルのファイルは、Copilot 版の規約から `SpringBoot/Gemini-skill/build/build-skill.ps1` で作っています。
 
 （注）pom.xmlファイルはサンプルです。Java SEベースのプログラムをコンパイル・リンクできます。AIエージェントはimport文を自動生成するために、pom.xmlファイルを読みます。
 

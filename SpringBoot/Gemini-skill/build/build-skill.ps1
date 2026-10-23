@@ -1,8 +1,8 @@
-﻿# build-gem.ps1
+﻿# build-skill.ps1
 # GitHub Copilot 版の規約（SpringBoot/GitHub-Copilot）から、Gemini スキルの SKILL.md とナレッジ3ファイルを作る。
 #
 # 使い方（SpringBoot/Gemini-skill/build フォルダーで）:
-#   powershell -ExecutionPolicy Bypass -File build-gem.ps1
+#   powershell -ExecutionPolicy Bypass -File build-skill.ps1
 #
 # 出力（SpringBoot/Gemini-skill フォルダー）:
 #   SKILL.md                    ← custom-template.md（先頭の HTML コメントを除く。BOM なし）
@@ -14,17 +14,17 @@
 #   - 先頭の applyTo などの設定部分（--- … ---）を取り除く
 #   - 管理用の HTML コメント（行頭の <!-- … -->）を取り除く（コードブロックの中と <!--/* は残す）
 #   - 「## 更新履歴」以降を取り除く
-#   - copilot-instructions.md の冒頭（## 0 より前）と ## 10 を、Gem 用の部品に差し替える
+#   - copilot-instructions.md の冒頭（## 0 より前）と ## 10 を、スキル用の部品に差し替える
 #   - ファイル名の参照を、ナレッジのファイル名に置き換える
-#   - 各ファイルの先頭に、Gem 用の見出し（header-*.md）を付ける
+#   - 各ファイルの先頭に、スキル用の見出し（header-*.md）を付ける
 #
 # このスクリプトは UTF-8（BOM付き）で保存すること（Windows PowerShell 5.1 が日本語を正しく読むため）。
 
 $ErrorActionPreference = 'Stop'
 
 $buildDir = $PSScriptRoot
-$gemDir   = Split-Path -Parent $buildDir
-$srcDir   = Join-Path (Split-Path -Parent $gemDir) 'GitHub-Copilot'
+$skillDir   = Split-Path -Parent $buildDir
+$srcDir   = Join-Path (Split-Path -Parent $skillDir) 'GitHub-Copilot'
 
 $utf8    = New-Object System.Text.UTF8Encoding($false)
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
@@ -112,8 +112,8 @@ function Rename-References([string]$text) {
     return $text
 }
 
-# Gem では意味をなさない個別の文を置き換える
-function Edit-GemSpecific([string]$text) {
+# スキルでは意味をなさない個別の文を置き換える
+function Edit-SkillSpecific([string]$text) {
     $pairs = @(
         @('- `.github/instructions/` 配下の各ファイルは、対象ファイルを編集するときに追加で適用される（`## 10`）。',
           '- ナレッジの `ガイドライン-SpringBoot.txt`・`ガイドライン-Thymeleaf.txt` は、該当するSPDからコードを生成するときに必ず読む（`## 10`）。'),
@@ -126,11 +126,11 @@ function Edit-GemSpecific([string]$text) {
     return $text
 }
 
-# springboot-java の、パッケージ名が無い場合の扱いを Gem 用に置き換える（`## 10.4`）
-function Edit-GemSpringBoot([string]$text) {
+# springboot-java の、パッケージ名が無い場合の扱いをスキル用に置き換える（`## 10.4`）
+function Edit-SkillSpringBoot([string]$text) {
     $pairs = @(
         @("- **基底パッケージも分からない場合は、そのSPDからコードを生成せず、パッケージ名を尋ねる。**`n  推測でパッケージ名を作ってはならない（1ファイルずつ生成したときに、ファイルごとにパッケージがずれるため）。`n  尋ねるときは、SPDのタイトル行の前に ``※jp.kwebs.<アーティファクト名>.entity`` の形で書くよう案内する。",
-          "- **Gem では、SPDにパッケージ名が無い場合は ``package`` 文を書かずに生成する。** 生成を止めて尋ねてはならない。`n  同じプロジェクトのクラスの import とファイルのパスの書き方は、``ガイドライン-共通.txt`` の ``## 10.4``・``## 10.5`` に従う。"),
+          "- **このスキルでは、SPDにパッケージ名が無い場合は ``package`` 文を書かずに生成する。** 生成を止めて尋ねてはならない。`n  同じプロジェクトのクラスの import とファイルのパスの書き方は、``ガイドライン-共通.txt`` の ``## 10.4``・``## 10.5`` に従う。"),
         @('無い場合に基底パッケージから決め、それも分からないときは生成せずに尋ねたか（`## 20.7`）',
           '無い場合に `package` 文を書かずに生成し、パッケージの分からない同じプロジェクトのクラスの import を推測で書かなかったか（`## 10.4`）')
     )
@@ -163,21 +163,21 @@ $vars = @{
 # ---- ガイドライン-共通.txt ----
 $c = Remove-History (Remove-ManagementComments $common)
 $c = Remove-Preamble $c
-$c = Set-Section $c '## 10.' (Read-Text (Join-Path $buildDir 'section10-gem.md'))
+$c = Set-Section $c '## 10.' (Read-Text (Join-Path $buildDir 'section10-skill.md'))
 $k = Remove-ManagementComments (Remove-FrontMatter $core)
 $c = $c.TrimEnd("`n") + "`n`n" + $k.TrimStart("`n")
-$c = (Expand-Header 'header-common.md' $vars) + (Edit-GemSpecific (Rename-References $c))
-Write-Text (Join-Path $gemDir 'ガイドライン-共通.txt') $c
+$c = (Expand-Header 'header-common.md' $vars) + (Edit-SkillSpecific (Rename-References $c))
+Write-Text (Join-Path $skillDir 'ガイドライン-共通.txt') $c
 
 # ---- ガイドライン-SpringBoot.txt ----
 $s = Remove-History (Remove-ManagementComments (Remove-FrontMatter $springboot))
-$s = (Expand-Header 'header-springboot.md' $vars) + (Edit-GemSpringBoot (Rename-References $s.TrimStart("`n")))
-Write-Text (Join-Path $gemDir 'ガイドライン-SpringBoot.txt') $s
+$s = (Expand-Header 'header-springboot.md' $vars) + (Edit-SkillSpringBoot (Rename-References $s.TrimStart("`n")))
+Write-Text (Join-Path $skillDir 'ガイドライン-SpringBoot.txt') $s
 
 # ---- ガイドライン-Thymeleaf.txt ----
 $t = Remove-History (Remove-ManagementComments (Remove-FrontMatter $thymeleaf))
 $t = (Expand-Header 'header-thymeleaf.md' $vars) + (Rename-References $t.TrimStart("`n"))
-Write-Text (Join-Path $gemDir 'ガイドライン-Thymeleaf.txt') $t
+Write-Text (Join-Path $skillDir 'ガイドライン-Thymeleaf.txt') $t
 
 # ---- SKILL.md ----
 # custom-template.md の {{SECTION:<元>:<見出し>}} を、元の規約のその節で置き換える
@@ -203,7 +203,7 @@ function Get-SectionText([string]$text, [string]$heading) {
 
 $sources = @{
     core       = Remove-ManagementComments (Remove-FrontMatter $core)
-    springboot = Edit-GemSpringBoot (Remove-ManagementComments (Remove-FrontMatter $springboot))
+    springboot = Edit-SkillSpringBoot (Remove-ManagementComments (Remove-FrontMatter $springboot))
     thymeleaf  = Remove-ManagementComments (Remove-FrontMatter $thymeleaf)
 }
 $ci = Expand-Header 'custom-template.md' $vars
@@ -214,7 +214,7 @@ $ci = [regex]::Replace($ci, '\{\{SECTION:(\w+):([^}]+)\}\}', {
 # テンプレート用のメモ（先頭の HTML コメント）を除く。--- で始まらないと SKILL.md として読まれない
 $ci = [regex]::Replace($ci, '\A<!--.*?-->\s*', '', 'Singleline')
 if (-not $ci.StartsWith("---`n")) { throw 'SKILL.md が --- で始まっていません（custom-template.md を確認）' }
-Write-Text (Join-Path $gemDir 'SKILL.md') $ci -NoBom
+Write-Text (Join-Path $skillDir 'SKILL.md') $ci -NoBom
 Write-Host ("SKILL.md：{0} 文字" -f $ci.Length)
 
 Write-Host ("作成しました: 共通 v{0}（SPD-CORE v{1}）/ SpringBoot v{2} / Thymeleaf v{3}" -f `
