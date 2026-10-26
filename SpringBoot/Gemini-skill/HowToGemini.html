@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SPDからSpringBoot、Thymeleafのコード生成スキル 作成・利用ガイド</title>
 <style>
 /* ---- フォント指定 ----
@@ -26,10 +27,15 @@ h1, h2, h3, h4, h5, h6 {
    font-weight: bold;
 }
 
-/* ---- ページ全体（横幅900px固定・中央揃え） ---- */
-html { background-color: #eef0f3; }
+/* ---- ページ全体（最大幅900px・中央揃え。狭い画面では画面幅に合わせる） ---- */
+html {
+   background-color: #eef0f3;
+   -webkit-text-size-adjust: 100%;
+   text-size-adjust: 100%;
+}
 body {
-   width: 900px;
+   width: auto;
+   max-width: 900px;
    box-sizing: border-box;
    margin: 26px auto;
    padding: 31px 44px 37px;
@@ -40,7 +46,11 @@ body {
    color: #222;
    font-size: 11pt;
    line-height: 1.75;
+   overflow-wrap: break-word;   /* 長いURL・英単語で横にはみ出さない */
 }
+
+/* 画像などが親幅を超えないようにする */
+img, video, svg { max-width: 100%; height: auto; }
 
 /* ---- 見出し ---- */
 h1 {
@@ -79,12 +89,16 @@ li::marker { color: #4a78a8; }
 ol > li::marker { font-weight: bold; }
 strong { color: #1a1a1a; }
 
-/* ---- コードブロック（SPD・Java共通） ---- */
+/* ---- コードブロック（SPD・Java共通） ----
+   罫線や字下げを崩さないよう折り返さず、はみ出す分は横スクロールさせる */
 pre {
    font-size: 9.5pt;
    line-height: 1.5;
    white-space: pre;
    overflow-x: auto;
+   -webkit-overflow-scrolling: touch;
+   max-width: 100%;
+   box-sizing: border-box;
    background-color: #f7f9f7;
    border: 1px solid #e2e8e2;
    border-left: 4px solid #9fbf9f;   /* SPD・その他 */
@@ -93,6 +107,7 @@ pre {
    margin: 8pt 0 11pt;
    tab-size: 4;
    -moz-tab-size: 4;
+   overflow-wrap: normal;
 }
 pre code {
    font-size: inherit;
@@ -101,6 +116,8 @@ pre code {
    padding: 0;
    color: #222;
    white-space: pre;
+   overflow-wrap: normal;
+   word-break: normal;
 }
 /* Javaコードは左罫の色を変えて区別する */
 pre.java { border-left-color: #7fa3cf; background-color: #f6f9fd; border-color: #dfe7f1; }
@@ -113,14 +130,16 @@ code {
    border: 1px solid #e8e1e3;
    border-radius: 3px;
    padding: 0 4px;
+   overflow-wrap: anywhere;   /* 長いファイル名でも行内で折り返す */
 }
 
-/* ---- 表 ---- */
+/* ---- 表（狭い画面では表だけ横スクロール） ---- */
 table {
    border-collapse: collapse;
    font-size: 9.5pt;
    line-height: 1.5;
    margin: 8pt 0;
+   max-width: 100%;
 }
 th, td {
    border: 1px solid #d5dbe2;
@@ -147,16 +166,50 @@ hr { border: none; border-top: 1px solid #d3d8de; margin: 22pt 0; }
 ul.checklist { list-style: none; padding-left: 3.5pt; }
 ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
 
+/* ---- タブレット（〜960px）：外側の余白を確保しつつ幅いっぱいに ---- */
+@media (max-width: 960px) {
+   body {
+      margin: 16px;
+      padding: 26px 32px 30px;
+   }
+}
+
+/* ---- スマートフォン（〜600px）：カード装飾を外し、余白・文字を詰める ---- */
+@media (max-width: 600px) {
+   html { background-color: #ffffff; }
+   body {
+      margin: 0;
+      padding: 18px 16px 24px;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 10.5pt;
+      line-height: 1.7;
+   }
+   h1 { font-size: 14pt; }
+   h2 { font-size: 12.5pt; margin-top: 20pt; }
+   h3 { font-size: 11.5pt; }
+   ul, ol { padding-left: 16pt; }
+   pre { font-size: 9pt; padding: 7pt 9pt; }
+   blockquote { padding: 4pt 9pt; }
+   table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+   }
+   hr { margin: 18pt 0; }
+}
+
 /* ---- 印刷時は背景・影・外枠を外す ---- */
 @media print {
    html { background: none; }
-   body { width: auto; margin: 0; padding: 0; border: none; box-shadow: none; }
+   body { width: auto; max-width: none; margin: 0; padding: 0; border: none; box-shadow: none; }
    pre { white-space: pre; overflow: visible; }
 }
 </style>
 </head>
 <body>
-<h1>Geminiの"スキル"を使ってコード生成を行う方法</h1>
+<h1>Geminiの"スキル"を使ってSpringBoot、thymeleafのコードを生成する方法</h1>
 <p>構造化プログラム設計図（SPD：Structured Programming Diagram）を読み込ませ、Spring Boot（Java）やThymeleaf（HTML）のソースコードを自動生成するためのカスタムスキルを作成・活用する方法を解説します。</p>
 <p>このスキルは、AIの「マルチファイル構成（指示書＋参考資料の組み合わせ）」を利用することで、複雑な変換ルールやプロジェクトの仕様を正確に維持しながらコード生成を行えるのが特徴です。</p>
 <hr />

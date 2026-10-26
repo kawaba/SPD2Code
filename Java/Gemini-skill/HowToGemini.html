@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geminiの&quot;スキル&quot;を使ってJavaコードを生成する方法</title>
+<style>
+/* ---- フォント指定 ----
+   本文＝BIZ UDPゴシック（プロポーショナル）／見出し＝游ゴシック体（太字）／
+   SPD・Javaコード＝BIZ UDゴシック（等幅）
+   フォント名は環境ごとに登録名が異なるため、日本語名・英語名を併記する。 */
+body, table, th, td, blockquote {
+   font-family: "BIZ UDPゴシック", "BIZ UDPGothic", "Meiryo", "メイリオ",
+                "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+
+/* SPD・Javaコードは等幅のBIZ UDゴシック（Pなし＝等幅。半角＝全角の1/2幅で罫線が揃う） */
+pre, code {
+   font-family: "BIZ UDゴシック", "BIZ UDGothic",
+                "MS ゴシック", "MS Gothic", monospace;
+}
+
+/* 見出しは游ゴシック体の太字 */
+h1, h2, h3, h4, h5, h6 {
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+}
+
+/* ---- ページ全体（横幅900px固定・中央揃え／本文11ptが基準） ---- */
+html { background-color: #eef0f3; }
+body {
+   width: auto;
+   max-width: 900px;          /* 広い画面では従来どおり900px・中央揃え */
+   overflow-wrap: break-word; /* 長い英単語・URLで横にはみ出さないように */
+   box-sizing: border-box;
+   margin: 26px auto;
+   padding: 31px 66px 37px;   /* 左右の余白を標準（44px）の1.5倍に */
+   background-color: #ffffff;
+   border: 1px solid #dde1e6;
+   border-radius: 6px;
+   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+   color: #222;
+   font-size: 11pt;
+   line-height: 1.75;
+}
+
+/* ---- 見出し ---- */
+h1 {
+   font-size: 15.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-bottom: 3px solid #1f3a5f;
+   padding-bottom: 6.5pt;
+   margin: 0 0 15.5pt;
+}
+h2 {
+   font-size: 13.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-left: 5px solid #4a78a8;
+   border-bottom: 1px solid #d8e0ea;
+   padding: 3pt 0 3pt 8pt;
+   margin: 24pt 0 9pt;
+}
+h3 {
+   font-size: 12pt;
+   line-height: 1.4;
+   color: #2b4c74;
+   padding-bottom: 2pt;
+   border-bottom: 1px dashed #c9d4e1;
+   margin: 17.5pt 0 6.5pt;
+}
+h4 { font-size: 11pt; color: #2b4c74; margin: 13pt 0 4.5pt; }
+h5, h6 { font-size: 10pt; color: #2b4c74; margin: 9pt 0 3pt; }
+
+/* ---- 本文・リスト ---- */
+p  { margin: 6.5pt 0; }
+ul, ol { margin: 6.5pt 0; padding-left: 20pt; }
+li { margin: 3pt 0; }
+li::marker { color: #4a78a8; }
+ol > li::marker { font-weight: bold; }
+strong { color: #1a1a1a; }
+
+/* ---- コードブロック（SPD・Java共通） ---- */
+pre {
+   font-size: 9.5pt;
+   line-height: 1.5;
+   white-space: pre;
+   overflow-x: auto;
+   background-color: #f7f9f7;
+   border: 1px solid #e2e8e2;
+   border-left: 4px solid #9fbf9f;   /* SPD・その他 */
+   border-radius: 4px;
+   padding: 8pt 11pt;
+   margin: 8pt 0 11pt;
+   tab-size: 4;
+   -moz-tab-size: 4;
+}
+pre code {
+   font-size: inherit;
+   background: none;
+   border: none;
+   padding: 0;
+   color: #222;
+   white-space: pre;
+}
+/* Javaコードは左罫の色を変えて区別する */
+pre.java { border-left-color: #7fa3cf; background-color: #f6f9fd; border-color: #dfe7f1; }
+
+/* ---- インラインコード ---- */
+code {
+   font-size: 92%;
+   color: #8a2d3b;
+   background-color: #f4f1f2;
+   border: 1px solid #e8e1e3;
+   border-radius: 3px;
+   padding: 0 4px;
+}
+
+/* ---- 表 ---- */
+table {
+   border-collapse: collapse;
+   font-size: 9.5pt;
+   line-height: 1.5;
+   margin: 8pt 0;
+}
+th, td {
+   border: 1px solid #d5dbe2;
+   padding: 3.5pt 8pt;
+   text-align: left;
+   vertical-align: top;
+}
+th { background-color: #e9eef4; color: #1f3a5f; }
+tr:nth-child(even) td { background-color: #fafbfc; }
+
+/* ---- 引用・区切り線 ---- */
+blockquote {
+   margin: 8pt 0;
+   padding: 4.5pt 11pt;
+   border-left: 4px solid #e0b75a;
+   border-radius: 0 4px 4px 0;
+   background-color: #fdf9ee;
+   color: #333;
+}
+blockquote p { margin: 3pt 0; }
+hr { border: none; border-top: 1px solid #d3d8de; margin: 22pt 0; }
+
+/* ---- チェックリスト ---- */
+ul.checklist { list-style: none; padding-left: 3.5pt; }
+ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
+
+/* ---- レスポンシブ対応 ---- */
+/* タブレット・狭いウィンドウ：カードの外側と左右の余白を詰める */
+@media screen and (max-width: 960px) {
+   body { margin: 16px auto; padding: 28px 40px 32px; }
+   html { padding: 0 16px; }
+}
+/* スマートフォン：カードの枠をなくし、画面いっぱいに表示する */
+@media screen and (max-width: 640px) {
+   html { background-color: #ffffff; padding: 0; }
+   body { margin: 0; padding: 20px 16px 28px; border: none; border-radius: 0; box-shadow: none; }
+   ul, ol { padding-left: 16pt; }
+   table { display: block; overflow-x: auto; }   /* 表は横スクロール */
+}
+
+/* ---- 印刷時は背景・影・外枠を外す ---- */
+@media print {
+   html { background: none; }
+   body { width: auto; margin: 0; padding: 0; border: none; box-shadow: none; }
+   pre { white-space: pre; overflow: visible; }
+}
+</style>
+</head>
+<body>
+<h1>Geminiの&quot;スキル&quot;を使ってJavaコードを生成する方法</h1>
+<p>構造化プログラム設計図（SPD：Structured Programming Diagram）を読み込ませ、Javaのソースコードを生成するカスタムスキルを作成する方法を解説します。</p>
+<p>このスキルは、AIの「マルチファイル構成（指示書＋参考資料の組み合わせ）」を利用することで、複雑な変換ルールやプロジェクトの仕様を正確に維持しながらコード生成を行えるのが特徴です。</p>
+<hr />
+<h2>1. スキルフォルダの構成</h2>
+<p>本スキルは、AIへの指示をまとめたメインの指示書（<code>SKILL.md</code>）と、変換ルールや設定を記述した知識ファイルで構成されます。</p>
+<pre><code class="language-text">SKILL.md          # 全体の制御と変換ワークフローを定義する指示書
+ガイドライン.txt  # SPD記述ルールとJava変換ルール
+pom.xml           # プロジェクトの依存関係・設定ファイル
+</code></pre>
+<h3>各ファイルの役割</h3>
+<ul>
+<li><strong><code>SKILL.md</code></strong>:<br>
+　AIがいつ・どのようにこのスキルを起動し、どの順番でファイルを参照してコードを生成すべきかを指示する中心的な台本です。SPDの未記入部分は生成しないという最優先ルール、記号一覧、SPDの読み方、生成時のチェックリストもここにあります。</li>
+<li><strong><code>ガイドライン.txt</code></strong>: <br>
+　SPDの要素（順次、選択、繰り返し、例外処理、ラムダ式、ストリーム処理など）の読み方、クラス定義、キーボード入力（<code>Input</code>）、四捨五入（<code>Tools.round</code>）など、Javaへの変換ルールの全文。</li>
+<li><strong><code>pom.xml</code></strong>: <br>
+　利用するライブラリのバージョン情報をAIに正しく認識させるための設定ファイル。AIは、import文を生成するときにこのファイルを参照します。</li>
+</ul>
+<hr />
+<h2>2. スキルの作成・登録手順</h2>
+<p>3つのファイルをAI環境に登録し、カスタムスキルとして保存します。</p>
+<ol>
+<li><strong>AI環境へのアップロード</strong>
+AIのチャット画面に、すべてのファイルを同時にドラッグ＆ドロップ（または添付）します。</li>
+<li><strong>登録の指示</strong>
+チャット欄に以下のように入力して実行します。
+<blockquote>
+<p>「アップロードした <code>SKILL.md</code> と、知識であるそれ以外の2つのファイルを使って、SPDからJavaのコードを生成するマルチファイル構成のスキルを作成・保存してください。」</p>
+</blockquote>
+</li>
+<li><strong>保存完了</strong>
+AI側でシステムツールが実行され、いつでも呼び出し可能なカスタムスキルとして登録されます。</li>
+</ol>
+<hr />
+<h2>3. スキルの利用方法</h2>
+<p>作成したスキルは、日常の学習・開発作業の中で次のように呼び出して利用できます。</p>
+<h3>基本的な使い方</h3>
+<p>チャットに、SPDのテキスト、または先頭のブロックコメント（<code>/* ... */</code>）にSPDを書いたJavaファイルを貼り付け（または添付し）、スキルを呼び出します。
+クラス用とメソッド用など、複数のSPDをまとめて貼り付けてもかまいません。</p>
+<blockquote>
+<p><strong>プロンプト例：</strong><br>
+「（SPDを貼り付けた後、）このSPDをもとに、Javaのソースコードを生成してください」<br>
+「（Javaファイルを添付した後、）先頭のSPDをもとに、Javaのソースコードを生成してください」</p>
+</blockquote>
+<h3>期待される動作</h3>
+<ol>
+<li>AIが自動的に <code>SKILL.md</code> の指示を読み、SPDに現れる記号や型定義に応じて、<code>ガイドライン.txt</code> の該当する節を参照します。</li>
+<li>コードを書く前に、<code>未記入判定:</code> の1行（<code>◇</code> が複数あれば <code>◇判定:</code> の1行も）を出力します。SPDに未記入の部分があれば、そのメソッドやクラスは生成せず、コメント1行で知らせます。</li>
+<li><code>pom.xml</code> の依存ライブラリに合わせてimport文を選びます。キーボード入力には <code>jp.kwebs.tools.Input</code>、桁数を指定した四捨五入には <code>Tools.round</code> を使い、<code>package</code> 文は書きません。</li>
+<li>SPDを1つのブロックコメントにまとめてファイルの冒頭に残し、その下に規約に準拠したJavaコードを出力します。識別子の誤記や見つからない名前があれば、コードの後の「生成後の報告」で知らせます。</li>
+</ol>
+<h3>注意点</h3>
+<ol>
+<li>一回に1つのSPDから1つのコードを生成してください。</li>
+<li>ただし、コード生成に必要な他のJavaファイル（クラスやインタフェースの定義など）がある場合は、チャット欄でそれらをアップロードしておいてください。</li>
+</ol>
+<hr />
+</body>
+</html>
