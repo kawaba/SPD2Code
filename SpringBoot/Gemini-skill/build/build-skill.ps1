@@ -10,6 +10,8 @@
 #   ガイドライン-SpringBoot.txt ← springboot-java.instructions.md
 #   ガイドライン-Thymeleaf.txt  ← thymeleaf.instructions.md
 #
+# 続けて SpringBoot/Claude-skill/build/build-claude.ps1 を実行し、上の出力から claude.ai 用のスキルも作る。
+#
 # 行う変換:
 #   - 先頭の applyTo などの設定部分（--- … ---）を取り除く
 #   - 管理用の HTML コメント（行頭の <!-- … -->）を取り除く（コードブロックの中と <!--/* は残す）
@@ -219,3 +221,6 @@ Write-Host ("SKILL.md：{0} 文字" -f $ci.Length)
 
 Write-Host ("作成しました: 共通 v{0}（SPD-CORE v{1}）/ SpringBoot v{2} / Thymeleaf v{3}" -f `
     $vars.COMMON, $vars.CORE, $vars.SPRINGBOOT, $vars.THYMELEAF)
+
+# ---- Claude スキル（上で作ったファイルから作る） ----
+& (Join-Path (Split-Path -Parent $skillDir) 'Claude-skill/build/build-claude.ps1')
