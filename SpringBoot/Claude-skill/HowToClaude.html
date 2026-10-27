@@ -243,6 +243,12 @@ ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
 <li>claude.ai にログインし、左下のアカウント名から <strong>Settings（設定）</strong> を開きます。</li>
 <li><strong>Capabilities（機能）</strong> を開き、<strong>Code execution and file creation（コード実行とファイル作成）</strong> をオンにします。</li>
 </ol>
+<h3>コードが崩れて表示されるとき（Edge）</h3>
+<p>生成されたコードの改行がつながったり、<code>return</code> が「帰還」、<code>"/date"</code> が「「/日付」」のように変わって表示されたりする場合は、ブラウザーの翻訳機能がページを機械翻訳しています。コピーボタンでコピーしたコードは正しいので、コード自体には問題ありません。Edge では、次の手順で英語のページを自動で翻訳しないようにします。</p>
+<ol>
+<li>アドレスバーに <code>edge://settings/languages</code> と入力して開きます。</li>
+<li>「常に翻訳する言語」などの一覧に「英語」（「英語 (米国)」なども）があれば、すべて削除します。</li>
+</ol>
 <hr />
 <h2>3. スキルの登録手順</h2>
 <ol>
