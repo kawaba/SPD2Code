@@ -90,8 +90,12 @@ Gemini SKILLでは、各言語の Gemini-skill フォルダにある `Geminiのs
 | Python | Copilot | copilot-instructions.md | workspace/.github/ フォルダに置く |
 | | Gemini SKILL | spd-to-python-generator フォルダの SKILL.md / spd-pattern-python-code.md | `Geminiのskillとして設置する方法.md` の手順で、2ファイルをまとめてスキルとして登録する（SPDからのコード生成） |
 | | Gemini SKILL | requirements-to-python-generator フォルダの SKILL.md | `Geminiのskillとして設置する方法.md` の手順で、スキルとして登録する（要件定義からの仕様書・コード生成） |
+| | Claude SKILL | spd-to-python-generator.zip | `HowToClaude.html` の手順で、zip を解凍せずにそのまま claude.ai に登録する（SPDからのコード生成） |
+| | Claude SKILL | requirements-to-python-generator.zip | `HowToClaude.html` の手順で、zip を解凍せずにそのまま claude.ai に登録する（要件定義からの仕様書・コード生成） |
 
 Python の Gemini SKILL は2つあります。SPDからコードを生成するスキルと、要件定義から仕様書とコードを生成するスキルです。登録の詳細は `Python/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。
+
+Python の Claude SKILL も、Gemini SKILL と同じ2つです。claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。登録と使い方の詳細は `Python/Claude-skill/HowToClaude.html` を見てください。SPDからコードを生成するスキルの変換パターン集は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Python/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
 **表4**
 
