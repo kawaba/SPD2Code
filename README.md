@@ -9,7 +9,7 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
 
 ・Gemini SKILL
 
-・Claude SKILL（claude.ai のウェブ版。現在は Spring Boot 用と Python 用）
+・Claude SKILL（claude.ai のウェブ版。現在は Spring Boot 用・Python 用・Java 用）
 
 
 ## フォルダとファイル
@@ -24,6 +24,11 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
       │  └─GitHub-Copilot──copilot-instructions.md
       │
       ├─Java
+      │  ├─Claude-skill ┬─spd-to-java-generator.zip（claude.ai に登録するファイル）
+      │  │               ├─spd-to-java-generator（zip の中身）
+      │  │               ├─HowToClaude.html
+      │  │               └─build（Gemini SKILL のファイルから Claude SKILL を作る変換スクリプト）
+      │  │
       │  ├─Gemini-skill ┬─SKILL.md
       │  │               ├─HowToGemini.html
       │  │               ├─ガイドライン.txt
@@ -87,8 +92,11 @@ Gemini SKILLでは、各言語の Gemini-skill フォルダにある `HowToGemin
 |---|---|---|---|
 | Java | Copilot | copilot-instructions.md | workspace/project/.github/ フォルダに置く |
 | | Gemini SKILL | SKILL.md / ガイドライン.txt / pom.xml | `HowToGemini.html` の手順で、3ファイルをまとめてスキルとして登録する |
+| | Claude SKILL | spd-to-java-generator.zip | `HowToClaude.html` の手順で、zip を解凍せずにそのまま claude.ai に登録する |
 
 登録の詳細は `Java/Gemini-skill/HowToGemini.html` を見てください。
+
+Java の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。使い方は Gemini SKILL と同じです。登録と使い方の詳細は `Java/Claude-skill/HowToClaude.html` を見てください。変換ルールは節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Java/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
 **表3**
 
