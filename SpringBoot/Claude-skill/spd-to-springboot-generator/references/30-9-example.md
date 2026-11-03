@@ -16,11 +16,9 @@
 │
 └─構成
      ├─［見出し］会員一覧
-     ├─［条件表示］messageがある
-     │  └─［通知］{message}
-     ├─［条件表示］memberListが空である
-     │  └─［段落］会員が登録されていません。
-     ├─［表（列）］memberListの各要素をmとする
+     ├─({message}は空ではない) ［通知］{message}
+     ├─({memberList}は空である) ［段落］会員が登録されていません。
+     ├─({memberList}は空ではない) ［表（列）］memberListの各要素をmとする
      │  ├─番号：{m.id}
      │  ├─名前：{m.name}
      │  ├─入会日：{m.joinedOn} <<"yyyy年MM月dd日">>
@@ -49,11 +47,9 @@
 │
 └─構成
      ├─［見出し］会員一覧
-     ├─［条件表示］messageがある
-     │  └─［通知］{message}
-     ├─［条件表示］memberListが空である
-     │  └─［段落］会員が登録されていません。
-     ├─［表（列）］memberListの各要素をmとする
+     ├─({message}は空ではない) ［通知］{message}
+     ├─({memberList}は空である) ［段落］会員が登録されていません。
+     ├─({memberList}は空ではない) ［表（列）］memberListの各要素をmとする
      │  ├─番号：{m.id}
      │  ├─名前：{m.name}
      │  ├─入会日：{m.joinedOn} <<"yyyy年MM月dd日">>
@@ -75,11 +71,11 @@
 <body>
   <h1>会員一覧</h1>
 
-  <div class="message" th:if="${message}" th:text="${message}">通知</div>
+  <div class="message" th:if="${not #strings.isEmpty(message)}" th:text="${message}">通知</div>
 
   <p th:if="${#lists.isEmpty(memberList)}">会員が登録されていません。</p>
 
-  <table>
+  <table th:if="${not #lists.isEmpty(memberList)}">
     <thead>
       <tr>
         <th>番号</th>
