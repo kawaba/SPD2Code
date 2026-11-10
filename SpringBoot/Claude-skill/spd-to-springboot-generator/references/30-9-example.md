@@ -71,7 +71,7 @@
 <body>
   <h1>会員一覧</h1>
 
-  <div class="message" th:if="${not #strings.isEmpty(message)}" th:text="${message}">通知</div>
+  <div class="message" th:if="${not #strings.isEmpty(message)}" th:text="${message}">メッセージ</div>
 
   <p th:if="${#lists.isEmpty(memberList)}">会員が登録されていません。</p>
 
@@ -86,9 +86,9 @@
     </thead>
     <tbody>
       <tr th:each="m : ${memberList}">
-        <td th:text="${m.id}">1</td>
+        <td th:text="${m.id}">番号</td>
         <td th:text="${m.name}">名前</td>
-        <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">2026年01月01日</td>
+        <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">入会日</td>
         <td>
           <a th:href="@{/members/{id}/edit(id=${m.id})}">編集</a>
           |

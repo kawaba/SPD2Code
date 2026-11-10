@@ -161,7 +161,7 @@
 
 | SPDの記述 | 生成 |
 |---|---|
-| `日付：{birthday}` | `<tr><td>日付</td><td th:text="${birthday}">2026-01-01</td></tr>` |
+| `日付：{birthday}` | `<tr><td>日付</td><td th:text="${birthday}">生年月日</td></tr>` |
 | `空欄：`（子なし） | `<tr><td>空欄</td><td></td></tr>` |
 | `：左マスは空欄` | `<tr><td></td><td>左マスは空欄</td></tr>` |
 | `参考図：［画像］/images/sample.png <<50px>>` | `<tr><td>参考図</td><td><img th:src="@{/images/sample.png}" alt="" width="50"></td></tr>` |
@@ -198,7 +198,7 @@
 <table>
   <tr>
     <td>番号</td>
-    <td th:text="${member.id}">1</td>
+    <td th:text="${member.id}">番号</td>
   </tr>
   <tr>
     <td>名前</td>
@@ -211,7 +211,7 @@
   <tr>
     <td>紹介</td>
     <td>
-      <span th:text="|${member.name}さんのページは|">名前さんのページは</span>
+      <span th:text="|${member.name}さんのページは|">nameさんのページは</span>
       <a th:href="@{/members/{id}/profile(id=${member.id})}">こちら</a>
     </td>
   </tr>
@@ -369,7 +369,7 @@
 ```html
 <tr>
   <td>会員番号</td>
-  <td th:text="*{id}">1</td>
+  <td th:text="*{id}">会員番号</td>
 </tr>
 ```
 
@@ -488,7 +488,7 @@
 <label for="departmentId">所属</label>
 <select th:field="*{departmentId}">
   <option value="">選択してください</option>
-  <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}">表示名</option>
+  <option th:each="d : ${departments}" th:value="${d.id}" th:text="${d.name}">name</option>
 </select>
 <span class="error-msg" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}">エラー</span>
 ```

@@ -31,9 +31,9 @@
   </thead>
   <tbody>
     <tr th:each="m : ${memberList}">
-      <td th:text="${m.id}">1</td>
+      <td th:text="${m.id}">番号</td>
       <td th:text="${m.name}">名前</td>
-      <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">2026年01月01日</td>
+      <td th:text="${m.joinedOn == null ? '' : #temporals.format(m.joinedOn, 'yyyy年MM月dd日')}">入会日</td>
       <td><img th:src="@{/images/{photo}(photo=${m.photo})}" alt="" width="60"></td>
       <td>
         <a th:href="@{/members/{id}/edit(id=${m.id})}">編集</a>
@@ -106,7 +106,7 @@
 │         └─入会日：{memberForm.joinedOn} <<"yyyy年MM月dd日">>
 ```
 ```html
-<td th:text="*{joinedOn == null ? '' : #temporals.format(joinedOn, 'yyyy年MM月dd日')}">2026年04月01日</td>
+<td th:text="*{joinedOn == null ? '' : #temporals.format(joinedOn, 'yyyy年MM月dd日')}">入会日</td>
 ```
 
 - `${memberForm.joinedOn == null ? …}` や、`*{…}` と `${…}` を混ぜた式にしない。
@@ -168,7 +168,7 @@
 </tr>
 <tr>
   <td>価格</td>
-  <td th:text="${price == null ? '' : #numbers.formatInteger(price, 1, 'COMMA')}" class="右寄せ">1,000</td>
+  <td th:text="${price == null ? '' : #numbers.formatInteger(price, 1, 'COMMA')}" class="右寄せ">価格</td>
 </tr>
 ```
 ```css
@@ -206,7 +206,7 @@
 ```
 ```html
 <ul>
-  <li th:each="m : ${memberList}" th:text="${m.name}">名前</li>
+  <li th:each="m : ${memberList}" th:text="${m.name}">name</li>
 </ul>
 ```
 
@@ -239,7 +239,7 @@
   </tr>
   <tr>
     <td>備考</td>
-    <td><span th:if="${flag}" th:text="|獲得ポイント ${point}|">獲得ポイント 10</span></td>
+    <td><span th:if="${flag}" th:text="|獲得ポイント ${point}|">獲得ポイント ポイント</span></td>
   </tr>
   <tr th:if="${not #strings.isEmpty(message)}">
     <td colspan="2"><span th:text="${message}">メッセージ</span></td>
