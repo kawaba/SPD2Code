@@ -102,7 +102,7 @@ description: SPD（構造化プログラム設計図）から、Java入門教育
 | `references/09-10-notes.md` | `9.10 補足事項` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v2.12.0
+元の規約：`copilot-instructions.md` v2.14.0
 
 # 絶対ルール（references を読む前でも常に適用）
 

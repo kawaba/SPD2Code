@@ -1,7 +1,7 @@
 ﻿# Gemini SKILL用 ガイドライン（Spring Boot）— `## 20.x`
 
 > **このファイルは自動生成したものである。直接編集しないこと。**
-> 元：`SpringBoot/GitHub-Copilot/instructions/springboot-java.instructions.md`（SPRINGBOOT-JAVA v2.3.0）
+> 元：`SpringBoot/GitHub-Copilot/instructions/springboot-java.instructions.md`（SPRINGBOOT-JAVA v2.4.0）
 > 変換：`SpringBoot/Gemini-skill/build/build-skill.ps1`
 > `## 0`〜`## 11` と `## 9.x` は `ガイドライン-共通.txt`、`## 30.x` は `ガイドライン-Thymeleaf.txt` にある。
 > 「ワークスペース」などの読み替えは、`ガイドライン-共通.txt` の冒頭の「読み替え」に従う。
@@ -200,6 +200,8 @@ Javaで、マッピングのアノテーションが付いたメソッドがハ�
 `<説明>：[<マーカー>] <型> <変数名>` の形で書く。`spd-core` の `引数`（`<説明>：<型> <変数名>`）に、
 値の受け取り方を表すマーカーを加えたものである。**説明は自由に書いてよく、生成には影響しない**
 （Javadoc の `@param` の説明になる）。マーカーの `@` は全角 `＠` でもよい（`## 20.1`）。
+引数が1つだけのときは、`引数：会員番号：@パス変数 Long id` のように `引数` に続けて1行で書いてもよい
+（`spd-core` の `## 9.6.5`）。
 
 | SPDの記述 | 生成される引数 |
 |---|---|

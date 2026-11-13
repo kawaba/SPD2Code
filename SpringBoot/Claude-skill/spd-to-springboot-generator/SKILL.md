@@ -103,7 +103,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/30-9-example.md` | `30.9 完全な変換例` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v1.5.3、SPD-CORE v2.12.0、SPRINGBOOT-JAVA v2.3.0、THYMELEAF v8.5.0
+元の規約：`copilot-instructions.md` v1.5.3、SPD-CORE v2.14.0、SPRINGBOOT-JAVA v2.4.0、THYMELEAF v8.5.0
 
 # スキルでの運用（`## 10`）
 
