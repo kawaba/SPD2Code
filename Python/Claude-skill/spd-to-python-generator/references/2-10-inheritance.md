@@ -3,7 +3,7 @@
 #### 2.10.1 Memberクラスを継承するGeneralMemberクラス
 
 ```
-クラス: GeneralMember(Member)
+クラス: GeneralMember ─⊳ Member
 │
 ├─目的：一般会員のクラス
 ├─属性
@@ -27,7 +27,7 @@ class GeneralMember(Member):
 #### 2.10.2 コンストラクタのないサブクラス
 
 ```
-クラス: SeniorMember(Member)
+クラス: SeniorMember ─⊳ Member
 │
 ├─目的：メソッドだけのクラス
 ├─属性：なし
@@ -69,7 +69,7 @@ class SeniorMember(Member):
           └─ return json.dumps(self.__dict__, ensure_ascii=False)
 
 ※継承を利用してJsonMixinのto_jsonメソッドを取り込む
-クラス: GeneralMember(JsonMixin, Member)
+クラス: GeneralMember ─⊳ JsonMixin、Member
 │
 ├─目的：一般会員のクラス
 ├─属性
