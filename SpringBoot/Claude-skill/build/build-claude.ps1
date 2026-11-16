@@ -27,7 +27,7 @@ $claudeDir = Split-Path -Parent $buildDir
 $geminiDir = Join-Path (Split-Path -Parent $claudeDir) 'Gemini-skill'
 
 $skillName   = 'spd-to-springboot-generator'
-$description = 'SPD（構造化プログラム設計図）から、Spring Bootのエンティティ・フォーム・リポジトリ・サービス・コントローラーとThymeleafテンプレートを生成する。タイトルが「エンティティ:」「フォーム:」「リポジトリ:」「サービス:」「コントローラー:」「テンプレート:」のSPDを渡されたときに使う'
+$description = 'SPD（構造化プログラム設計図）から、Spring Bootのエンティティ・フォーム・リポジトリ・サービス・コントローラーとThymeleafテンプレートを生成する。タイトルが「エンティティ:」「フォーム:」「リポジトリ:」「サービス:」「コントローラー:」「テンプレート:」のSPDを渡されたときと、SPDの作成を頼まれたとき（作成はしない）に使う'
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 

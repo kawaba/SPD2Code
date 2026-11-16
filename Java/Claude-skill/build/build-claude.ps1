@@ -26,7 +26,7 @@ $claudeDir = Split-Path -Parent $buildDir
 $geminiDir = Join-Path (Split-Path -Parent $claudeDir) 'Gemini-skill'
 
 $skillName   = 'spd-to-java-generator'
-$description = 'SPD（構造化プログラム設計図）から、Java入門教育向けのJavaコードを生成する。「クラス:」「抽象クラス:」「インタフェース:」「レコード:」「メソッド:」で始まるSPDや、├─・◇・↻・〇・λ・▽を使った木構造の設計図（Javaファイル先頭のブロックコメント内も含む）を渡されたときに使う'
+$description = 'SPD（構造化プログラム設計図）から、Java入門教育向けのJavaコードを生成する。「クラス:」「抽象クラス:」「インタフェース:」「レコード:」「メソッド:」で始まるSPDや、├─・◇・↻・〇・λ・▽を使った木構造の設計図（Javaファイル先頭のブロックコメント内も含む）を渡されたときと、SPDの作成を頼まれたとき（作成はしない）に使う'
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
@@ -167,7 +167,7 @@ $skill = ([regex]'(?m)^description: .*$').Replace($skill, "description: $descrip
 $skill = Edit-Pairs $skill @(
     @('詳細・具体例・誤記の判断表はナレッジの `## 0` にあります。', '詳細・具体例・誤記の判断表は `references/00-unfilled.md`（`## 0`）にあります。'),
     @('残りの細目はナレッジの `## 0.8` にあります。', '残りの細目は `references/00-unfilled.md` の `## 0.8` にあります。'),
-    @('／ガイドラインの他の節が明示的に求めている不整合の指摘。', '／規約の他の節が明示的に求めている不整合の指摘。'),
+    @('／ガイドラインの他の節が明示的に求めている不整合の指摘／', '／規約の他の節が明示的に求めている不整合の指摘／'),
     @('# ナレッジの参照', '# 詳細な規約の参照'),
     @('詳細な規約は、ナレッジ **`ガイドライン.txt`** に全文があります。', '詳細な規約は、このスキルの `references/` フォルダーに、節ごとのファイルで置いてあります（構成は下の「references の構成」）。'),
     @('＋ **ナレッジの `pom.xml`（実際の依存関係はこちらが正）**', '＋ **`references/pom.xml`（実際の依存関係はこちらが正）**'),

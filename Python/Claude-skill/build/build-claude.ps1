@@ -29,8 +29,8 @@ $geminiDir = Join-Path (Split-Path -Parent $claudeDir) 'Gemini-skill'
 $spdName = 'spd-to-python-generator'
 $reqName = 'requirements-to-python-generator'
 $descriptions = @{
-    $spdName = 'SPD（構造化プログラム設計図）から、Python入門教育向けの読みやすいPythonコードを生成する。「関数:」「クラス:」「データクラス:」で始まるSPDや、├─・◇・↻・〇を使った木構造の設計図（ファイル先頭のdocstring内も含む）を渡されたときに使う'
-    $reqName = '自然文の要件定義（目的・入力・出力・処理条件など）から、Python入門教育向けの仕様書とPythonコードを生成する。SPDではなく文章で要件が書かれているときに使う'
+    $spdName = 'SPD（構造化プログラム設計図）から、Python入門教育向けの読みやすいPythonコードを生成する。「関数:」「クラス:」「データクラス:」で始まるSPDや、├─・◇・↻・〇を使った木構造の設計図（ファイル先頭のdocstring内も含む）を渡されたときと、SPDの作成を頼まれたとき（作成はしない）に使う'
+    $reqName = '自然文の要件定義（目的・入力・出力・処理条件など）から、Python入門教育向けの仕様書とPythonコードを生成する。SPDではなく文章で要件が書かれているときに使う。要件からSPDを作る依頼にも使う（作成はしない）'
 }
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)

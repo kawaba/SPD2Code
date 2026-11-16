@@ -25,7 +25,7 @@ $claudeDir = Split-Path -Parent $buildDir
 $geminiDir = Join-Path (Split-Path -Parent $claudeDir) 'Gemini-skill'
 
 $skillName   = 'spd-to-c-generator'
-$description = 'SPD（構造化プログラム設計図）から、C言語入門者向けの読みやすいCコードを生成する。├─・◇・↻を使った木構造の設計図（Cファイル先頭のブロックコメント内も含む）を渡されたときに使う。SPDのない、C言語でのコードの提案や、要件定義からのC言語の仕様書作成にも使う'
+$description = 'SPD（構造化プログラム設計図）から、C言語入門者向けの読みやすいCコードを生成する。├─・◇・↻を使った木構造の設計図（Cファイル先頭のブロックコメント内も含む）を渡されたときに使う。SPDのない、C言語でのコードの提案や、要件定義からのC言語の仕様書作成、SPDの作成の依頼（作成はしない）にも使う'
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
