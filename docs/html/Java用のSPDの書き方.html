@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java用のSPDの書き方</title>
+<style>
+/* ---- フォント指定 ----
+   本文＝BIZ UDPゴシック（プロポーショナル）／見出し＝游ゴシック体（太字）／
+   SPD・Javaコード＝BIZ UDゴシック（等幅）
+   フォント名は環境ごとに登録名が異なるため、日本語名・英語名を併記する。 */
+body, table, th, td, blockquote {
+   font-family: "BIZ UDPゴシック", "BIZ UDPGothic", "Meiryo", "メイリオ",
+                "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+
+/* SPD・Javaコードは等幅のBIZ UDゴシック（Pなし＝等幅。半角＝全角の1/2幅で罫線が揃う） */
+pre, code {
+   font-family: "BIZ UDゴシック", "BIZ UDGothic",
+                "MS ゴシック", "MS Gothic", monospace;
+}
+
+/* 見出しは游ゴシック体の太字 */
+h1, h2, h3, h4, h5, h6 {
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+}
+
+/* ---- ページ全体（最大幅900px・中央揃え／本文11ptが基準） ---- */
+html { background-color: #eef0f3; }
+body {
+   width: auto;
+   max-width: 900px;          /* 広い画面では900px・中央揃え */
+   overflow-wrap: break-word; /* 長い英単語・URLで横にはみ出さないように */
+   box-sizing: border-box;
+   margin: 26px auto;
+   padding: 31px 66px 37px;   /* 左右の余白は66px */
+   background-color: #ffffff;
+   border: 1px solid #dde1e6;
+   border-radius: 6px;
+   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+   color: #222;
+   font-size: 11pt;
+   line-height: 1.75;
+}
+
+/* ---- 見出し ---- */
+h1 {
+   font-size: 15.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-bottom: 3px solid #1f3a5f;
+   padding-bottom: 6.5pt;
+   margin: 0 0 15.5pt;
+}
+h2 {
+   font-size: 13.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-left: 5px solid #4a78a8;
+   border-bottom: 1px solid #d8e0ea;
+   padding: 3pt 0 3pt 8pt;
+   margin: 24pt 0 9pt;
+}
+h3 {
+   font-size: 12pt;
+   line-height: 1.4;
+   color: #2b4c74;
+   padding-bottom: 2pt;
+   border-bottom: 1px dashed #c9d4e1;
+   margin: 17.5pt 0 6.5pt;
+}
+h4 { font-size: 11pt; color: #2b4c74; margin: 13pt 0 4.5pt; }
+h5, h6 { font-size: 10pt; color: #2b4c74; margin: 9pt 0 3pt; }
+
+/* ---- 本文・リスト ---- */
+p  { margin: 6.5pt 0; }
+ul, ol { margin: 6.5pt 0; padding-left: 20pt; }
+li { margin: 3pt 0; }
+li::marker { color: #4a78a8; }
+ol > li::marker { font-weight: bold; }
+strong { color: #1a1a1a; }
+
+/* ---- コードブロック（SPD・Java共通） ---- */
+pre {
+   font-size: 9.5pt;
+   line-height: 1.5;
+   white-space: pre;
+   overflow-x: auto;
+   background-color: #f7f9f7;
+   border: 1px solid #e2e8e2;
+   border-left: 4px solid #9fbf9f;   /* SPD・その他 */
+   border-radius: 4px;
+   padding: 8pt 11pt;
+   margin: 8pt 0 11pt;
+   tab-size: 4;
+   -moz-tab-size: 4;
+}
+pre code {
+   font-size: inherit;
+   background: none;
+   border: none;
+   padding: 0;
+   color: #222;
+   white-space: pre;
+}
+/* Javaコードは左罫の色を変えて区別する */
+pre.java { border-left-color: #7fa3cf; background-color: #f6f9fd; border-color: #dfe7f1; }
+
+/* ---- インラインコード ---- */
+code {
+   font-size: 92%;
+   color: #8a2d3b;
+   background-color: #f4f1f2;
+   border: 1px solid #e8e1e3;
+   border-radius: 3px;
+   padding: 0 4px;
+}
+
+/* ---- 表 ---- */
+table {
+   border-collapse: collapse;
+   font-size: 9.5pt;
+   line-height: 1.5;
+   margin: 8pt 0;
+}
+th, td {
+   border: 1px solid #d5dbe2;
+   padding: 3.5pt 8pt;
+   text-align: left;
+   vertical-align: top;
+}
+th { background-color: #e9eef4; color: #1f3a5f; }
+tr:nth-child(even) td { background-color: #fafbfc; }
+
+/* ---- 引用・区切り線 ---- */
+blockquote {
+   margin: 8pt 0;
+   padding: 4.5pt 11pt;
+   border-left: 4px solid #e0b75a;
+   border-radius: 0 4px 4px 0;
+   background-color: #fdf9ee;
+   color: #333;
+}
+blockquote p { margin: 3pt 0; }
+hr { border: none; border-top: 1px solid #d3d8de; margin: 22pt 0; }
+
+/* ---- チェックリスト ---- */
+ul.checklist { list-style: none; padding-left: 3.5pt; }
+ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
+
+/* ---- 目次リンクと「目次に戻る」見出しリンク ---- */
+a { color: #2f62a3; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h2[id], h3[id] { scroll-margin-top: 12px; }
+a.toc-back { color: inherit; }
+a.toc-back:hover { color: #4a78a8; text-decoration: none; }
+a.toc-back:hover::after {
+   content: "↑ 目次へ";
+   font-size: 8.5pt;
+   font-weight: normal;
+   color: #7a8ea8;
+   margin-left: 8pt;
+}
+
+/* ---- レスポンシブ対応 ---- */
+/* タブレット・狭いウィンドウ：カードの外側と左右の余白を詰める */
+@media screen and (max-width: 960px) {
+   body { margin: 16px auto; padding: 28px 40px 32px; }
+   html { padding: 0 16px; }
+}
+/* スマートフォン：カードの枠をなくし、画面いっぱいに表示する */
+@media screen and (max-width: 640px) {
+   html { background-color: #ffffff; padding: 0; }
+   body { margin: 0; padding: 20px 16px 28px; border: none; border-radius: 0; box-shadow: none; }
+   ul, ol { padding-left: 16pt; }
+   table { display: block; overflow-x: auto; }   /* 表は横スクロール */
+}
+
+/* ---- 印刷時は背景・影・外枠を外す ---- */
+@media print {
+   html { background: none; }
+   body { width: auto; margin: 0; padding: 0; border: none; box-shadow: none; }
+   pre { white-space: pre; overflow: visible; }
+   a.toc-back:hover::after { content: none; }
+}
+</style>
+</head>
+<body>
+<h1>Java用のSPDの書き方</h1>
+<p>Java のプログラムを SPD（Structured Programming Diagram）で設計するための入門書です。
+規約（<code>Java/GitHub-Copilot/copilot-instructions.md</code>）のうち、初めて書くときに知っておきたいことだけを選んで説明します。
+細かい規則や例外は省いていますので、迷ったときは規約を参照してください。</p>
+<p>各節では、<strong>SPD の例</strong>と、そこから<strong>生成される Java のコード</strong>を対にして示します。</p>
+<h2 id="目次">目次</h2>
+<ul>
+<li><a href="#第1章-spdの基本">第1章 SPDの基本</a>
+<ul>
+<li><a href="#11-spdとは">1.1 SPDとは</a></li>
+<li><a href="#12-木の書き方">1.2 木の書き方</a></li>
+<li><a href="#13-コメント">1.3 コメント</a></li>
+<li><a href="#14-spdはコードの先頭に残る">1.4 SPDはコードの先頭に残る</a></li>
+<li><a href="#15-書きかけの部分はコードにならない">1.5 書きかけの部分はコードにならない</a></li>
+</ul>
+</li>
+<li><a href="#第2章-順に実行する処理">第2章 順に実行する処理</a>
+<ul>
+<li><a href="#21-変数と代入">2.1 変数と代入</a></li>
+<li><a href="#22-キーボードからの入力">2.2 キーボードからの入力</a></li>
+<li><a href="#23-表示">2.3 表示</a></li>
+<li><a href="#24-四捨五入">2.4 四捨五入</a></li>
+</ul>
+</li>
+<li><a href="#第3章-分岐">第3章 分岐</a>
+<ul>
+<li><a href="#31-if-と-else">3.1 if と else</a></li>
+<li><a href="#32-独立した-if-と-else-if-の見分け方">3.2 独立した if と else if の見分け方</a></li>
+<li><a href="#33-switch">3.3 switch</a></li>
+<li><a href="#34-条件式">3.4 条件式</a></li>
+</ul>
+</li>
+<li><a href="#第4章-繰り返し">第4章 繰り返し</a>
+<ul>
+<li><a href="#41-リストの要素を順に処理する">4.1 リストの要素を順に処理する</a></li>
+<li><a href="#42-回数を数えて繰り返す">4.2 回数を数えて繰り返す</a></li>
+<li><a href="#43-条件が成り立つ間繰り返す">4.3 条件が成り立つ間繰り返す</a></li>
+</ul>
+</li>
+<li><a href="#第5章-例外処理">第5章 例外処理</a>
+<ul>
+<li><a href="#51-try-と-catch">5.1 try と catch</a></li>
+<li><a href="#52-ファイルを開くtry-with-resources">5.2 ファイルを開く（try-with-resources）</a></li>
+<li><a href="#53-例外を投げる">5.3 例外を投げる</a></li>
+</ul>
+</li>
+<li><a href="#第6章-メソッド">第6章 メソッド</a>
+<ul>
+<li><a href="#61-メソッドの形">6.1 メソッドの形</a></li>
+<li><a href="#62-引数と戻り値の書き方">6.2 引数と戻り値の書き方</a></li>
+</ul>
+</li>
+<li><a href="#第7章-クラス">第7章 クラス</a>
+<ul>
+<li><a href="#71-クラスの形">7.1 クラスの形</a></li>
+<li><a href="#72-フィールドとアクセス修飾子">7.2 フィールドとアクセス修飾子</a></li>
+<li><a href="#73-自動生成">7.3 自動生成</a></li>
+<li><a href="#74-コンストラクタとメソッド">7.4 コンストラクタとメソッド</a></li>
+<li><a href="#75-クラス変数とクラスメソッド">7.5 クラス変数とクラスメソッド</a></li>
+<li><a href="#76-継承と実装">7.6 継承と実装</a></li>
+</ul>
+</li>
+<li><a href="#第8章-インタフェース抽象クラスレコード">第8章 インタフェース・抽象クラス・レコード</a>
+<ul>
+<li><a href="#81-インタフェース">8.1 インタフェース</a></li>
+<li><a href="#82-抽象クラス">8.2 抽象クラス</a></li>
+<li><a href="#83-レコード">8.3 レコード</a></li>
+</ul>
+</li>
+<li><a href="#第9章-ラムダ式とストリーム">第9章 ラムダ式とストリーム</a>
+<ul>
+<li><a href="#91-ラムダ式">9.1 ラムダ式</a></li>
+<li><a href="#92-ストリーム処理">9.2 ストリーム処理</a></li>
+</ul>
+</li>
+<li><a href="#第10章-まとめ">第10章 まとめ</a>
+<ul>
+<li><a href="#101-完全な例">10.1 完全な例</a></li>
+<li><a href="#102-よくある間違い">10.2 よくある間違い</a></li>
+<li><a href="#103-記号の早見表">10.3 記号の早見表</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="第1章-spdの基本"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第1章 SPDの基本</a></h2>
+<h3 id="11-spdとは"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.1 SPDとは</a></h3>
+<p><strong>SPD</strong> は、プログラムの処理の流れを、罫線で描いた<strong>木の形</strong>で表す設計図です。
+<strong>順次・分岐・繰り返し・例外処理</strong>を記号で表し、それぞれの処理は日本語で書きます。</p>
+<pre><code>リストの要素を集計する
+  │
+  ├─整数のリストを作成して、変数listに代入する
+  │    └─要素は(10, 20, 30)
+  ├─合計を入れる変数int totalを宣言してゼロを代入する
+  ├─↻─for:変数nにlistから毎回１つずつ要素を取り出す
+  │       └─nをtotalに加算する
+  └─合計を&quot;合計＝〇〇&quot;の書式でコンソールに表示する
+</code></pre>
+<pre class="java"><code class="language-java">public class ListAggregation {
+    public static void main(String[] args) {
+        var list = List.of(10, 20, 30);
+
+        int total = 0;
+        for (var n : list) {
+            total += n;
+        }
+
+        System.out.printf(&quot;合計＝%d%n&quot;, total);
+    }
+}
+</code></pre>
+<ul>
+<li><strong>1行目はタイトル</strong>です。プログラム名や処理の概要を書きます。</li>
+<li>タイトルだけで型（クラスなど）の宣言が無い SPD は、<strong><code>main</code> メソッドの中身</strong>になります。</li>
+<li>1つの SPD は、原則として1つのプログラム・1つのメソッド・1つのクラスに対応します。</li>
+</ul>
+<h3 id="12-木の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.2 木の書き方</a></h3>
+<table>
+<thead>
+<tr>
+<th>記号</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>│</code></strong></td>
+<td>処理の流れ（縦の線）</td>
+</tr>
+<tr>
+<td><strong><code>├─</code></strong></td>
+<td>項目。同じ高さにまだ続きがある</td>
+</tr>
+<tr>
+<td><strong><code>└─</code></strong></td>
+<td>最後の項目。または、上の項目の<strong>詳しい説明</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>字下げが深い項目は、すぐ上の親の項目に属します。</strong></li>
+<li><strong><code>└─</code> の子は、親の処理を詳しく説明したもの</strong>として読まれます。上の例の <code>要素は(10, 20, 30)</code> は、「整数のリストを作成して」の中身です。</li>
+<li>制御構造の記号（<code>◇</code>・<code>↻</code>・<code>〇</code> など）は、第3章から説明します。</li>
+<li>罫線の前後の空白の揺れ（全角・半角の混在など）は気にしなくて構いません。意味を持つのは記号と階層です。</li>
+</ul>
+<h3 id="13-コメント"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.3 コメント</a></h3>
+<p><strong><code>※</code> からその行末まではコメント</strong>です。処理としては読まれず、コードの同じ位置に <code>//</code> のコメントとして写されます。</p>
+<pre><code>├─変数int priceにキーボードから価格を入力する ※税抜き価格
+│  ※ここからは税込み価格の計算と表示
+└─priceに1.1を掛けて整数に丸め、&quot;税込=〇〇&quot;の形式で表示する
+</code></pre>
+<pre class="java"><code class="language-java">int price = Input.getInt(); // 税抜き価格
+// ここからは税込み価格の計算と表示
+System.out.printf(&quot;税込=%d%n&quot;, Math.round(price * 1.1));
+</code></pre>
+<ul>
+<li>引用符（<code>&quot;…&quot;</code>）や鉤括弧（<code>「…」</code>）の中の <code>※</code> は、コメントになりません。</li>
+</ul>
+<h3 id="14-spdはコードの先頭に残る"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.4 SPDはコードの先頭に残る</a></h3>
+<p>生成されるコードの先頭には、<strong>SPD 全体がブロックコメント（<code>/* … */</code>）としてそのまま残ります</strong>。</p>
+<pre class="java"><code class="language-java">import java.util.List;
+
+/*
+リストの要素を集計する
+  │
+  ├─整数のリストを作成して、変数listに代入する
+  …
+*/
+public class ListAggregation {
+    …
+}
+</code></pre>
+<ul>
+<li>SPD は分けられず、1か所にまとめて置かれます。コードからコピーして、SPD エディタに戻せます。</li>
+<li><code>import</code> 文は自動で補われるので、SPD に書く必要はありません。</li>
+</ul>
+<h3 id="15-書きかけの部分はコードにならない"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.5 書きかけの部分はコードにならない</a></h3>
+<p><strong><code>★</code> を含む行</strong>や、中身の無い <code>処理</code> があるメソッドは、<strong>書きかけ</strong>とみなされ、コードが作られません。
+推測で補われることはなく、代わりに次のようなコメント1行が置かれます。</p>
+<pre><code>└─メソッド：calcScore
+     ├─目的：点数を計算する
+     ├─引数：int[] hand
+     ├─戻り値：int、点数
+     └─処理
+          └─★ここにSPDを書く★
+</code></pre>
+<pre class="java"><code class="language-java">// calcScoreメソッド：SPDが未記入のため生成していません
+</code></pre>
+<ul>
+<li>書きかけかどうかは、メソッドやクラスの単位ごとに決まります。ほかの部分は、ふつうに生成されます。</li>
+<li><code>引数：なし</code>・<code>戻り値：なし</code>・<code>フィールド：なし</code> のように <strong><code>なし</code> と書いた項目は、書き終えたもの</strong>として扱われます。</li>
+</ul>
+<hr />
+<h2 id="第2章-順に実行する処理"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第2章 順に実行する処理</a></h2>
+<h3 id="21-変数と代入"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.1 変数と代入</a></h3>
+<p>変数は <strong><code>変数&lt;型&gt; &lt;名前&gt;</code></strong> の形で書くと、その型で宣言されます。型を書かなければ、<code>var</code> になることがあります。</p>
+<pre><code>├─合計を入れる変数int totalを宣言してゼロを代入する
+├─整数のリストを作成して、変数listに代入する
+│    └─要素は(10, 20, 30)
+└─km = mile * 1.609
+</code></pre>
+<pre class="java"><code class="language-java">int total = 0;
+var list = List.of(10, 20, 30);
+double km = mile * 1.609;
+</code></pre>
+<ul>
+<li><strong>代入は <code>←</code> または <code>=</code> で書いても構いません</strong>（<code>km = mile * 1.609</code>）。</li>
+<li>型を明示したいときは、<code>変数int total</code> のように変数名の前に型を書きます。</li>
+</ul>
+<h3 id="22-キーボードからの入力"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.2 キーボードからの入力</a></h3>
+<p>キーボードからの入力は、授業用の <strong><code>Input</code> クラス</strong>で行います（<code>Scanner</code> は使いません）。</p>
+<pre><code>├─変数int ageにキーボードから年齢を入力する
+├─身長（cm）を変数double heightに入力する（入力プロンプトは &quot;身長&gt;&quot;）
+└─変数String answerに、&quot;Y:続ける, N:終了する&quot;から選択させた値を代入する
+</code></pre>
+<pre class="java"><code class="language-java">int age = Input.getInt();
+double height = Input.getDouble(&quot;身長&gt;&quot;);
+String answer = Input.getSelect(&quot;Y:続ける, N:終了する&quot;);
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>入力するもの</th>
+<th>使われるメソッド</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整数</td>
+<td><strong><code>Input.getInt()</code></strong></td>
+</tr>
+<tr>
+<td>実数</td>
+<td><strong><code>Input.getDouble()</code></strong></td>
+</tr>
+<tr>
+<td>文字列</td>
+<td><strong><code>Input.getString()</code></strong></td>
+</tr>
+<tr>
+<td>選択肢から選ぶ</td>
+<td><strong><code>Input.getSelect(&quot;Y:はい, N:いいえ&quot;)</code></strong>（選んだ記号を大文字で返す）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>入力プロンプト</strong>（入力の前に表示する文字）を書くと、メソッドの引数になります。</li>
+<li>「選択肢」「メニュー」「選ぶ」と書くと、<code>getSelect</code> が使われます。</li>
+</ul>
+<h3 id="23-表示"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.3 表示</a></h3>
+<pre><code>├─memberをコンソールに表示する
+└─合計を&quot;合計＝〇〇&quot;の書式でコンソールに表示する
+</code></pre>
+<pre class="java"><code class="language-java">System.out.println(member);
+System.out.printf(&quot;合計＝%d%n&quot;, total);
+</code></pre>
+<ul>
+<li><strong><code>&quot;〇〇=△△&quot;</code> のように書式を示すと、<code>printf</code> で表示</strong>されます。<code>〇〇</code> の部分に値が入ります。</li>
+</ul>
+<h3 id="24-四捨五入"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.4 四捨五入</a></h3>
+<table>
+<thead>
+<tr>
+<th>SPD の書き方</th>
+<th>生成されるコード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>小数点以下2桁までに四捨五入する</code></strong></td>
+<td><code>Tools.round(x, 2)</code></td>
+</tr>
+<tr>
+<td><strong><code>整数に丸める</code></strong>（小数点以下0桁）</td>
+<td><code>Math.round(x)</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code>└─kmを小数点以下2桁までに四捨五入して返す
+</code></pre>
+<pre class="java"><code class="language-java">return Tools.round(km, 2);
+</code></pre>
+<ul>
+<li>桁数を指定した四捨五入は、授業用の <strong><code>Tools.round</code></strong> で行います。</li>
+</ul>
+<hr />
+<h2 id="第3章-分岐"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第3章 分岐</a></h2>
+<h3 id="31-if-と-else"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.1 if と else</a></h3>
+<p>分岐は <strong><code>◇─条件</code></strong> と書き、その下に条件が成り立つときの処理を書きます。成り立たないときの処理は <strong><code>└─else</code></strong> の下に書きます。</p>
+<pre><code>├─◇─scoreは60以上である
+│  │    └─&quot;合格&quot;と表示する
+│  └─else
+│        └─&quot;不合格&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">if (score &gt;= 60) {
+    System.out.println(&quot;合格&quot;);
+} else {
+    System.out.println(&quot;不合格&quot;);
+}
+</code></pre>
+<p><code>else</code> が要らなければ、省きます。</p>
+<pre><code>├─◇─scoreは100である
+│        └─&quot;満点&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">if (score == 100) {
+    System.out.println(&quot;満点&quot;);
+}
+</code></pre>
+<h3 id="32-独立した-if-と-else-if-の見分け方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.2 独立した if と else if の見分け方</a></h3>
+<p><strong><code>◇</code> の左にある最初の文字</strong>で、新しい <code>if</code> か、上の <code>◇</code> に続く <code>else if</code> かが決まります。ここはとても大事です。</p>
+<table>
+<thead>
+<tr>
+<th><code>◇</code> の左の最初の文字（空白は飛ばす）</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>│</code></strong>、または行頭</td>
+<td>上の <code>◇</code> の続き → <strong><code>else if</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>─</code></strong>（<code>├─◇</code>・<code>└─◇</code>）</td>
+<td>新しい分岐 → <strong>独立した <code>if</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>else if にするとき</strong>（2つ目の <code>◇</code> の左は <code>│</code>）</p>
+<pre><code>├─◇─scoreは80以上である
+│  │    └─&quot;A&quot;と表示する
+│  ◇─scoreは60以上である
+│  │    └─&quot;B&quot;と表示する
+│  └─else
+│        └─&quot;C&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">if (score &gt;= 80) {
+    System.out.println(&quot;A&quot;);
+} else if (score &gt;= 60) {
+    System.out.println(&quot;B&quot;);
+} else {
+    System.out.println(&quot;C&quot;);
+}
+</code></pre>
+<p><strong>独立した if を並べるとき</strong>（どちらの <code>◇</code> も左は <code>─</code>）</p>
+<pre><code>├─◇─scoreは80以上である
+│        └─&quot;よくできました&quot;と表示する
+├─◇─欠席は3回以上である
+│        └─&quot;補習があります&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">if (score &gt;= 80) {
+    System.out.println(&quot;よくできました&quot;);
+}
+if (absence &gt;= 3) {
+    System.out.println(&quot;補習があります&quot;);
+}
+</code></pre>
+<ul>
+<li><strong>字下げの位置が同じでも、意味は違います。</strong> 見るのは <code>◇</code> の左の文字だけです。</li>
+</ul>
+<h3 id="33-switch"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.3 switch</a></h3>
+<p>1つの値で場合分けするときは、<strong><code>◇─switch文:</code></strong> と書き、子に <code>case</code> を並べます。</p>
+<pre><code>└─◇─switch文: rankの値で判定
+    ├─case &quot;A&quot;なら&quot;優&quot;と表示する
+    ├─case &quot;B&quot;か&quot;C&quot;なら&quot;良&quot;と表示する
+    └─default それ以外なら&quot;可&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">switch (rank) {
+    case &quot;A&quot; -&gt; System.out.println(&quot;優&quot;);
+    case &quot;B&quot;, &quot;C&quot; -&gt; System.out.println(&quot;良&quot;);
+    default -&gt; System.out.println(&quot;可&quot;);
+}
+</code></pre>
+<p>値を選んで変数に入れるときは、<strong><code>switch式</code></strong> にします。</p>
+<pre><code>└─変数labelにswitch式の戻り値を代入する
+       └─label=◇─switch式: rankの値で判定
+             ├─case &quot;A&quot;なら &quot;優&quot;を返す
+             └─default それ以外なら &quot;可&quot;を返す
+</code></pre>
+<pre class="java"><code class="language-java">var label = switch (rank) {
+    case &quot;A&quot; -&gt; &quot;優&quot;;
+    default -&gt; &quot;可&quot;;
+};
+</code></pre>
+<ul>
+<li>1つの <code>case</code> で複数の処理をするときは、<code>case</code> の右に <strong><code>┬</code></strong> を置き、その下に処理を並べます。</li>
+</ul>
+<h3 id="34-条件式"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.4 条件式</a></h3>
+<p><code>◇</code> を使わず、1行で「〜なら A を、それ以外なら B を代入する」と書くと、条件式（<code>? :</code>）になります。</p>
+<pre><code>├─numberが6なら&quot;当たり&quot;を、それ以外なら&quot;はずれ&quot;を変数messageに代入する
+</code></pre>
+<pre class="java"><code class="language-java">String message = number == 6 ? &quot;当たり&quot; : &quot;はずれ&quot;;
+</code></pre>
+<hr />
+<h2 id="第4章-繰り返し"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第4章 繰り返し</a></h2>
+<p>繰り返しは <strong><code>↻─</code></strong> で表します。繰り返す処理は、その子に書きます。</p>
+<h3 id="41-リストの要素を順に処理する"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.1 リストの要素を順に処理する</a></h3>
+<pre><code>└─↻─for: 変数nにlistから毎回１つずつ要素を取り出す
+   └─nを表示する
+</code></pre>
+<pre class="java"><code class="language-java">for (var n : list) {
+    System.out.println(n);
+}
+</code></pre>
+<ul>
+<li>要素を1つずつ取り出すときは、<strong>拡張 for 文</strong>になります。</li>
+</ul>
+<h3 id="42-回数を数えて繰り返す"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.2 回数を数えて繰り返す</a></h3>
+<pre><code>└─↻─for: iを0から10未満まで1ずつ増やす
+   └─iを表示する
+</code></pre>
+<pre class="java"><code class="language-java">for (int i = 0; i &lt; 10; i++) {
+    System.out.println(i);
+}
+</code></pre>
+<ul>
+<li>番号（インデックス）が必要なときだけ、この形を使います。</li>
+</ul>
+<h3 id="43-条件が成り立つ間繰り返す"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.3 条件が成り立つ間繰り返す</a></h3>
+<pre><code>└─↻─while: numberにキーボードから整数を入力し、それが0でない間繰り返す
+   └─numberをtotalに加算する
+</code></pre>
+<pre class="java"><code class="language-java">while ((number = Input.getInt()) != 0) {
+    total += number;
+}
+</code></pre>
+<p>途中で抜けるときは、<strong><code>while: true</code></strong> と <code>break</code> を組み合わせます。</p>
+<pre><code>├─↻─while: true
+│     ├─変数int nにキーボードから整数を入力する
+│     ├─◇─nは0である
+│     │  └─breakでループを脱出する
+│     └─nをtotalに加算する
+</code></pre>
+<pre class="java"><code class="language-java">while (true) {
+    int n = Input.getInt();
+    if (n == 0) {
+        break;
+    }
+    total += n;
+}
+</code></pre>
+<hr />
+<h2 id="第5章-例外処理"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第5章 例外処理</a></h2>
+<p>例外処理は <strong><code>〇─try</code></strong> と <strong><code>〇─catch:</code></strong> で表します。</p>
+<h3 id="51-try-と-catch"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.1 try と catch</a></h3>
+<pre><code>├─〇─try
+│  │  └─textを整数に変換して変数int nに代入する
+│  〇─catch:NumberFormatException e
+│       └─&quot;数字を入力してください&quot;と表示する
+</code></pre>
+<pre class="java"><code class="language-java">try {
+    int n = Integer.parseInt(text);
+} catch (NumberFormatException e) {
+    System.out.println(&quot;数字を入力してください&quot;);
+}
+</code></pre>
+<ul>
+<li><code>catch</code> の中では、少なくともメッセージを表示します。<strong>例外を何もせずに捨てる（握りつぶす）コードは作られません。</strong></li>
+</ul>
+<h3 id="52-ファイルを開くtry-with-resources"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.2 ファイルを開く（try-with-resources）</a></h3>
+<p><code>try:</code> の右に、ファイルを開く式を書くと、自動で閉じる <strong>try-with-resources</strong> になります。</p>
+<pre><code>├─〇─try:var in = Files.newBufferedReader(path) によりファイルを開く
+│  │  └─1行ずつ読んで表示する
+│  〇─catch:IOException e
+│       └─標準エラー出力にスタックトレースを表示する
+</code></pre>
+<pre class="java"><code class="language-java">try (var in = Files.newBufferedReader(path)) {
+    String line;
+    while ((line = in.readLine()) != null) {
+        System.out.println(line);
+    }
+} catch (IOException e) {
+    e.printStackTrace();
+}
+</code></pre>
+<h3 id="53-例外を投げる"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.3 例外を投げる</a></h3>
+<p><strong><code>〜Exceptionを投げる</code></strong> と書き、子にメッセージを書きます。</p>
+<pre><code>├─◇─count は負である
+│        └─IllegalArgumentExceptionを投げる
+│              └─エラーメッセージは &quot;不正な値&quot; + count とする
+</code></pre>
+<pre class="java"><code class="language-java">if (count &lt; 0) {
+    throw new IllegalArgumentException(&quot;不正な値&quot; + count);
+}
+</code></pre>
+<ul>
+<li>検査例外（<code>IOException</code> など）を投げるメソッドには、<code>throws</code> が自動で補われます。
+メソッドの見出しに <code>メソッド：doSomething throws MyException</code> と書いておくこともできます。</li>
+</ul>
+<hr />
+<h2 id="第6章-メソッド"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第6章 メソッド</a></h2>
+<h3 id="61-メソッドの形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.1 メソッドの形</a></h3>
+<p>メソッドは、見出しを <strong><code>クラスメソッド：&lt;名前&gt;</code></strong>（static）または <strong><code>メソッド：&lt;名前&gt;</code></strong>（インスタンスメソッド）とし、
+子に <strong><code>目的</code>・<code>引数</code>・<code>戻り値</code>・<code>処理</code></strong> を書きます。</p>
+<pre><code>クラスメソッド: mile2km
+│
+├─目的:マイルをキロメートルに変換する
+├─引数
+│    └─マイルの値：double mile
+├─戻り値：double、キロメートルの値
+└─処理
+      ├─km = mile * 1.609
+      └─kmを小数点以下2桁までに四捨五入して返す
+</code></pre>
+<pre class="java"><code class="language-java">/**
+ * マイルをキロメートルに変換する
+ * @param mile マイルの値
+ * @return キロメートルの値
+ */
+public static double mile2km(double mile) {
+    double km = mile * 1.609;
+    return Tools.round(km, 2);
+}
+</code></pre>
+<ul>
+<li><strong><code>目的</code> が Javadoc になります</strong>。引数と戻り値の説明は、<code>@param</code>・<code>@return</code> になります。<code>目的</code> を書かなければ、Javadoc は付きません。</li>
+<li><strong><code>クラスメソッド: main</code></strong> は <code>main</code> メソッドです。目的・引数・戻り値は省略できます。</li>
+<li>見出しのコロンは、全角の <code>：</code> でも半角の <code>:</code> でも構いません。</li>
+</ul>
+<h3 id="62-引数と戻り値の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.2 引数と戻り値の書き方</a></h3>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>書き方</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>引数</strong></td>
+<td><code>&lt;説明&gt;：&lt;型&gt; &lt;名前&gt;</code> か <code>&lt;型&gt; &lt;名前&gt; : &lt;説明&gt;</code></td>
+<td><code>マイルの値：double mile</code></td>
+</tr>
+<tr>
+<td>引数が1つ</td>
+<td><code>引数</code> に続けて1行で書ける</td>
+<td><code>引数：回数：int count</code></td>
+</tr>
+<tr>
+<td>引数が無い</td>
+<td><code>引数：なし</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>戻り値</strong></td>
+<td><strong><code>&lt;型&gt;、&lt;説明&gt;</code></strong>（型が先）</td>
+<td><code>戻り値：double、キロメートルの値</code></td>
+</tr>
+<tr>
+<td>戻り値が無い</td>
+<td><code>戻り値：なし</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>戻り値は型を先に書きます。</strong> <code>キロメートルの値、double</code> のように逆にすると読めません。</li>
+<li>処理の中で値を返すときは、<strong><code>〜を返す</code></strong> と書きます。</li>
+</ul>
+<hr />
+<h2 id="第7章-クラス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第7章 クラス</a></h2>
+<h3 id="71-クラスの形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.1 クラスの形</a></h3>
+<p>クラスは、タイトルを <strong><code>クラス：&lt;名前&gt;</code></strong> とし、メンバーを木の枝として並べます。</p>
+<pre><code>クラス：GeneralMember
+│
+├─目的：一般会員を表すクラス
+│
+├─フィールド
+│  ├─番号：int uid
+│  └─名前：String name
+│
+├─自動生成
+│  ├─コンストラクタ：全引数
+│  ├─ゲッター
+│  └─toString
+│
+└─メソッド：greet
+   ├─目的：挨拶を表示する
+   ├─引数：なし
+   ├─戻り値：なし
+   └─処理
+         └─&quot;こんにちは、〇〇さん&quot;の形式で名前を表示する
+</code></pre>
+<pre class="java"><code class="language-java">// 一般会員を表すクラス
+public class GeneralMember {
+    private int uid;     // 番号
+    private String name; // 名前
+
+    // 自動生成：コンストラクタ：全引数
+    public GeneralMember(int uid, String name) {
+        this.uid = uid;
+        this.name = name;
+    }
+
+    // 自動生成：ゲッター
+    public int getUid() {
+        return uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    // 自動生成：toString
+    @Override
+    public String toString() {
+        return &quot;GeneralMember[uid=&quot; + uid + &quot;, name=&quot; + name + &quot;]&quot;;
+    }
+
+    /** 挨拶を表示する */
+    public void greet() {
+        System.out.printf(&quot;こんにちは、%sさん%n&quot;, name);
+    }
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>枝</th>
+<th>書く内容</th>
+<th>回数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>目的</code></strong></td>
+<td>クラスの説明（クラスの直前のコメントになる）</td>
+<td>1回</td>
+</tr>
+<tr>
+<td><strong><code>フィールド</code></strong></td>
+<td>インスタンスの変数</td>
+<td>1回</td>
+</tr>
+<tr>
+<td><strong><code>自動生成</code></strong></td>
+<td>自動で作るメンバー（7.3）</td>
+<td>1回</td>
+</tr>
+<tr>
+<td><strong><code>コンストラクタ</code></strong></td>
+<td>自分で書くコンストラクタ（7.4）</td>
+<td>何回でも</td>
+</tr>
+<tr>
+<td><strong><code>メソッド：</code></strong></td>
+<td>インスタンスメソッド</td>
+<td>何回でも</td>
+</tr>
+<tr>
+<td><strong><code>クラス変数</code></strong>・<strong><code>クラスメソッド：</code></strong></td>
+<td>static のメンバー（7.5）</td>
+<td>何回でも</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>枝の順番は自由</strong>です。どの枝も省略できます（クラス名だけは必須です）。</li>
+</ul>
+<h3 id="72-フィールドとアクセス修飾子"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.2 フィールドとアクセス修飾子</a></h3>
+<p>フィールドは <strong><code>&lt;説明&gt;：&lt;修飾子&gt; &lt;型&gt; &lt;名前&gt;</code></strong> と書きます。説明は行末のコメントになります。</p>
+<table>
+<thead>
+<tr>
+<th>記号</th>
+<th>アクセス修飾子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>+</code></strong></td>
+<td><code>public</code></td>
+</tr>
+<tr>
+<td><strong><code>#</code></strong></td>
+<td><code>protected</code></td>
+</tr>
+<tr>
+<td><strong><code>~</code></strong></td>
+<td>修飾子なし（パッケージ内）</td>
+</tr>
+<tr>
+<td><strong><code>-</code></strong></td>
+<td><code>private</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>省略したときの既定値</strong></p>
+<table>
+<thead>
+<tr>
+<th>書くもの</th>
+<th>既定値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>フィールド</td>
+<td><strong><code>private</code></strong></td>
+</tr>
+<tr>
+<td>クラス・メソッド・クラス変数・コンストラクタ</td>
+<td><strong><code>public</code></strong></td>
+</tr>
+</tbody>
+</table>
+<pre><code>├─フィールド
+│  ├─番号：int uid
+│  └─種別：# String kind
+</code></pre>
+<pre class="java"><code class="language-java">private int uid;        // 番号
+protected String kind;  // 種別
+</code></pre>
+<h3 id="73-自動生成"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.3 自動生成</a></h3>
+<p>決まった形のメンバーは、<strong><code>自動生成</code></strong> に項目名を書くだけで作られます。<strong>書いたものだけ</strong>が作られます。</p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>作られるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>コンストラクタ：全引数</code></strong></td>
+<td>すべてのフィールドを引数に取るコンストラクタ</td>
+</tr>
+<tr>
+<td><strong><code>コンストラクタ：引数なし</code></strong></td>
+<td>引数も中身も無いコンストラクタ</td>
+</tr>
+<tr>
+<td><strong><code>ゲッター</code></strong>・<strong><code>セッター</code></strong></td>
+<td>フィールドの get／set メソッド</td>
+</tr>
+<tr>
+<td><strong><code>toString</code></strong></td>
+<td><code>toString()</code></td>
+</tr>
+<tr>
+<td><strong><code>等値判定</code></strong></td>
+<td><code>equals()</code> と <code>hashCode()</code></td>
+</tr>
+<tr>
+<td><code>移譲メソッド</code></td>
+<td>自作クラス型のフィールドのメソッドを呼ぶだけのメソッド</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>← フィールド名</code></strong> で、対象のフィールドを絞れます（<code>等値判定 ← uid</code>・<code>ゲッター ← uid, name</code>）。書かなければ、すべてのフィールドが対象です。</li>
+<li>先頭に修飾子を書けます（<code># コンストラクタ：全引数</code> → <code>protected</code> のコンストラクタ）。</li>
+<li>自動生成と同じ形のメソッドを <code>メソッド：</code> で書くと、そちらが優先されます。</li>
+</ul>
+<h3 id="74-コンストラクタとメソッド"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.4 コンストラクタとメソッド</a></h3>
+<p>自動生成で足りないコンストラクタは、<strong><code>コンストラクタ</code></strong> の枝に <code>引数</code> と <code>処理</code> を書きます。</p>
+<pre><code>├─コンストラクタ
+│    ├─引数
+│    │    └─CSV 文字列：String csv
+│    └─処理
+│          ├─csvをカンマで区切って配列itemsに代入する
+│          ├─items[0]の前後の空白を除き、intに変換してuidに代入する
+│          └─items[1]の前後の空白を除いてnameに代入する
+</code></pre>
+<pre class="java"><code class="language-java">public GeneralMember(String csv) {
+    var items = csv.split(&quot;,&quot;);
+    this.uid = Integer.parseInt(items[0].trim());
+    this.name = items[1].trim();
+}
+</code></pre>
+<ul>
+<li>インスタンスメソッドは <strong><code>メソッド：&lt;名前&gt;</code></strong>、private のメソッドは <strong><code>プライベートメソッド：&lt;名前&gt;</code></strong> と書きます。書き方は第6章と同じです。</li>
+</ul>
+<h3 id="75-クラス変数とクラスメソッド"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.5 クラス変数とクラスメソッド</a></h3>
+<p>static な変数は <strong><code>クラス変数</code></strong>、static なメソッドは <strong><code>クラスメソッド：</code></strong> に書きます。</p>
+<pre><code>├─クラス変数：
+│  └─会費額：# final int FEE = 5000
+│
+└─クラスメソッド：main
+     └─処理
+          ├─（100, &quot;田中宏&quot; ）でインスタンスを作って変数memberに代入する
+          └─memberをコンソールに表示する
+</code></pre>
+<pre class="java"><code class="language-java">protected static final int FEE = 5000; // 会費額
+
+public static void main(String[] args) {
+    var member = new GeneralMember(100, &quot;田中宏&quot;);
+    System.out.println(member);
+}
+</code></pre>
+<ul>
+<li><code>final</code> は、書いたときだけ付きます。クラス変数は、クラスの先頭に置かれます。</li>
+</ul>
+<h3 id="76-継承と実装"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.6 継承と実装</a></h3>
+<p>タイトルの後ろに、<strong><code>─⊳</code></strong>（継承）と <strong><code>---⊳</code></strong>（実装）で書きます。</p>
+<pre><code>クラス: StudentMember ─⊳ Member ---⊳ Versionable, Comparable&lt;StudentMember&gt;
+</code></pre>
+<pre class="java"><code class="language-java">public class StudentMember extends Member implements Versionable, Comparable&lt;StudentMember&gt; {
+</code></pre>
+<ul>
+<li>継承できるクラスは1つだけです。実装するインタフェースは、<code>、</code> か <code>,</code> で区切って並べられます。</li>
+<li>親クラスのメソッドを上書きするメソッドには、<strong><code>@Override</code> が自動で付きます</strong>。</li>
+</ul>
+<hr />
+<h2 id="第8章-インタフェース抽象クラスレコード"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第8章 インタフェース・抽象クラス・レコード</a></h2>
+<h3 id="81-インタフェース"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.1 インタフェース</a></h3>
+<p>タイトルを <strong><code>インタフェース：&lt;名前&gt;</code></strong> とし、中身の無いメソッドを <strong><code>抽象メソッド：</code></strong> で書きます。<code>処理</code> は書きません。</p>
+<pre><code>インタフェース：Versionable
+│
+├─目的：バージョン番号を返す
+│
+└─抽象メソッド：version
+       ├─目的：バージョン番号を返す
+       ├─引数：なし
+       └─戻り値：String、バージョン番号
+</code></pre>
+<pre class="java"><code class="language-java">/** バージョン番号を返す */
+public interface Versionable {
+    /**
+     * バージョン番号を返す
+     * @return バージョン番号
+     */
+    String version();
+}
+</code></pre>
+<ul>
+<li>インタフェースには、<code>クラス変数</code>・<strong><code>デフォルトメソッド：</code></strong>（<code>default</code>）・<code>クラスメソッド：</code>・<code>プライベートメソッド：</code> も書けます。</li>
+<li>インタフェースの継承は <strong><code>─⊳</code></strong> で書きます（<code>インタフェース：A ─⊳ B</code>）。</li>
+</ul>
+<h3 id="82-抽象クラス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.2 抽象クラス</a></h3>
+<p>タイトルを <strong><code>抽象クラス：&lt;名前&gt;</code></strong> とします。書き方はクラスと同じで、<code>抽象メソッド：</code> も書けます。</p>
+<pre><code>抽象クラス：Member
+│
+├─フィールド
+│    ├─番号：int uid
+│    └─名前：String name
+│
+├─自動生成
+│    └─# コンストラクタ：全引数
+│
+└─抽象メソッド：fee
+      ├─目的：会費額を返す
+      ├─引数：なし
+      └─戻り値：int 、会費額
+</code></pre>
+<pre class="java"><code class="language-java">public abstract class Member {
+    private int uid;     // 番号
+    private String name; // 名前
+
+    // 自動生成：コンストラクタ：全引数
+    protected Member(int uid, String name) {
+        this.uid = uid;
+        this.name = name;
+    }
+
+    /**
+     * 会費額を返す
+     * @return 会費額
+     */
+    public abstract int fee();
+}
+</code></pre>
+<ul>
+<li>抽象クラスのコンストラクタは、サブクラスからだけ呼ばれるので、<code>#</code>（protected）を付けるのが定石です。</li>
+</ul>
+<h3 id="83-レコード"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.3 レコード</a></h3>
+<p>値をまとめるだけの型は、タイトルを <strong><code>レコード：&lt;名前&gt;</code></strong> とし、<code>フィールド</code> だけを書きます。</p>
+<pre><code>レコード:Product
+│
+├─目的:製品レコード
+└─フィールド
+      ├─型番: String number
+      ├─品名: String name
+      └─価格: int price
+</code></pre>
+<pre class="java"><code class="language-java">/** Product: 製品レコード */
+public record Product(
+    String number,   // 型番
+    String name,     // 品名
+    int price        // 価格
+) {}
+</code></pre>
+<ul>
+<li>レコードの値は、<code>number()</code>・<code>price()</code> のように、フィールド名と同じ名前のメソッドで取り出します。</li>
+</ul>
+<hr />
+<h2 id="第9章-ラムダ式とストリーム"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第9章 ラムダ式とストリーム</a></h2>
+<h3 id="91-ラムダ式"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">9.1 ラムダ式</a></h3>
+<p>ラムダ式は <strong><code>λ(引数)：&lt;本体&gt;</code></strong> と書きます。</p>
+<pre><code>├─listを重さ順に並べ替える─λ(a, b):aとbの重さを比較した結果を返す
+</code></pre>
+<pre class="java"><code class="language-java">list.sort((a, b) -&gt; Integer.compare(a.weight(), b.weight()));
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>SPD</th>
+<th>生成される式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>λ(a):a の重さは300 以上</code></td>
+<td><code>a -&gt; a.weight() &gt;= 300</code></td>
+</tr>
+<tr>
+<td><code>λ(a, b):aとbの重さを比較した結果を返す</code></td>
+<td><code>(a, b) -&gt; Integer.compare(…)</code></td>
+</tr>
+<tr>
+<td><code>λ(a):a を表示する</code></td>
+<td><code>System.out::println</code>（メソッド参照に書き換わる）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>処理の右に <strong><code>─</code></strong> でラムダ式をつなぐと、その処理の引数になります（上の <code>sort</code> の例）。</li>
+<li>本体が複数の処理なら、<code>λ(a):┬</code> と書き、<code>┬</code> の下に処理を並べます。</li>
+<li>単純な形のラムダ式は、<code>System.out::println</code> のような<strong>メソッド参照</strong>に書き換えられます。</li>
+</ul>
+<h3 id="92-ストリーム処理"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">9.2 ストリーム処理</a></h3>
+<p><strong><code>▽─stream:&lt;コレクション&gt;</code></strong> の子に、操作を1行に1つずつ上から並べます。</p>
+<pre><code>└─▽─stream:list
+    ├─メーカー名（maker ）が&quot;Panan&quot; であるものだけをフィルタリングする
+    ├─機種名（name ）のストリームに変換する
+    └─すべての要素をprintln で表示する
+</code></pre>
+<pre class="java"><code class="language-java">list.stream()
+    .filter(pc -&gt; &quot;Panan&quot;.equals(pc.maker()))
+    .map(PC::name)
+    .forEach(System.out::println);
+</code></pre>
+<p>結果を変数に入れるときは、<strong><code>変数←▽─stream:…</code></strong> と書きます。</p>
+<pre><code>└─names←▽─stream:list
+          ├─機種名（name ）のストリームに変換する
+          └─リストにする
+</code></pre>
+<pre class="java"><code class="language-java">List&lt;String&gt; names = list.stream()
+        .map(PC::name)
+        .toList();
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>SPD の言い方</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>…だけをフィルタリングする</code></td>
+<td><code>filter</code></td>
+</tr>
+<tr>
+<td><code>…のストリームに変換する</code></td>
+<td><code>map</code></td>
+</tr>
+<tr>
+<td><code>…でソートする</code></td>
+<td><code>sorted</code></td>
+</tr>
+<tr>
+<td><code>リストにする</code></td>
+<td><code>toList()</code></td>
+</tr>
+<tr>
+<td><code>…で連結した文字列を作成する</code></td>
+<td><code>collect(joining(…))</code></td>
+</tr>
+<tr>
+<td><code>合計を求める</code>・<code>個数を数える</code></td>
+<td><code>sum()</code>・<code>count()</code></td>
+</tr>
+<tr>
+<td><code>表示する</code></td>
+<td><code>forEach(…)</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>最後の行は、結果を作る操作（終端操作）にします。</strong> 無ければストリームは動きません。</li>
+<li>フィールド名を括弧で添える（<code>メーカー名（maker ）</code>）と、確実にその名前が使われます。</li>
+<li><code>Files.lines(path)</code> のようにストリームを返す式は、<code>▽─Files.lines(path)</code> と直接書けます。</li>
+</ul>
+<hr />
+<h2 id="第10章-まとめ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第10章 まとめ</a></h2>
+<h3 id="101-完全な例"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">10.1 完全な例</a></h3>
+<pre><code>リストの要素を集計する
+  │
+  ├─整数のリストを作成して、変数listに代入する
+  │    └─要素は(10, 20, 30)
+  ├─合計を入れる変数int totalを宣言してゼロを代入する
+  ├─↻─ for:変数nにlistから毎回１つずつ要素を取り出す
+  │       └─ nをtotalに加算する
+  ├─平均を計算して変数double aveに代入する
+  │    └─平均は、doubleに変換したtotalをlistの要素数で割り、小数点以下1桁までに四捨五入する
+  ├─合計を&quot;合計＝〇〇&quot;の書式でコンソールに表示する
+  └─平均を&quot;平均＝〇〇&quot;の書式でコンソールに表示する
+</code></pre>
+<pre class="java"><code class="language-java">import java.util.List;
+import jp.kwebs.tools.Tools;
+
+/*
+（SPD 全体）
+*/
+public class ListAggregation {
+    public static void main(String[] args) {
+        var list = List.of(10, 20, 30);
+
+        int total = 0;
+        for (var n : list) {
+            total += n;
+        }
+
+        double ave = Tools.round((double) total / list.size(), 1);
+
+        System.out.printf(&quot;合計＝%d%n&quot;, total);
+        System.out.printf(&quot;平均＝%.1f%n&quot;, ave);
+    }
+}
+</code></pre>
+<h3 id="102-よくある間違い"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">10.2 よくある間違い</a></h3>
+<table>
+<thead>
+<tr>
+<th>間違い</th>
+<th>正しい書き方</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>else if</code> のつもりで <code>├─◇─</code> を続けて書く</td>
+<td>2つ目を <code>│  ◇─</code> と書く</td>
+<td><code>◇</code> の左が <code>─</code> だと独立した <code>if</code> になる</td>
+</tr>
+<tr>
+<td><code>戻り値：キロメートルの値、double</code></td>
+<td><code>戻り値：double、キロメートルの値</code></td>
+<td>戻り値は型が先</td>
+</tr>
+<tr>
+<td><code>自動生成</code> に <code>メソッド：calc</code> を書く</td>
+<td><code>メソッド：calc</code> の枝を別に書く</td>
+<td><code>自動生成</code> に書けるのは決まった項目だけ</td>
+</tr>
+<tr>
+<td><code>抽象メソッド：</code> に <code>処理</code> を書く</td>
+<td><code>処理</code> を書かない</td>
+<td>抽象メソッドは中身を持たない</td>
+</tr>
+<tr>
+<td><code>クラス：A ─⊳ B, C</code></td>
+<td>継承は1つだけ。インタフェースなら <code>---⊳</code></td>
+<td>Java は単一継承</td>
+</tr>
+<tr>
+<td><code>処理</code> に <code>★ここに書く★</code> を残す</td>
+<td>処理を書く</td>
+<td>書きかけとみなされ、コードが作られない</td>
+</tr>
+<tr>
+<td><code>▽─stream:list</code> の最後が <code>…に変換する</code></td>
+<td>最後に <code>リストにする</code> などを書く</td>
+<td>終端操作が無いとストリームが動かない</td>
+</tr>
+<tr>
+<td>引用符の中で区切ろうとして <code>※</code> を使う</td>
+<td><code>※</code> は引用符の外に書く</td>
+<td>引用符の中の <code>※</code> はコメントにならない</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-記号の早見表"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">10.3 記号の早見表</a></h3>
+<table>
+<thead>
+<tr>
+<th>記号</th>
+<th>意味</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>├─</code>・<code>└─</code>・<code>│</code></td>
+<td>木の枝と流れ</td>
+<td></td>
+</tr>
+<tr>
+<td><code>※</code></td>
+<td>コメント</td>
+<td><code>※税抜き価格</code></td>
+</tr>
+<tr>
+<td><code>←</code>・<code>=</code></td>
+<td>代入</td>
+<td><code>km = mile * 1.609</code></td>
+</tr>
+<tr>
+<td><code>◇─</code></td>
+<td>分岐</td>
+<td><code>◇─scoreは60以上である</code></td>
+</tr>
+<tr>
+<td><code>↻─</code></td>
+<td>繰り返し</td>
+<td><code>↻─for: …</code>・<code>↻─while: …</code></td>
+</tr>
+<tr>
+<td><code>〇─</code></td>
+<td>例外処理</td>
+<td><code>〇─try</code>・<code>〇─catch:IOException e</code></td>
+</tr>
+<tr>
+<td><code>┬</code></td>
+<td>複数の処理のまとまり</td>
+<td><code>case &quot;A&quot;なら┬</code></td>
+</tr>
+<tr>
+<td><code>λ(…)：</code></td>
+<td>ラムダ式</td>
+<td><code>λ(a):a の重さは300 以上</code></td>
+</tr>
+<tr>
+<td><code>▽─</code></td>
+<td>ストリーム処理</td>
+<td><code>▽─stream:list</code></td>
+</tr>
+<tr>
+<td><code>+</code>・<code>#</code>・<code>~</code>・<code>-</code></td>
+<td>アクセス修飾子</td>
+<td><code># final int FEE = 5000</code></td>
+</tr>
+<tr>
+<td><code>─⊳</code>・<code>---⊳</code></td>
+<td>継承・実装</td>
+<td><code>クラス: A ─⊳ B ---⊳ C</code></td>
+</tr>
+<tr>
+<td><code>← フィールド</code></td>
+<td>自動生成の対象</td>
+<td><code>等値判定 ← uid</code></td>
+</tr>
+<tr>
+<td><code>★</code></td>
+<td>書きかけの印</td>
+<td><code>★ここにSPDを書く★</code></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
