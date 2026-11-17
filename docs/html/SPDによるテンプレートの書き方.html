@@ -220,7 +220,8 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <ul>
 <li><a href="#31-一覧の表--表列">3.1 一覧の表 ― 表（列）</a></li>
 <li><a href="#32-詳細の表--表行">3.2 詳細の表 ― 表（行）</a></li>
-<li><a href="#33-箇条書き">3.3 箇条書き</a></li>
+<li><a href="#33-1つのオブジェクトの値を並べる--オブジェクト名とまとまり">3.3 1つのオブジェクトの値を並べる ― オブジェクト名と［まとまり］</a></li>
+<li><a href="#34-箇条書き">3.4 箇条書き</a></li>
 </ul>
 </li>
 <li><a href="#第4章-見た目を整える">第4章 見た目を整える</a>
@@ -639,7 +640,56 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <li>表（列）と同じく、<code>ラベル：</code> の子に並べれば、右のマスに複数の部品を置けます。</li>
 <li>表（行）は、フォームの入力画面でもよく使います（第6章）。</li>
 </ul>
-<h3 id="33-箇条書き"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.3 箇条書き</a></h3>
+<h3 id="33-1つのオブジェクトの値を並べる--オブジェクト名とまとまり"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.3 1つのオブジェクトの値を並べる ― オブジェクト名と［まとまり］</a></h3>
+<p>上の例のように同じオブジェクト（<code>member</code>）の値を並べるときは、<strong><code>［表（行）］</code> の後ろにオブジェクト名を書けます。</strong>
+表に <code>th:object</code> が付き、中の値は <strong><code>*{…}</code>（選択変数式）</strong> で生成されます。</p>
+<pre><code>├─受け取り
+│  └─ユーザー：UserForm userForm
+│
+└─構成
+     ├─［見出し］ユーザーデータ
+     └─［表（行）］userForm
+          ├─ユーザー名：{userForm.name}
+          ├─メール：{userForm.mail}
+          └─［リンク］戻る → /app
+</code></pre>
+<pre><code class="language-html">&lt;h1&gt;ユーザーデータ&lt;/h1&gt;
+&lt;table th:object=&quot;${userForm}&quot;&gt;
+  &lt;tr&gt;
+    &lt;td&gt;ユーザー名&lt;/td&gt;
+    &lt;td th:text=&quot;*{name}&quot;&gt;ユーザー名&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;メール&lt;/td&gt;
+    &lt;td th:text=&quot;*{mail}&quot;&gt;メール&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;2&quot;&gt;&lt;a th:href=&quot;@{/app}&quot;&gt;戻る&lt;/a&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<ul>
+<li><strong>値は、これまでどおり <code>{userForm.name}</code> と書きます。</strong> <code>{name}</code> とは書きません。生成するときに <code>*{name}</code> に変換されます。</li>
+<li>オブジェクト名は <code>受け取り</code> の名前です。フォームクラスでなくてもかまいません（<code>［表（行）］member</code> など）。</li>
+<li>オブジェクト名を書かなければ、これまでどおり <code>${userForm.name}</code> で生成されます。表示される値は同じです。</li>
+</ul>
+<p>表以外の部品をまとめるときは <strong><code>［まとまり］</code></strong> を使います。子が1つの <code>&lt;div&gt;</code> の中に置かれます。</p>
+<pre><code>└─構成
+     └─［まとまり］userForm &lt;&lt;.カード&gt;&gt;
+          ├─［小見出し］{userForm.name}さん
+          └─［段落］{userForm.mail}
+</code></pre>
+<pre><code class="language-html">&lt;div th:object=&quot;${userForm}&quot; class=&quot;カード&quot;&gt;
+  &lt;h2 th:text=&quot;|*{name}さん|&quot;&gt;nameさん&lt;/h2&gt;
+  &lt;p th:text=&quot;*{mail}&quot;&gt;mail&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+<ul>
+<li><code>［まとまり］</code> には、オブジェクト名とクラス名のどちらか（または両方）を書きます。</li>
+<li><code>［まとまり］</code> は <code>構成</code> の直下に置き、子には <code>構成</code> の直下と同じ部品を書けます。</li>
+<li>オブジェクト名を書いた <code>［表（行）］</code>・<code>［まとまり］</code>・<code>［フォーム］</code> を、入れ子にはできません。</li>
+</ul>
+<h3 id="34-箇条書き"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.4 箇条書き</a></h3>
 <p>リストの要素を箇条書きにするときは <strong><code>［箇条書き］&lt;リスト&gt;の各要素を&lt;変数&gt;とする</code></strong> と書き、子に <strong><code>［項目］</code></strong> を1行書きます。</p>
 <pre><code>└─構成
      └─［箇条書き］memberListの各要素をmとする
@@ -1255,6 +1305,11 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <td><code>受け取り</code> に無い名前を使う</td>
 <td><code>受け取り</code> に書き、コントローラーと名前をそろえる</td>
 <td>値がテンプレートに渡らない</td>
+</tr>
+<tr>
+<td><code>［表（行）］userForm</code> の中で <code>{name}</code></td>
+<td><code>{userForm.name}</code></td>
+<td>オブジェクト名を書いた表やフォームの中でも、値は受け取りの名前から書く</td>
 </tr>
 </tbody>
 </table>
