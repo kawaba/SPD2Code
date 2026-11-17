@@ -11,6 +11,22 @@ Python版は安定版です。Java版は2026年内にSpringBoot用のルール�
 
 ・Claude SKILL（claude.ai のウェブ版。Spring Boot 用・Python 用・Java 用・C 用）
 
+## SPDの書き方（入門書）
+
+SPDの書き方を、言語ごとに説明した入門書をウェブで公開しています。
+
+目次：https://kawaba.github.io/SPD2Code/docs/html/
+
+・[Java用のSPDの書き方](https://kawaba.github.io/SPD2Code/docs/html/Java%E7%94%A8%E3%81%AESPD%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)
+
+・[Python用のSPDの書き方](https://kawaba.github.io/SPD2Code/docs/html/Python%E7%94%A8%E3%81%AESPD%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)
+
+・[C用のSPDの書き方](https://kawaba.github.io/SPD2Code/docs/html/C%E7%94%A8%E3%81%AESPD%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)
+
+・[SpringBoot用のSPDの書き方](https://kawaba.github.io/SPD2Code/docs/html/SpringBoot%E7%94%A8%E3%81%AESPD%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)
+
+・[SPDによるテンプレートの書き方](https://kawaba.github.io/SPD2Code/docs/html/SPD%E3%81%AB%E3%82%88%E3%82%8B%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)（Spring Boot の Thymeleaf テンプレート）
+
 
 ## フォルダとファイル
 　各言語別のフォルダには、Gemini-skillフォルダとGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
