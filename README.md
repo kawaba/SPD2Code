@@ -33,6 +33,14 @@ SPDの書き方を、言語ごとに説明した入門書をウェブで公開�
 
       SPD2Code
       │
+      ├─docs
+      │  └─html ┬─index.html（入門書の目次）
+      │          ├─Java用のSPDの書き方.html
+      │          ├─Python用のSPDの書き方.html
+      │          ├─C用のSPDの書き方.html
+      │          ├─SpringBoot用のSPDの書き方.html
+      │          └─SPDによるテンプレートの書き方.html
+      │
       ├─C
       │  ├─Claude-skill ┬─spd-to-c-generator.zip（claude.ai に登録するファイル）
       │  │               ├─spd-to-c-generator（zip の中身）
