@@ -185,9 +185,13 @@ a.toc-back:hover::after {
    pre { white-space: pre; overflow: visible; }
    a.toc-back:hover::after { content: none; }
 }
+/* ---- 目次へ戻るリンク ---- */
+nav.back { font-size: 10pt; margin: 0 0 9pt; }
+nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e0ea; }
 </style>
 </head>
 <body>
+<nav class="back"><a href="index.html">← 目次へ戻る</a></nav>
 <h1>C用のSPDの書き方</h1>
 <p>C 言語のプログラムを SPD（Structured Programming Diagram）で設計するための入門書です。
 規約（<code>C/GitHub-Copilot/copilot-instructions.md</code>）のうち、初めて書くときに知っておきたいことだけを選んで説明します。
@@ -1027,5 +1031,6 @@ int main(void) {
 </tr>
 </tbody>
 </table>
+<nav class="back bottom"><a href="index.html">← 目次へ戻る</a></nav>
 </body>
 </html>
