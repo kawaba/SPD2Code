@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPDの書き方</title>
+<style>
+/* 入門書のページと同じフォント・配色にそろえる */
+body {
+   font-family: "BIZ UDPゴシック", "BIZ UDPGothic", "Meiryo", "メイリオ",
+                "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+h1, h2 {
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+}
+
+html { background-color: #eef0f3; }
+body {
+   max-width: 900px;
+   overflow-wrap: break-word;
+   box-sizing: border-box;
+   margin: 26px auto;
+   padding: 31px 66px 37px;
+   background-color: #ffffff;
+   border: 1px solid #dde1e6;
+   border-radius: 6px;
+   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+   color: #222;
+   font-size: 11pt;
+   line-height: 1.75;
+}
+
+h1 {
+   font-size: 15.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-bottom: 3px solid #1f3a5f;
+   padding-bottom: 6.5pt;
+   margin: 0 0 15.5pt;
+}
+p { margin: 6.5pt 0; }
+
+/* ---- 目次（カード） ---- */
+ul.toc { list-style: none; padding: 0; margin: 15pt 0 0; }
+ul.toc li { margin: 0 0 11pt; }
+ul.toc a {
+   display: block;
+   padding: 11pt 14pt;
+   border: 1px solid #d8e0ea;
+   border-left: 5px solid #4a78a8;
+   border-radius: 4px;
+   color: inherit;
+   text-decoration: none;
+}
+ul.toc a:hover, ul.toc a:focus-visible {
+   background-color: #f4f7fb;
+   border-color: #4a78a8;
+}
+ul.toc .name {
+   display: block;
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+   font-size: 12.5pt;
+   color: #1f3a5f;
+}
+ul.toc .desc { display: block; margin-top: 3pt; font-size: 10pt; color: #555; }
+
+/* ---- スマートフォン ---- */
+@media (max-width: 700px) {
+   body { margin: 0; padding: 20px 16px 24px; border: none; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<h1>SPDの書き方</h1>
+<p>SPD（構造化プログラム設計図）の書き方を説明する入門書です。読みたいものを選んでください。</p>
+
+<ul class="toc">
+   <li>
+      <a href="SpringBoot用のSPDの書き方.html">
+         <span class="name">SpringBoot用のSPDの書き方</span>
+         <span class="desc">エンティティ・フォーム・リポジトリ・サービス・コントローラーの5種類の SPD の書き方</span>
+      </a>
+   </li>
+   <li>
+      <a href="SPDによるテンプレートの書き方.html">
+         <span class="name">SPDによるテンプレートの書き方</span>
+         <span class="desc">Thymeleaf のテンプレート（HTML）を SPD で書く方法。SPD の例と生成されるテンプレートを対にして示します</span>
+      </a>
+   </li>
+</ul>
+</body>
+</html>
