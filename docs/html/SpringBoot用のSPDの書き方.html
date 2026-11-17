@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpringBoot用のSPDの書き方</title>
+<style>
+/* ---- フォント指定 ----
+   本文＝BIZ UDPゴシック（プロポーショナル）／見出し＝游ゴシック体（太字）／
+   SPD・Javaコード＝BIZ UDゴシック（等幅）
+   フォント名は環境ごとに登録名が異なるため、日本語名・英語名を併記する。 */
+body, table, th, td, blockquote {
+   font-family: "BIZ UDPゴシック", "BIZ UDPGothic", "Meiryo", "メイリオ",
+                "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+
+/* SPD・Javaコードは等幅のBIZ UDゴシック（Pなし＝等幅。半角＝全角の1/2幅で罫線が揃う） */
+pre, code {
+   font-family: "BIZ UDゴシック", "BIZ UDGothic",
+                "MS ゴシック", "MS Gothic", monospace;
+}
+
+/* 見出しは游ゴシック体の太字 */
+h1, h2, h3, h4, h5, h6 {
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+}
+
+/* ---- ページ全体（最大幅900px・中央揃え／本文11ptが基準） ---- */
+html { background-color: #eef0f3; }
+body {
+   width: auto;
+   max-width: 900px;          /* 広い画面では900px・中央揃え */
+   overflow-wrap: break-word; /* 長い英単語・URLで横にはみ出さないように */
+   box-sizing: border-box;
+   margin: 26px auto;
+   padding: 31px 66px 37px;   /* 左右の余白は66px */
+   background-color: #ffffff;
+   border: 1px solid #dde1e6;
+   border-radius: 6px;
+   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+   color: #222;
+   font-size: 11pt;
+   line-height: 1.75;
+}
+
+/* ---- 見出し ---- */
+h1 {
+   font-size: 15.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-bottom: 3px solid #1f3a5f;
+   padding-bottom: 6.5pt;
+   margin: 0 0 15.5pt;
+}
+h2 {
+   font-size: 13.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-left: 5px solid #4a78a8;
+   border-bottom: 1px solid #d8e0ea;
+   padding: 3pt 0 3pt 8pt;
+   margin: 24pt 0 9pt;
+}
+h3 {
+   font-size: 12pt;
+   line-height: 1.4;
+   color: #2b4c74;
+   padding-bottom: 2pt;
+   border-bottom: 1px dashed #c9d4e1;
+   margin: 17.5pt 0 6.5pt;
+}
+h4 { font-size: 11pt; color: #2b4c74; margin: 13pt 0 4.5pt; }
+h5, h6 { font-size: 10pt; color: #2b4c74; margin: 9pt 0 3pt; }
+
+/* ---- 本文・リスト ---- */
+p  { margin: 6.5pt 0; }
+ul, ol { margin: 6.5pt 0; padding-left: 20pt; }
+li { margin: 3pt 0; }
+li::marker { color: #4a78a8; }
+ol > li::marker { font-weight: bold; }
+strong { color: #1a1a1a; }
+
+/* ---- コードブロック（SPD・Java共通） ---- */
+pre {
+   font-size: 9.5pt;
+   line-height: 1.5;
+   white-space: pre;
+   overflow-x: auto;
+   background-color: #f7f9f7;
+   border: 1px solid #e2e8e2;
+   border-left: 4px solid #9fbf9f;   /* SPD・その他 */
+   border-radius: 4px;
+   padding: 8pt 11pt;
+   margin: 8pt 0 11pt;
+   tab-size: 4;
+   -moz-tab-size: 4;
+}
+pre code {
+   font-size: inherit;
+   background: none;
+   border: none;
+   padding: 0;
+   color: #222;
+   white-space: pre;
+}
+/* Javaコードは左罫の色を変えて区別する */
+pre.java { border-left-color: #7fa3cf; background-color: #f6f9fd; border-color: #dfe7f1; }
+
+/* ---- インラインコード ---- */
+code {
+   font-size: 92%;
+   color: #8a2d3b;
+   background-color: #f4f1f2;
+   border: 1px solid #e8e1e3;
+   border-radius: 3px;
+   padding: 0 4px;
+}
+
+/* ---- 表 ---- */
+table {
+   border-collapse: collapse;
+   font-size: 9.5pt;
+   line-height: 1.5;
+   margin: 8pt 0;
+}
+th, td {
+   border: 1px solid #d5dbe2;
+   padding: 3.5pt 8pt;
+   text-align: left;
+   vertical-align: top;
+}
+th { background-color: #e9eef4; color: #1f3a5f; }
+tr:nth-child(even) td { background-color: #fafbfc; }
+
+/* ---- 引用・区切り線 ---- */
+blockquote {
+   margin: 8pt 0;
+   padding: 4.5pt 11pt;
+   border-left: 4px solid #e0b75a;
+   border-radius: 0 4px 4px 0;
+   background-color: #fdf9ee;
+   color: #333;
+}
+blockquote p { margin: 3pt 0; }
+hr { border: none; border-top: 1px solid #d3d8de; margin: 22pt 0; }
+
+/* ---- チェックリスト ---- */
+ul.checklist { list-style: none; padding-left: 3.5pt; }
+ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
+
+/* ---- 目次リンクと「目次に戻る」見出しリンク ---- */
+a { color: #2f62a3; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h2[id], h3[id] { scroll-margin-top: 12px; }
+a.toc-back { color: inherit; }
+a.toc-back:hover { color: #4a78a8; text-decoration: none; }
+a.toc-back:hover::after {
+   content: "↑ 目次へ";
+   font-size: 8.5pt;
+   font-weight: normal;
+   color: #7a8ea8;
+   margin-left: 8pt;
+}
+
+/* ---- レスポンシブ対応 ---- */
+/* タブレット・狭いウィンドウ：カードの外側と左右の余白を詰める */
+@media screen and (max-width: 960px) {
+   body { margin: 16px auto; padding: 28px 40px 32px; }
+   html { padding: 0 16px; }
+}
+/* スマートフォン：カードの枠をなくし、画面いっぱいに表示する */
+@media screen and (max-width: 640px) {
+   html { background-color: #ffffff; padding: 0; }
+   body { margin: 0; padding: 20px 16px 28px; border: none; border-radius: 0; box-shadow: none; }
+   ul, ol { padding-left: 16pt; }
+   table { display: block; overflow-x: auto; }   /* 表は横スクロール */
+}
+
+/* ---- 印刷時は背景・影・外枠を外す ---- */
+@media print {
+   html { background: none; }
+   body { width: auto; margin: 0; padding: 0; border: none; box-shadow: none; }
+   pre { white-space: pre; overflow: visible; }
+   a.toc-back:hover::after { content: none; }
+}
+</style>
+</head>
+<body>
+<h1>SpringBoot用のSPDの書き方</h1>
+<p>Spring Boot のアプリケーション（エンティティ・フォーム・リポジトリ・サービス・コントローラー）を SPD で設計するための入門書です。
+規約（<code>springboot-java.instructions.md</code>）のうち、初めて書くときに知っておきたいことだけを選んで説明します。
+細かい規則や例外は省いていますので、迷ったときは規約を参照してください。</p>
+<p>各節では、<strong>SPD の例</strong>と、そこから<strong>生成される Java のコード</strong>を対にして示します。
+<code>処理</code> の中の書き方（<code>◇</code>・<code>↻</code> などの記号や、「〜を返す」といった文）は、Java 用の SPD と同じです。
+画面（テンプレート）の書き方は、別の入門書「SPDによるテンプレートの書き方」で説明しています。</p>
+<h2 id="目次">目次</h2>
+<ul>
+<li><a href="#第1章-全体像">第1章 全体像</a>
+<ul>
+<li><a href="#11-5種類のspdと層">1.1 5種類のSPDと層</a></li>
+<li><a href="#12-共通の書き方">1.2 共通の書き方</a></li>
+<li><a href="#13-書く順番">1.3 書く順番</a></li>
+</ul>
+</li>
+<li><a href="#第2章-エンティティ">第2章 エンティティ</a>
+<ul>
+<li><a href="#21-基本の形">2.1 基本の形</a></li>
+<li><a href="#22-フィールドのマーカー">2.2 フィールドのマーカー</a></li>
+<li><a href="#23-関連">2.3 関連</a></li>
+</ul>
+</li>
+<li><a href="#第3章-フォーム">第3章 フォーム</a>
+<ul>
+<li><a href="#31-基本の形">3.1 基本の形</a></li>
+<li><a href="#32-検証の書き方">3.2 検証の書き方</a></li>
+</ul>
+</li>
+<li><a href="#第4章-リポジトリ">第4章 リポジトリ</a>
+<ul>
+<li><a href="#41-基本の形">4.1 基本の形</a></li>
+<li><a href="#42-検索メソッド">4.2 検索メソッド</a></li>
+<li><a href="#43-jpqlで検索する">4.3 JPQLで検索する</a></li>
+</ul>
+</li>
+<li><a href="#第5章-サービス">第5章 サービス</a>
+<ul>
+<li><a href="#51-基本の形">5.1 基本の形</a></li>
+<li><a href="#52-自動生成">5.2 自動生成</a></li>
+<li><a href="#53-フォームとエンティティの詰め替え">5.3 フォームとエンティティの詰め替え</a></li>
+</ul>
+</li>
+<li><a href="#第6章-コントローラー">第6章 コントローラー</a>
+<ul>
+<li><a href="#61-基本の形">6.1 基本の形</a></li>
+<li><a href="#62-マッピング">6.2 マッピング</a></li>
+<li><a href="#63-引数とマーカー">6.3 引数とマーカー</a></li>
+<li><a href="#64-処理の書き方">6.4 処理の書き方</a></li>
+<li><a href="#65-補われる引数">6.5 補われる引数</a></li>
+</ul>
+</li>
+<li><a href="#第7章-コントローラーとテンプレートをつなぐ">第7章 コントローラーとテンプレートをつなぐ</a>
+<ul>
+<li><a href="#71-テンプレート名">7.1 テンプレート名</a></li>
+<li><a href="#72-テンプレートに渡す名前">7.2 テンプレートに渡す名前</a></li>
+<li><a href="#73-フォームの名前">7.3 フォームの名前</a></li>
+<li><a href="#74-登録編集削除の流れ">7.4 登録・編集・削除の流れ</a></li>
+</ul>
+</li>
+<li><a href="#第8章-まとめ">第8章 まとめ</a>
+<ul>
+<li><a href="#81-よくある間違い">8.1 よくある間違い</a></li>
+<li><a href="#82-早見表">8.2 早見表</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="第1章-全体像"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第1章 全体像</a></h2>
+<h3 id="11-5種類のspdと層"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.1 5種類のSPDと層</a></h3>
+<p>Spring Boot のアプリケーションは、役割の違う部品（<strong>層</strong>）に分けて作ります。SPD も、部品ごとに次の5種類を書きます。</p>
+<pre><code>コントローラー  →  サービス  →  リポジトリ  →  （データベース）
+                      ↓
+              エンティティ／フォーム
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>SPD のタイトル</th>
+<th>役割</th>
+<th>生成されるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>エンティティ：</code></strong></td>
+<td>データベースの表の1行を表すクラス</td>
+<td><code>@Entity</code> のクラス</td>
+</tr>
+<tr>
+<td><strong><code>フォーム：</code></strong></td>
+<td>画面の入力項目と、その検証</td>
+<td>入力用のクラス</td>
+</tr>
+<tr>
+<td><strong><code>リポジトリ：</code></strong></td>
+<td>データベースの読み書き</td>
+<td><code>JpaRepository</code> を継承したインタフェース</td>
+</tr>
+<tr>
+<td><strong><code>サービス：</code></strong></td>
+<td>業務の処理</td>
+<td><code>@Service</code> のクラス</td>
+</tr>
+<tr>
+<td><strong><code>コントローラー：</code></strong></td>
+<td>画面からの要求を受け、画面を選ぶ</td>
+<td><code>@Controller</code> のクラス</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>呼び出しは上から下への一方向だけです。</strong> コントローラーはサービスを呼び、サービスはリポジトリを呼びます。</li>
+<li><strong>コントローラーからリポジトリを直接呼んではいけません。</strong> データベースの操作は、必ずサービスを通します。</li>
+<li>サービスは画面のことを知りません。<code>Model</code> などの画面用の型は、コントローラーだけで使います。</li>
+</ul>
+<h3 id="12-共通の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.2 共通の書き方</a></h3>
+<p>どの SPD も、<strong>タイトル</strong>・<strong><code>目的</code></strong>・部品ごとの項目を、木の形で書きます。</p>
+<pre><code>※jp.kwebs.bookshop.entity
+エンティティ：Book
+├─目的：書籍を表すエンティティ
+…
+</code></pre>
+<pre class="java"><code class="language-java">package jp.kwebs.bookshop.entity;
+
+…（import 文）…
+
+/*
+エンティティ：Book
+├─目的：書籍を表すエンティティ
+…
+*/
+
+// 書籍を表すエンティティ
+@Entity
+public class Book {
+</code></pre>
+<ul>
+<li><strong>パッケージ名は、タイトルの前の行に <code>※</code> を付けて書きます。</strong> そのまま <code>package</code> 文になります。</li>
+<li><strong><code>目的</code> は、クラスの直前のコメントになります。</strong></li>
+<li><strong>SPD 全体が、Java ファイルの先頭にコメントとして残ります。</strong></li>
+<li><code>@主キー</code>・<code>@検証</code> のような <strong><code>@</code> で始まる指定をマーカー</strong>と呼びます。<code>@</code> は全角の <code>＠</code> でも構いません。</li>
+<li>import 文は自動で決まるので、SPD に書く必要はありません。</li>
+</ul>
+<h3 id="13-書く順番"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.3 書く順番</a></h3>
+<p>ほかの SPD の名前を使うので、使われる側から書くと迷いません。</p>
+<ol>
+<li><strong>エンティティ</strong>（データの形を決める）</li>
+<li><strong>フォーム</strong>（画面で入力する項目を決める）</li>
+<li><strong>リポジトリ</strong>（エンティティを読み書きする）</li>
+<li><strong>サービス</strong>（リポジトリを使って処理する）</li>
+<li><strong>コントローラー</strong>（サービスを使い、テンプレートを選ぶ）</li>
+<li><strong>テンプレート</strong>（コントローラーから受け取って表示する）</li>
+</ol>
+<hr />
+<h2 id="第2章-エンティティ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第2章 エンティティ</a></h2>
+<h3 id="21-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.1 基本の形</a></h3>
+<p>エンティティは、データベースの表と対応するクラスです。<strong><code>フィールド</code></strong> に表の列を、<strong><code>自動生成</code></strong> に作ってほしいメソッドを書きます。</p>
+<pre><code>エンティティ：Member
+├─目的：会員を表すエンティティ
+├─テーブル：members
+├─フィールド
+│  ├─番号：@主キー @自動採番 Long id
+│  ├─名前：@必須 @桁数(20) String name
+│  └─入会日：LocalDate joinedOn
+└─自動生成
+     ├─コンストラクタ：引数なし
+     ├─ゲッター
+     └─セッター
+</code></pre>
+<pre class="java"><code class="language-java">// 会員を表すエンティティ
+@Entity
+@Table(name = &quot;members&quot;)
+public class Member {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 番号
+
+    @Column(nullable = false, length = 20)
+    private String name; // 名前
+
+    private LocalDate joinedOn; // 入会日
+
+    // 自動生成：コンストラクタ：引数なし
+    public Member() {
+    }
+
+    // 自動生成：ゲッター
+    public Long getId() {
+        return id;
+    }
+    …（ほかのゲッターとセッター）…
+}
+</code></pre>
+<ul>
+<li>フィールドは <strong><code>&lt;説明&gt;：&lt;マーカー&gt; &lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。説明は行末のコメントになります。</li>
+<li><strong><code>テーブル</code></strong> を書くと、表の名前を指定できます。省略すると、クラス名から決まります。</li>
+<li><strong>引数なしのコンストラクタは JPA に必須</strong>なので、書き忘れても補われます。</li>
+</ul>
+<h3 id="22-フィールドのマーカー"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.2 フィールドのマーカー</a></h3>
+<table>
+<thead>
+<tr>
+<th>マーカー</th>
+<th>意味</th>
+<th>生成されるアノテーション</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>@主キー</code></strong></td>
+<td>行を見分ける番号（必ず1つ）</td>
+<td><code>@Id</code></td>
+</tr>
+<tr>
+<td><strong><code>@自動採番</code></strong></td>
+<td>番号を自動で振る</td>
+<td><code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code></td>
+</tr>
+<tr>
+<td><strong><code>@必須</code></strong></td>
+<td>空にできない</td>
+<td><code>@Column(nullable = false)</code></td>
+</tr>
+<tr>
+<td><code>@一意</code></td>
+<td>同じ値を入れられない</td>
+<td><code>@Column(unique = true)</code></td>
+</tr>
+<tr>
+<td><code>@桁数(N)</code></td>
+<td>文字数の上限</td>
+<td><code>@Column(length = N)</code></td>
+</tr>
+<tr>
+<td><code>@列名(x)</code></td>
+<td>列の名前を指定する</td>
+<td><code>@Column(name = &quot;x&quot;)</code></td>
+</tr>
+<tr>
+<td><code>@値コレクション</code></td>
+<td>文字列などのリスト・セット</td>
+<td><code>@ElementCollection</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>マーカーは型の前に書きます。</strong> 複数のマーカーは、1つの <code>@Column</code> にまとめられます。</li>
+<li><strong><code>@主キー</code> が無いエンティティは作れません。</strong></li>
+<li><strong>日付・時刻は <code>LocalDate</code>・<code>LocalDateTime</code>・<code>LocalTime</code> で書きます。</strong> 古い <code>Date</code>・<code>Calendar</code> は使えません。</li>
+</ul>
+<h3 id="23-関連"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.3 関連</a></h3>
+<p>ほかのエンティティとのつながりは、<strong><code>関連</code></strong> に <strong><code>&lt;説明&gt;：&lt;種類&gt; &lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。</p>
+<pre><code>├─関連
+│  └─所属：多対一 Department department
+</code></pre>
+<pre class="java"><code class="language-java">@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = &quot;department_id&quot;)
+private Department department; // 所属
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>種類</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>多対一</code></strong></td>
+<td>多くの会員が1つの部署に属する（いちばんよく使う）</td>
+</tr>
+<tr>
+<td><code>一対多</code></td>
+<td>1つの部署に多くの会員がいる</td>
+</tr>
+<tr>
+<td><code>一対一</code></td>
+<td>1対1で対応する</td>
+</tr>
+<tr>
+<td><code>多対多</code></td>
+<td>互いに複数と対応する</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>関連が無いときは <code>関連：なし</code> と書くか、<code>関連</code> の枝を省きます。</li>
+</ul>
+<hr />
+<h2 id="第3章-フォーム"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第3章 フォーム</a></h2>
+<h3 id="31-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.1 基本の形</a></h3>
+<p>フォームは、画面で入力された値を受け取るクラスです。エンティティと似ていますが、<strong>入力の検証</strong>を書けるところが違います。</p>
+<pre><code>フォーム：BookForm
+├─目的：書籍の入力フォーム
+├─フィールド
+│    ├─主キー：Long id
+│    ├─表題：String title　　　＠必須(&quot;表題を入力してください&quot;)、20文字以内
+│    ├─発行日：LocalDate issuedOn　＠過去の日付
+│    └─価格：Integer price　　　＠正の数
+└─自動生成
+      ├─コンストラクタ：引数なし
+      ├─ゲッター
+      └─セッター
+</code></pre>
+<pre class="java"><code class="language-java">// 書籍の入力フォーム
+public class BookForm {
+
+    private Long id; // 主キー
+
+    @NotBlank(message = &quot;表題を入力してください&quot;)
+    @Size(max = 20)
+    private String title; // 表題
+
+    @Past
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate issuedOn; // 発行日
+
+    @Positive
+    private Integer price; // 価格
+
+    …（コンストラクタ・ゲッター・セッター）…
+}
+</code></pre>
+<ul>
+<li><strong>検証は、フィールドの行の末尾に <code>@</code> を書き、その右に並べます。</strong> 区切りは <code>、</code> か <code>,</code> です。</li>
+<li>位置をそろえるために、<code>@</code> の前に空白を入れて構いません。</li>
+<li><strong>エンティティのマーカーは型の前、フォームの検証は変数名の後</strong>です。取り違えに注意してください。</li>
+<li>日付・時刻のフィールドには、画面から送られた値を変換するための <code>@DateTimeFormat</code> が自動で付きます。</li>
+<li>更新画面で使うフォームには、エンティティの主キーと同じ名前・型のフィールド（ここでは <code>id</code>）を入れておきます（7.4）。</li>
+</ul>
+<h3 id="32-検証の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.2 検証の書き方</a></h3>
+<table>
+<thead>
+<tr>
+<th>SPD の書き方</th>
+<th>意味</th>
+<th>生成されるアノテーション</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>必須</code></strong></td>
+<td>入力が必要</td>
+<td>文字列は <code>@NotBlank</code>、リストは <code>@NotEmpty</code>、それ以外は <code>@NotNull</code></td>
+</tr>
+<tr>
+<td><strong><code>N文字以内</code></strong>・<code>N文字以上</code></td>
+<td>文字数</td>
+<td><code>@Size(max = N)</code>・<code>@Size(min = N)</code></td>
+</tr>
+<tr>
+<td><strong><code>N以上</code></strong>・<strong><code>M以下</code></strong></td>
+<td>数の範囲</td>
+<td><code>@Min(N)</code>・<code>@Max(M)</code></td>
+</tr>
+<tr>
+<td><code>メール形式</code></td>
+<td>メールアドレス</td>
+<td><code>@Email</code></td>
+</tr>
+<tr>
+<td><code>正の数</code></td>
+<td>0より大きい</td>
+<td><code>@Positive</code></td>
+</tr>
+<tr>
+<td><code>過去の日付</code>・<code>未来の日付</code></td>
+<td>日付の範囲</td>
+<td><code>@Past</code>・<code>@Future</code></td>
+</tr>
+<tr>
+<td><code>&quot;&lt;正規表現&gt;&quot;に一致</code></td>
+<td>形の決まった文字列</td>
+<td><code>@Pattern(regexp = &quot;…&quot;)</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>エラーメッセージは、検証の直後の <code>(&quot;…&quot;)</code> に書きます</strong>（<code>必須(&quot;表題を入力してください&quot;)</code>）。書かなければ、標準のメッセージになります。</li>
+<li>表に無い書き方は、検証として使えません。</li>
+</ul>
+<hr />
+<h2 id="第4章-リポジトリ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第4章 リポジトリ</a></h2>
+<h3 id="41-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.1 基本の形</a></h3>
+<p>リポジトリは、エンティティをデータベースに保存したり、読み出したりする部品です。
+<strong><code>対象</code></strong>（エンティティ）と <strong><code>主キー</code></strong>（主キーの型）を書くだけで、基本の操作が使えるようになります。</p>
+<pre><code>リポジトリ：MemberRepository
+├─目的：会員の永続化を行う
+├─対象：Member
+├─主キー：Long
+└─検索メソッド：なし
+</code></pre>
+<pre class="java"><code class="language-java">// 会員の永続化を行う
+public interface MemberRepository extends JpaRepository&lt;Member, Long&gt; {
+}
+</code></pre>
+<ul>
+<li>これだけで、<code>findAll</code>（全件）・<code>findById</code>（主キーで1件）・<code>save</code>（保存）・<code>deleteById</code>（削除）・<code>count</code>（件数）などが使えます。</li>
+<li>メソッドの中身は Spring が自動で用意するので、<strong>リポジトリはインタフェース</strong>になります。</li>
+</ul>
+<h3 id="42-検索メソッド"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.2 検索メソッド</a></h3>
+<p>条件を付けて検索したいときは、<strong><code>検索メソッド</code></strong> に <strong><code>&lt;説明&gt;：&lt;メソッドの宣言&gt;</code></strong> を並べます。
+メソッド名を <strong>Spring Data の決まりに沿った名前</strong>にすると、名前から検索の内容が決まります。</p>
+<pre><code>├─検索メソッド
+│    ├─表題で検索：List&lt;Book&gt; findByTitle(String title)
+│    ├─表題の部分一致：List&lt;Book&gt; findByTitleContaining(String keyword)
+│    └─価格の降順で全件：List&lt;Book&gt; findAllByOrderByPriceDesc()
+</code></pre>
+<pre class="java"><code class="language-java">List&lt;Book&gt; findByTitle(String title);               // 表題で検索
+List&lt;Book&gt; findByTitleContaining(String keyword);   // 表題の部分一致
+List&lt;Book&gt; findAllByOrderByPriceDesc();             // 価格の降順で全件
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>名前の部品</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>findBy&lt;フィールド&gt;</code></td>
+<td>そのフィールドが等しいものを探す</td>
+</tr>
+<tr>
+<td><code>…Containing</code></td>
+<td>部分一致</td>
+</tr>
+<tr>
+<td><code>…LessThanEqual</code>・<code>…GreaterThanEqual</code></td>
+<td>以下・以上</td>
+</tr>
+<tr>
+<td><code>…And…</code>・<code>…Or…</code></td>
+<td>条件をつなぐ</td>
+</tr>
+<tr>
+<td><code>…OrderBy&lt;フィールド&gt;Asc</code>・<code>Desc</code></td>
+<td>並べ替え</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-jpqlで検索する"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.3 JPQLで検索する</a></h3>
+<p>名前で表しにくい検索は、<strong><code>メソッド：</code></strong> を書き、<code>処理</code> の代わりに <strong><code>JPQL</code></strong> に検索の内容を日本語で書きます。</p>
+<pre><code>└─メソッド：searchByPriceAndTitle
+      ├─目的：価格と表題で検索する
+      ├─引数
+      │    ├─上限価格：@パラメータ Integer price
+      │    └─表題のキーワード：@パラメータ String title
+      ├─戻り値：List&lt;Book&gt;、書籍のリスト
+      └─JPQL：価格がprice以下で表題にtitleを含む書籍を検索し、価格の昇順に並べて返す
+</code></pre>
+<pre class="java"><code class="language-java">// JPQL：価格がprice以下で表題にtitleを含む書籍を検索し、価格の昇順に並べて返す
+@Query(&quot;SELECT b FROM Book b WHERE b.price &lt;= :price AND b.title LIKE CONCAT(&#x27;%&#x27;, :title, &#x27;%&#x27;) ORDER BY b.price ASC&quot;)
+List&lt;Book&gt; searchByPriceAndTitle(@Param(&quot;price&quot;) Integer price, @Param(&quot;title&quot;) String title);
+</code></pre>
+<ul>
+<li><strong>引数の名前と型は、エンティティのフィールドと同じにします</strong>（<code>price</code>・<code>title</code>）。名前で条件を対応づけるためです。</li>
+<li>使える言い方は、<code>以下</code>・<code>以上</code>・<code>より小さい</code>・<code>より大きい</code>・<code>と等しい</code>・<code>を含む</code>・<code>で始まる</code>・<code>で終わる</code>・<code>かつ</code>・<code>または</code>・<code>昇順</code>・<code>降順</code> などです。</li>
+<li>JPQL の文を直接書きたいときは、<code>JPQL：&quot;SELECT …&quot;</code> と引用符で囲みます。</li>
+</ul>
+<hr />
+<h2 id="第5章-サービス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第5章 サービス</a></h2>
+<h3 id="51-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.1 基本の形</a></h3>
+<p>サービスは、業務の処理を書く部品です。使うリポジトリを <strong><code>インジェクション</code></strong> に書き、処理を <strong><code>メソッド：</code></strong> で書きます。</p>
+<pre><code>サービス：MemberService
+├─目的：会員に関する業務処理を行う
+├─インジェクション
+│  └─会員リポジトリ：MemberRepository memberRepository
+└─メソッド：create
+     ├─目的：会員を登録する
+     ├─トランザクション：更新あり
+     ├─引数
+     │    └─入力フォーム：MemberForm form
+     ├─戻り値：なし
+     └─処理
+           ├─Memberのインスタンスを作って変数memberに代入する
+           ├─formのnameをmemberのnameに設定する
+           └─memberRepositoryのsaveをmemberを引数にして呼び出す
+</code></pre>
+<pre class="java"><code class="language-java">// 会員に関する業務処理を行う
+@Service
+public class MemberService {
+
+    private final MemberRepository memberRepository; // 会員リポジトリ
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    /**
+     * 会員を登録する
+     *
+     * @param form 入力フォーム
+     */
+    @Transactional
+    public void create(MemberForm form) {
+        var member = new Member();
+        member.setName(form.getName());
+        memberRepository.save(member);
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>インジェクション</code></strong> に書いた部品は、コンストラクタで受け取る形（コンストラクタインジェクション）で生成されます。コントローラーでも同じです。</li>
+<li><strong><code>トランザクション</code></strong> は、データベースを扱うメソッドに書きます。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>書き方</th>
+<th>意味</th>
+<th>生成されるアノテーション</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>トランザクション：更新あり</code></strong></td>
+<td>書き込む</td>
+<td><code>@Transactional</code></td>
+</tr>
+<tr>
+<td><strong><code>トランザクション：参照のみ</code></strong></td>
+<td>読むだけ</td>
+<td><code>@Transactional(readOnly = true)</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>トランザクション</code> を書かなければ、アノテーションは付きません。</li>
+</ul>
+<h3 id="52-自動生成"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.2 自動生成</a></h3>
+<p>「リポジトリを呼ぶだけ」の決まりきったメソッドは、<strong><code>自動生成：&lt;リポジトリ&gt;</code></strong> に項目名を並べるだけで作れます。
+ここでは、<code>BookForm</code> のフィールドが <code>id</code>・<code>title</code>・<code>price</code> で、<code>Book</code> にも同じ名前・型のフィールドがあるものとします。</p>
+<pre><code>サービス：BookService
+├─目的：本のデータベース操作
+├─インジェクション
+│    └─本のリポジトリ：BookRepository bookRepository
+└─自動生成：BookRepository
+      ├─全件検索
+      ├─主キーで検索
+      ├─新規作成 ← BookForm
+      ├─更新 ← BookForm
+      └─削除
+</code></pre>
+<pre class="java"><code class="language-java">// 自動生成：全件検索
+@Transactional(readOnly = true)
+public List&lt;Book&gt; findAll() {
+    return bookRepository.findAll();
+}
+
+// 自動生成：主キーで検索
+@Transactional(readOnly = true)
+public Book findById(Long id) {
+    return bookRepository.findById(id).orElseThrow();
+}
+
+// 自動生成：新規作成
+@Transactional
+public Book create(BookForm bookForm) {
+    var book = new Book();
+    book.setTitle(bookForm.getTitle());
+    book.setPrice(bookForm.getPrice());
+    return bookRepository.save(book);
+}
+
+// 自動生成：更新
+@Transactional
+public Book update(BookForm bookForm) {
+    var book = bookRepository.findById(bookForm.getId()).orElseThrow();
+    book.setTitle(bookForm.getTitle());
+    book.setPrice(bookForm.getPrice());
+    return bookRepository.save(book);
+}
+
+// 自動生成：削除
+@Transactional
+public void deleteById(Long id) {
+    bookRepository.deleteById(id);
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>生成されるメソッド</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>全件検索</code></strong></td>
+<td><code>List&lt;E&gt; findAll()</code></td>
+</tr>
+<tr>
+<td><strong><code>主キーで検索</code></strong></td>
+<td><code>E findById(K id)</code></td>
+</tr>
+<tr>
+<td><strong><code>新規作成 ← F</code></strong></td>
+<td><code>E create(F f)</code>：フォームから新しいエンティティを作って保存</td>
+</tr>
+<tr>
+<td><strong><code>更新 ← F</code></strong></td>
+<td><code>E update(F f)</code>：主キーで読み出し、フォームの値で上書きして保存</td>
+</tr>
+<tr>
+<td><strong><code>削除</code></strong></td>
+<td><code>void deleteById(K id)</code></td>
+</tr>
+<tr>
+<td><code>総件数</code></td>
+<td><code>long countAll()</code></td>
+</tr>
+<tr>
+<td><code>ページング</code></td>
+<td><code>Page&lt;E&gt; findAll(Pageable pageable)</code></td>
+</tr>
+<tr>
+<td><code>検索メソッド</code></td>
+<td>リポジトリの検索メソッドを呼ぶだけのメソッド</td>
+</tr>
+<tr>
+<td><code>詰め替え ← F</code>・<code>フォームに詰め替え → F</code></td>
+<td>5.3 で説明します</td>
+</tr>
+</tbody>
+</table>
+<p>（<code>E</code> はエンティティ、<code>K</code> は主キーの型、<code>F</code> はフォームの型です）</p>
+<ul>
+<li><strong>書いた項目だけが作られます。</strong></li>
+<li><code>新規作成</code>・<code>更新</code> は、<strong>フォームとエンティティで名前と型が同じフィールド</strong>を1つずつコピーします。
+フォームにだけあるフィールドがあると作れないので、そのときは <code>メソッド：</code> で処理を書きます。</li>
+<li><code>自動生成：</code> の後のリポジトリは、<code>インジェクション</code> に書いたものでなければなりません。</li>
+</ul>
+<h3 id="53-フォームとエンティティの詰め替え"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.3 フォームとエンティティの詰め替え</a></h3>
+<p>編集画面では、データベースから読んだエンティティの値を、フォームに移して画面に出します。
+このためのメソッドは、<strong><code>フォームに詰め替え → F</code></strong> で作ります。</p>
+<pre><code>└─自動生成：BookRepository
+      ├─…
+      ├─詰め替え ← BookForm
+      └─フォームに詰め替え → BookForm
+</code></pre>
+<pre class="java"><code class="language-java">// 自動生成：詰め替え
+private void copyFormToEntity(BookForm bookForm, Book book) {
+    book.setTitle(bookForm.getTitle());
+    book.setPrice(bookForm.getPrice());
+}
+
+// 自動生成：フォームに詰め替え
+public void copyEntityToForm(Book book, BookForm bookForm) {
+    bookForm.setId(book.getId());
+    bookForm.setTitle(book.getTitle());
+    bookForm.setPrice(book.getPrice());
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>向き</th>
+<th>使う場所</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>詰め替え ← F</code></strong></td>
+<td>フォーム → エンティティ（主キーは除く）</td>
+<td>サービスの中（<code>新規作成</code>・<code>更新</code> がこれを呼ぶようになる）</td>
+</tr>
+<tr>
+<td><strong><code>フォームに詰め替え → F</code></strong></td>
+<td>エンティティ → フォーム（主キーも含む）</td>
+<td>コントローラーの編集画面（6.4・7.4）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="第6章-コントローラー"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第6章 コントローラー</a></h2>
+<h3 id="61-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.1 基本の形</a></h3>
+<p>コントローラーは、ブラウザからの要求を受け取り、サービスを呼んで、表示するテンプレートを選ぶ部品です。
+<strong><code>ベースパス</code></strong> に URL の共通部分を書き、要求ごとに <strong><code>メソッド：</code></strong> を書きます。
+メソッドに <strong><code>マッピング</code></strong> を書くと、その URL への要求を受け取るメソッド（<strong>ハンドラーメソッド</strong>）になります。</p>
+<pre><code>コントローラー：MemberController
+├─目的：会員の一覧・登録を扱う
+├─ベースパス：/members
+├─インジェクション
+│  └─会員サービス：MemberService memberService
+└─メソッド：list
+   ├─目的：会員の一覧を表示する
+   ├─マッピング：GET
+   ├─引数
+   │    └─モデル：Model model
+   ├─戻り値：String、表示するテンプレート名
+   └─処理
+         ├─memberServiceを使って、全件を読み出した結果をmemberListとしてテンプレートに渡す
+         └─&quot;member/list&quot;を返す
+</code></pre>
+<pre class="java"><code class="language-java">// 会員の一覧・登録を扱う
+@Controller
+@RequestMapping(&quot;/members&quot;)
+public class MemberController {
+
+    private final MemberService memberService; // 会員サービス
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    /**
+     * 会員の一覧を表示する
+     *
+     * @param model モデル
+     * @return 表示するテンプレート名
+     */
+    @GetMapping({&quot;&quot;, &quot;/&quot;}) // 末尾の / の有無どちらでも受け付けるため
+    public String list(Model model) {
+        model.addAttribute(&quot;memberList&quot;, memberService.findAll());
+        return &quot;member/list&quot;;
+    }
+}
+</code></pre>
+<ul>
+<li><strong>ハンドラーメソッドの戻り値は <code>String</code></strong> です。表示するテンプレートの名前か、リダイレクト先を返します。</li>
+<li><code>処理</code> では、サービスの <strong>メソッド名を書かずに、何をするかを書けます</strong>（「全件を読み出した」→ <code>findAll()</code>）。
+サービスにあるメソッドの中から、意味の合うものが選ばれます。</li>
+</ul>
+<h3 id="62-マッピング"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.2 マッピング</a></h3>
+<p><strong><code>マッピング：&lt;HTTPメソッド&gt; &lt;パス&gt;</code></strong> と書きます。<strong>パスは <code>ベースパス</code> からの続き</strong>です。</p>
+<table>
+<thead>
+<tr>
+<th>SPD</th>
+<th>受け取る要求（ベースパスが <code>/members</code> のとき）</th>
+<th>生成されるアノテーション</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>マッピング：GET</code></strong></td>
+<td><code>GET /members</code></td>
+<td><code>@GetMapping({&quot;&quot;, &quot;/&quot;})</code></td>
+</tr>
+<tr>
+<td><strong><code>マッピング：GET /new</code></strong></td>
+<td><code>GET /members/new</code></td>
+<td><code>@GetMapping(&quot;/new&quot;)</code></td>
+</tr>
+<tr>
+<td><strong><code>マッピング：GET /{id}/edit</code></strong></td>
+<td><code>GET /members/1/edit</code> など</td>
+<td><code>@GetMapping(&quot;/{id}/edit&quot;)</code></td>
+</tr>
+<tr>
+<td><strong><code>マッピング：POST</code></strong></td>
+<td><code>POST /members</code></td>
+<td><code>@PostMapping({&quot;&quot;, &quot;/&quot;})</code></td>
+</tr>
+<tr>
+<td><strong><code>マッピング：POST /{id}/delete</code></strong></td>
+<td><code>POST /members/1/delete</code> など</td>
+<td><code>@PostMapping(&quot;/{id}/delete&quot;)</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>画面を表示するときは <strong><code>GET</code></strong>、データを登録・更新・削除するときは <strong><code>POST</code></strong> を使います。</li>
+<li><strong>パスにベースパスを繰り返し書かないでください。</strong> <code>ベースパス：/members</code> で <code>マッピング：GET /members</code> と書くと、URL は <code>/members/members</code> になります。</li>
+<li>パスの <code>{id}</code> の部分は、引数の <code>@パス変数</code> で受け取ります（6.3）。</li>
+</ul>
+<h3 id="63-引数とマーカー"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.3 引数とマーカー</a></h3>
+<p>引数は <strong><code>&lt;説明&gt;：&lt;マーカー&gt; &lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。<strong>マーカーで、値をどこから受け取るかを決めます。</strong></p>
+<table>
+<thead>
+<tr>
+<th>SPD</th>
+<th>受け取るもの</th>
+<th>生成される引数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>入力内容：@検証 MemberForm memberForm</code></strong></td>
+<td>フォームの入力（検証する）</td>
+<td><code>@Valid MemberForm memberForm</code></td>
+</tr>
+<tr>
+<td><strong><code>会員番号：@パス変数 Long id</code></strong></td>
+<td>URL の <code>{id}</code> の部分</td>
+<td><code>@PathVariable Long id</code></td>
+</tr>
+<tr>
+<td><strong><code>キーワード：@パラメータ String keyword</code></strong></td>
+<td>URL の <code>?keyword=…</code> やフォームの値</td>
+<td><code>@RequestParam String keyword</code></td>
+</tr>
+<tr>
+<td><code>キーワード：@パラメータ String keyword = &quot;&quot;</code></td>
+<td>同上（無いときは <code>&quot;&quot;</code>）</td>
+<td><code>@RequestParam(defaultValue = &quot;&quot;) String keyword</code></td>
+</tr>
+<tr>
+<td><code>モデル：Model model</code></td>
+<td>テンプレートに値を渡す入れ物</td>
+<td><code>Model model</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>String</code>・<code>Long</code> のような単純な型には、必ず <code>@パス変数</code> か <code>@パラメータ</code> を付けます。</strong> 付けないと、どこから受け取るか決められません。</li>
+<li><code>Model</code>・<code>BindingResult</code>・<code>RedirectAttributes</code> は、型で決まるのでマーカーは要りません。</li>
+<li>引数が1つだけなら、<code>引数：会員番号：@パス変数 Long id</code> のように1行で書けます。</li>
+</ul>
+<h3 id="64-処理の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.4 処理の書き方</a></h3>
+<p><code>処理</code> には、Java 用の SPD と同じ書き方に加えて、コントローラーだけで使う言い方があります。</p>
+<table>
+<thead>
+<tr>
+<th>SPD の書き方</th>
+<th>生成されるコード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>&quot;member/list&quot;を返す</code></strong></td>
+<td><code>return &quot;member/list&quot;;</code>（テンプレートを表示）</td>
+</tr>
+<tr>
+<td><strong><code>&lt;名前&gt;をテンプレートに渡す</code></strong></td>
+<td><code>model.addAttribute(&quot;&lt;名前&gt;&quot;, &lt;名前&gt;);</code></td>
+</tr>
+<tr>
+<td><strong><code>&lt;式&gt;を&lt;名前&gt;としてテンプレートに渡す</code></strong></td>
+<td><code>model.addAttribute(&quot;&lt;名前&gt;&quot;, &lt;式&gt;);</code></td>
+</tr>
+<tr>
+<td><strong><code>空のMemberFormを作ってテンプレートに渡す</code></strong></td>
+<td><code>model.addAttribute(&quot;memberForm&quot;, new MemberForm());</code></td>
+</tr>
+<tr>
+<td><strong><code>ベースパスにリダイレクトする</code></strong></td>
+<td><code>return &quot;redirect:/members&quot;;</code></td>
+</tr>
+<tr>
+<td><code>/members/{id}へリダイレクトする</code></td>
+<td><code>return &quot;redirect:/members/&quot; + id;</code></td>
+</tr>
+<tr>
+<td><strong><code>&quot;登録しました&quot;をフラッシュメッセージとして渡す</code></strong></td>
+<td><code>redirectAttrs.addFlashAttribute(&quot;message&quot;, &quot;登録しました&quot;);</code></td>
+</tr>
+<tr>
+<td><strong><code>memberをMemberForm型の変数memberFormに詰め替える</code></strong></td>
+<td><code>var memberForm = new MemberForm();</code> ＋ <code>memberService.copyEntityToForm(member, memberForm);</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>リダイレクト</strong>は、処理のあとで別の URL を開き直させることです。登録や削除のあとは、一覧へリダイレクトするのが基本です。</li>
+<li><strong>フラッシュメッセージ</strong>は、リダイレクト先の画面に1回だけ渡すメッセージです。テンプレートでは <code>message</code> という名前で受け取ります。
+必ずリダイレクトと組で使います。</li>
+<li>「詰め替える」には、サービスに <code>フォームに詰め替え → MemberForm</code> が必要です（5.3）。</li>
+</ul>
+<h3 id="65-補われる引数"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.5 補われる引数</a></h3>
+<p>次の引数は、<code>引数</code> に書かなくても自動で補われます。</p>
+<table>
+<thead>
+<tr>
+<th>補われる引数</th>
+<th>補われる条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>BindingResult result</code></strong></td>
+<td><code>@検証</code> の引数がある</td>
+</tr>
+<tr>
+<td><strong><code>Model model</code></strong></td>
+<td><code>処理</code> に「テンプレートに渡す」がある</td>
+</tr>
+<tr>
+<td><strong><code>RedirectAttributes redirectAttrs</code></strong></td>
+<td><code>処理</code> に「フラッシュメッセージとして渡す」がある</td>
+</tr>
+</tbody>
+</table>
+<pre><code>└─メソッド：create
+     ├─目的：入力された会員を登録する
+     ├─マッピング：POST
+     ├─引数
+     │    └─入力内容：@検証 MemberForm memberForm
+     ├─戻り値：String、表示するテンプレート名またはリダイレクト先
+     └─処理
+           ├─◇─resultにエラーがある
+           │  └─&quot;member/form&quot;を返す
+           ├─memberServiceを使って、memberFormから会員を登録する
+           ├─&quot;登録しました&quot;をフラッシュメッセージとして渡す
+           └─ベースパスにリダイレクトする
+</code></pre>
+<pre class="java"><code class="language-java">// SPDに無いため BindingResult result を補った
+// SPDに無いため RedirectAttributes redirectAttrs を補った
+@PostMapping({&quot;&quot;, &quot;/&quot;}) // 末尾の / の有無どちらでも受け付けるため
+public String create(@Valid MemberForm memberForm,
+                     BindingResult result,
+                     RedirectAttributes redirectAttrs) {
+    if (result.hasErrors()) {
+        return &quot;member/form&quot;;
+    }
+    memberService.create(memberForm);
+    redirectAttrs.addFlashAttribute(&quot;message&quot;, &quot;登録しました&quot;);
+    return &quot;redirect:/members&quot;;
+}
+</code></pre>
+<ul>
+<li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。<code>処理</code> では、この名前で書きます（<code>resultにエラーがある</code>）。</li>
+<li>入力にエラーがあれば、同じ入力画面をもう一度表示します。入力した値とエラーメッセージは、そのまま画面に出ます。</li>
+</ul>
+<hr />
+<h2 id="第7章-コントローラーとテンプレートをつなぐ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第7章 コントローラーとテンプレートをつなぐ</a></h2>
+<p>コントローラーとテンプレートは、<strong>名前でつながっています</strong>。名前がずれると、コンパイルは通っても画面が正しく出ません。</p>
+<h3 id="71-テンプレート名"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.1 テンプレート名</a></h3>
+<p>コントローラーの <strong><code>&quot;…&quot;を返す</code></strong> の文字列と、テンプレートの <strong><code>テンプレート：…</code></strong> のタイトルを同じにします。</p>
+<pre><code>コントローラー側                       テンプレート側
+└─処理                                 テンプレート：member/list
+      └─&quot;member/list&quot;を返す
+</code></pre>
+<ul>
+<li>ファイルは <code>src/main/resources/templates/member/list.html</code> になります。</li>
+<li><strong><code>.html</code> は付けません。先頭に <code>/</code> も付けません</strong>（<code>&quot;/member/list&quot;</code> としない）。</li>
+</ul>
+<h3 id="72-テンプレートに渡す名前"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.2 テンプレートに渡す名前</a></h3>
+<p>コントローラーで <strong>「テンプレートに渡す」と書いた名前</strong>を、テンプレートの <strong><code>受け取り</code></strong> に同じ名前で書きます。</p>
+<pre><code>コントローラー側                                           テンプレート側
+└─処理                                                     ├─受け取り
+      └─…の結果をmemberListとしてテンプレートに渡す        │    └─会員リスト：List&lt;Member&gt; memberList
+</code></pre>
+<ul>
+<li><strong>リストの名前は <code>～List</code> にします</strong>（<code>memberList</code>・<code>bookList</code>）。<code>members</code> のような複数形にはしません。</li>
+<li>フラッシュメッセージは <code>message</code> という名前で渡るので、テンプレートでは <code>メッセージ：String message　※任意</code> と受け取ります。</li>
+</ul>
+<h3 id="73-フォームの名前"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.3 フォームの名前</a></h3>
+<p><strong>フォームの名前は、型名の先頭を小文字にしたもの</strong>に統一します（<code>MemberForm</code> → <code>memberForm</code>）。</p>
+<table>
+<thead>
+<tr>
+<th>場所</th>
+<th>書き方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>コントローラーの引数</td>
+<td><code>入力内容：@検証 MemberForm memberForm</code></td>
+</tr>
+<tr>
+<td>コントローラーの処理</td>
+<td><code>空のMemberFormを作ってテンプレートに渡す</code>（名前は自動で <code>memberForm</code>）</td>
+</tr>
+<tr>
+<td>テンプレートの受け取り</td>
+<td><code>入力内容：MemberForm memberForm</code></td>
+</tr>
+<tr>
+<td>テンプレートのフォーム</td>
+<td><code>［フォーム］memberForm → POST /members</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>引数を <code>MemberForm form</code> のように別の名前にすると、テンプレートとつながらなくなります。</li>
+</ul>
+<h3 id="74-登録編集削除の流れ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.4 登録・編集・削除の流れ</a></h3>
+<p>一覧・登録・編集・削除をそろえたコントローラーの例です。サービスには、<code>自動生成</code> で <code>全件検索</code>・<code>主キーで検索</code>・<code>新規作成 ← MemberForm</code>・<code>更新 ← MemberForm</code>・<code>削除</code>・<code>フォームに詰め替え → MemberForm</code> を書いておきます。</p>
+<pre><code>コントローラー：MemberController
+├─目的：会員の一覧・登録・編集・削除を扱う
+├─ベースパス：/members
+├─インジェクション
+│  └─会員サービス：MemberService memberService
+│
+├─メソッド：newForm
+│  ├─目的：登録画面を表示する
+│  ├─マッピング：GET /new
+│  ├─引数：なし
+│  ├─戻り値：String、表示するテンプレート名
+│  └─処理
+│        ├─空のMemberFormを作ってテンプレートに渡す
+│        └─&quot;member/form&quot;を返す
+│
+├─メソッド：editForm
+│  ├─目的：編集画面を表示する
+│  ├─マッピング：GET /{id}/edit
+│  ├─引数：会員番号：@パス変数 Long id
+│  ├─戻り値：String、表示するテンプレート名
+│  └─処理
+│        ├─memberServiceを使って、idで会員を検索した結果を変数memberに代入する
+│        ├─memberをMemberForm型の変数memberFormに詰め替える
+│        ├─memberFormをテンプレートに渡す
+│        └─&quot;member/edit&quot;を返す
+│
+├─メソッド：update
+│  ├─目的：入力された内容で会員を更新する
+│  ├─マッピング：POST /update
+│  ├─引数：入力内容：@検証 MemberForm memberForm
+│  ├─戻り値：String、表示するテンプレート名またはリダイレクト先
+│  └─処理
+│        ├─◇─resultにエラーがある
+│        │  └─&quot;member/edit&quot;を返す
+│        ├─memberServiceを使って、memberFormで会員を更新する
+│        ├─&quot;更新しました&quot;をフラッシュメッセージとして渡す
+│        └─ベースパスにリダイレクトする
+│
+└─メソッド：delete
+   ├─目的：会員を削除する
+   ├─マッピング：POST /{id}/delete
+   ├─引数：会員番号：@パス変数 Long id
+   ├─戻り値：String、リダイレクト先
+   └─処理
+         ├─memberServiceを使って、idで会員を削除する
+         └─ベースパスにリダイレクトする
+</code></pre>
+<pre class="java"><code class="language-java">// SPDに無いため Model model を補った
+@GetMapping(&quot;/new&quot;)
+public String newForm(Model model) {
+    model.addAttribute(&quot;memberForm&quot;, new MemberForm());
+    return &quot;member/form&quot;;
+}
+
+// SPDに無いため Model model を補った
+@GetMapping(&quot;/{id}/edit&quot;)
+public String editForm(@PathVariable Long id, Model model) {
+    var member = memberService.findById(id);
+    var memberForm = new MemberForm();
+    memberService.copyEntityToForm(member, memberForm);
+    model.addAttribute(&quot;memberForm&quot;, memberForm);
+    return &quot;member/edit&quot;;
+}
+
+// SPDに無いため BindingResult result を補った
+// SPDに無いため RedirectAttributes redirectAttrs を補った
+@PostMapping(&quot;/update&quot;)
+public String update(@Valid MemberForm memberForm,
+                     BindingResult result,
+                     RedirectAttributes redirectAttrs) {
+    if (result.hasErrors()) {
+        return &quot;member/edit&quot;;
+    }
+    memberService.update(memberForm);
+    redirectAttrs.addFlashAttribute(&quot;message&quot;, &quot;更新しました&quot;);
+    return &quot;redirect:/members&quot;;
+}
+
+@PostMapping(&quot;/{id}/delete&quot;)
+public String delete(@PathVariable Long id) {
+    memberService.deleteById(id);
+    return &quot;redirect:/members&quot;;
+}
+</code></pre>
+<p>（Javadoc は省略しています。）</p>
+<p>画面の動きは次のようになります。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>要求</th>
+<th>メソッド</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一覧を開く</td>
+<td><code>GET /members</code></td>
+<td><code>list</code></td>
+<td><code>member/list</code> を表示</td>
+</tr>
+<tr>
+<td>「新規登録」を押す</td>
+<td><code>GET /members/new</code></td>
+<td><code>newForm</code></td>
+<td>空のフォームで <code>member/form</code> を表示</td>
+</tr>
+<tr>
+<td>登録ボタンを押す</td>
+<td><code>POST /members</code></td>
+<td><code>create</code></td>
+<td>エラーなら <code>member/form</code> に戻る。成功なら一覧へリダイレクト</td>
+</tr>
+<tr>
+<td>「編集」を押す</td>
+<td><code>GET /members/1/edit</code></td>
+<td><code>editForm</code></td>
+<td>会員の値を入れたフォームで <code>member/edit</code> を表示</td>
+</tr>
+<tr>
+<td>更新ボタンを押す</td>
+<td><code>POST /members/update</code></td>
+<td><code>update</code></td>
+<td>エラーなら <code>member/edit</code> に戻る。成功なら一覧へリダイレクト</td>
+</tr>
+<tr>
+<td>削除ボタンを押す</td>
+<td><code>POST /members/1/delete</code></td>
+<td><code>delete</code></td>
+<td>一覧へリダイレクト</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>編集画面のテンプレートでは、<code>番号＜hidden＞：id</code> で主キーを送ります。<code>更新</code> は、この主キーでエンティティを読み出して上書きします。</li>
+</ul>
+<hr />
+<h2 id="第8章-まとめ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第8章 まとめ</a></h2>
+<h3 id="81-よくある間違い"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.1 よくある間違い</a></h3>
+<p>規約に合わない書き方は、推測で補われることはなく、生成されずに <strong>【確認事項】として報告されます</strong>。よくある間違いを挙げます。</p>
+<table>
+<thead>
+<tr>
+<th>間違い</th>
+<th>正しい書き方</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>会員番号：Long id</code>（ハンドラーメソッドの引数）</td>
+<td><code>会員番号：@パス変数 Long id</code></td>
+<td>どこから受け取るか決められない</td>
+</tr>
+<tr>
+<td><code>入力内容：MemberForm form</code></td>
+<td><code>入力内容：@検証 MemberForm memberForm</code></td>
+<td>フォームの名前は型名の先頭を小文字にする</td>
+</tr>
+<tr>
+<td><code>ベースパス：/members</code> で <code>マッピング：GET /members</code></td>
+<td><code>マッピング：GET</code></td>
+<td>パスはベースパスからの続き（<code>/members/members</code> になる）</td>
+</tr>
+<tr>
+<td><code>&quot;/member/list&quot;を返す</code>・<code>&quot;member/list.html&quot;を返す</code></td>
+<td><code>&quot;member/list&quot;を返す</code></td>
+<td><code>/</code> と <code>.html</code> は付けない</td>
+</tr>
+<tr>
+<td><code>…をmembersとしてテンプレートに渡す</code></td>
+<td><code>…をmemberListとしてテンプレートに渡す</code></td>
+<td>リストの名前は <code>～List</code></td>
+</tr>
+<tr>
+<td>コントローラーで <code>memberRepository</code> を使う</td>
+<td>サービスを通す</td>
+<td>コントローラーからリポジトリを呼ばない</td>
+</tr>
+<tr>
+<td>エンティティで <code>String name ＠必須</code></td>
+<td><code>@必須 String name</code></td>
+<td>エンティティのマーカーは型の前</td>
+</tr>
+<tr>
+<td>フォームで <code>@必須 String name</code></td>
+<td><code>String name　＠必須</code></td>
+<td>フォームの検証は変数名の後</td>
+</tr>
+<tr>
+<td><code>Date birthday</code></td>
+<td><code>LocalDate birthday</code></td>
+<td>日付は <code>java.time</code> の型</td>
+</tr>
+<tr>
+<td>「フラッシュメッセージとして渡す」の後に <code>&quot;member/list&quot;を返す</code></td>
+<td>後に <code>〜へリダイレクトする</code></td>
+<td>フラッシュメッセージはリダイレクトと組</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-早見表"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.2 早見表</a></h3>
+<p><strong>タイトルと主な項目</strong></p>
+<table>
+<thead>
+<tr>
+<th>SPD</th>
+<th>主な項目</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>エンティティ：</code></td>
+<td><code>目的</code>・<code>テーブル</code>・<code>フィールド</code>・<code>関連</code>・<code>自動生成</code></td>
+</tr>
+<tr>
+<td><code>フォーム：</code></td>
+<td><code>目的</code>・<code>フィールド</code>（行末に検証）・<code>自動生成</code></td>
+</tr>
+<tr>
+<td><code>リポジトリ：</code></td>
+<td><code>目的</code>・<code>対象</code>・<code>主キー</code>・<code>検索メソッド</code>・<code>メソッド：</code>（<code>JPQL</code>）</td>
+</tr>
+<tr>
+<td><code>サービス：</code></td>
+<td><code>目的</code>・<code>インジェクション</code>・<code>メソッド：</code>（<code>トランザクション</code>）・<code>自動生成：&lt;リポジトリ&gt;</code></td>
+</tr>
+<tr>
+<td><code>コントローラー：</code></td>
+<td><code>目的</code>・<code>ベースパス</code>・<code>インジェクション</code>・<code>メソッド：</code>（<code>マッピング</code>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>マーカー</strong></p>
+<table>
+<thead>
+<tr>
+<th>マーカー</th>
+<th>書く場所</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@主キー</code>・<code>@自動採番</code>・<code>@必須</code>・<code>@一意</code>・<code>@桁数(N)</code></td>
+<td>エンティティのフィールド（型の前）</td>
+<td>列の性質</td>
+</tr>
+<tr>
+<td><code>＠必須</code>・<code>＠N文字以内</code> など</td>
+<td>フォームのフィールド（変数名の後）</td>
+<td>入力の検証</td>
+</tr>
+<tr>
+<td><code>@検証</code></td>
+<td>コントローラーの引数</td>
+<td>フォームを受け取って検証する</td>
+</tr>
+<tr>
+<td><code>@パス変数</code></td>
+<td>コントローラーの引数</td>
+<td>URL の <code>{…}</code> から受け取る</td>
+</tr>
+<tr>
+<td><code>@パラメータ</code></td>
+<td>コントローラー・リポジトリの引数</td>
+<td>リクエストパラメーター／JPQL の引数</td>
+</tr>
+</tbody>
+</table>
+<p><strong>決まった名前</strong></p>
+<table>
+<thead>
+<tr>
+<th>名前</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>result</code></td>
+<td>検証の結果（<code>resultにエラーがある</code>）</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>テンプレートに値を渡す入れ物</td>
+</tr>
+<tr>
+<td><code>redirectAttrs</code></td>
+<td>フラッシュメッセージを渡す入れ物</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>フラッシュメッセージの名前（テンプレートで受け取る名前）</td>
+</tr>
+<tr>
+<td><code>memberForm</code> など</td>
+<td>フォームの名前（型名の先頭を小文字）</td>
+</tr>
+<tr>
+<td><code>memberList</code> など</td>
+<td>リストの名前（<code>～List</code>）</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

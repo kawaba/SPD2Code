@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPDによるテンプレートの書き方</title>
+<style>
+/* ---- フォント指定 ----
+   本文＝BIZ UDPゴシック（プロポーショナル）／見出し＝游ゴシック体（太字）／
+   SPD・Javaコード＝BIZ UDゴシック（等幅）
+   フォント名は環境ごとに登録名が異なるため、日本語名・英語名を併記する。 */
+body, table, th, td, blockquote {
+   font-family: "BIZ UDPゴシック", "BIZ UDPGothic", "Meiryo", "メイリオ",
+                "Yu Gothic UI", "Hiragino Sans", sans-serif;
+}
+
+/* SPD・Javaコードは等幅のBIZ UDゴシック（Pなし＝等幅。半角＝全角の1/2幅で罫線が揃う） */
+pre, code {
+   font-family: "BIZ UDゴシック", "BIZ UDGothic",
+                "MS ゴシック", "MS Gothic", monospace;
+}
+
+/* 見出しは游ゴシック体の太字 */
+h1, h2, h3, h4, h5, h6 {
+   font-family: "游ゴシック体", "YuGothic", "游ゴシック Medium", "Yu Gothic Medium",
+                "游ゴシック", "Yu Gothic", sans-serif;
+   font-weight: bold;
+}
+
+/* ---- ページ全体（最大幅900px・中央揃え／本文11ptが基準） ---- */
+html { background-color: #eef0f3; }
+body {
+   width: auto;
+   max-width: 900px;          /* 広い画面では900px・中央揃え */
+   overflow-wrap: break-word; /* 長い英単語・URLで横にはみ出さないように */
+   box-sizing: border-box;
+   margin: 26px auto;
+   padding: 31px 66px 37px;   /* 左右の余白は66px */
+   background-color: #ffffff;
+   border: 1px solid #dde1e6;
+   border-radius: 6px;
+   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+   color: #222;
+   font-size: 11pt;
+   line-height: 1.75;
+}
+
+/* ---- 見出し ---- */
+h1 {
+   font-size: 15.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-bottom: 3px solid #1f3a5f;
+   padding-bottom: 6.5pt;
+   margin: 0 0 15.5pt;
+}
+h2 {
+   font-size: 13.5pt;
+   line-height: 1.4;
+   color: #1f3a5f;
+   border-left: 5px solid #4a78a8;
+   border-bottom: 1px solid #d8e0ea;
+   padding: 3pt 0 3pt 8pt;
+   margin: 24pt 0 9pt;
+}
+h3 {
+   font-size: 12pt;
+   line-height: 1.4;
+   color: #2b4c74;
+   padding-bottom: 2pt;
+   border-bottom: 1px dashed #c9d4e1;
+   margin: 17.5pt 0 6.5pt;
+}
+h4 { font-size: 11pt; color: #2b4c74; margin: 13pt 0 4.5pt; }
+h5, h6 { font-size: 10pt; color: #2b4c74; margin: 9pt 0 3pt; }
+
+/* ---- 本文・リスト ---- */
+p  { margin: 6.5pt 0; }
+ul, ol { margin: 6.5pt 0; padding-left: 20pt; }
+li { margin: 3pt 0; }
+li::marker { color: #4a78a8; }
+ol > li::marker { font-weight: bold; }
+strong { color: #1a1a1a; }
+
+/* ---- コードブロック（SPD・Java共通） ---- */
+pre {
+   font-size: 9.5pt;
+   line-height: 1.5;
+   white-space: pre;
+   overflow-x: auto;
+   background-color: #f7f9f7;
+   border: 1px solid #e2e8e2;
+   border-left: 4px solid #9fbf9f;   /* SPD・その他 */
+   border-radius: 4px;
+   padding: 8pt 11pt;
+   margin: 8pt 0 11pt;
+   tab-size: 4;
+   -moz-tab-size: 4;
+}
+pre code {
+   font-size: inherit;
+   background: none;
+   border: none;
+   padding: 0;
+   color: #222;
+   white-space: pre;
+}
+/* Javaコードは左罫の色を変えて区別する */
+pre.java { border-left-color: #7fa3cf; background-color: #f6f9fd; border-color: #dfe7f1; }
+
+/* ---- インラインコード ---- */
+code {
+   font-size: 92%;
+   color: #8a2d3b;
+   background-color: #f4f1f2;
+   border: 1px solid #e8e1e3;
+   border-radius: 3px;
+   padding: 0 4px;
+}
+
+/* ---- 表 ---- */
+table {
+   border-collapse: collapse;
+   font-size: 9.5pt;
+   line-height: 1.5;
+   margin: 8pt 0;
+}
+th, td {
+   border: 1px solid #d5dbe2;
+   padding: 3.5pt 8pt;
+   text-align: left;
+   vertical-align: top;
+}
+th { background-color: #e9eef4; color: #1f3a5f; }
+tr:nth-child(even) td { background-color: #fafbfc; }
+
+/* ---- 引用・区切り線 ---- */
+blockquote {
+   margin: 8pt 0;
+   padding: 4.5pt 11pt;
+   border-left: 4px solid #e0b75a;
+   border-radius: 0 4px 4px 0;
+   background-color: #fdf9ee;
+   color: #333;
+}
+blockquote p { margin: 3pt 0; }
+hr { border: none; border-top: 1px solid #d3d8de; margin: 22pt 0; }
+
+/* ---- チェックリスト ---- */
+ul.checklist { list-style: none; padding-left: 3.5pt; }
+ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
+
+/* ---- 目次リンクと「目次に戻る」見出しリンク ---- */
+a { color: #2f62a3; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h2[id], h3[id] { scroll-margin-top: 12px; }
+a.toc-back { color: inherit; }
+a.toc-back:hover { color: #4a78a8; text-decoration: none; }
+a.toc-back:hover::after {
+   content: "↑ 目次へ";
+   font-size: 8.5pt;
+   font-weight: normal;
+   color: #7a8ea8;
+   margin-left: 8pt;
+}
+
+/* ---- レスポンシブ対応 ---- */
+/* タブレット・狭いウィンドウ：カードの外側と左右の余白を詰める */
+@media screen and (max-width: 960px) {
+   body { margin: 16px auto; padding: 28px 40px 32px; }
+   html { padding: 0 16px; }
+}
+/* スマートフォン：カードの枠をなくし、画面いっぱいに表示する */
+@media screen and (max-width: 640px) {
+   html { background-color: #ffffff; padding: 0; }
+   body { margin: 0; padding: 20px 16px 28px; border: none; border-radius: 0; box-shadow: none; }
+   ul, ol { padding-left: 16pt; }
+   table { display: block; overflow-x: auto; }   /* 表は横スクロール */
+}
+
+/* ---- 印刷時は背景・影・外枠を外す ---- */
+@media print {
+   html { background: none; }
+   body { width: auto; margin: 0; padding: 0; border: none; box-shadow: none; }
+   pre { white-space: pre; overflow: visible; }
+   a.toc-back:hover::after { content: none; }
+}
+</style>
+</head>
+<body>
+<h1>SPDによるテンプレートの書き方</h1>
+<p>Spring Boot の画面（Thymeleaf テンプレート）を SPD で設計するための入門書です。
+規約（<code>thymeleaf.instructions.md</code>）のうち、初めて書くときに知っておきたいことだけを選んで説明します。
+細かい規則や例外は省いていますので、迷ったときは規約を参照してください。</p>
+<p>各節では、<strong>SPD の例</strong>と、そこから<strong>生成されるテンプレート（HTML）</strong>を対にして示します。</p>
+<h2 id="目次">目次</h2>
+<ul>
+<li><a href="#第1章-テンプレートspdの全体像">第1章 テンプレートSPDの全体像</a>
+<ul>
+<li><a href="#11-全体の形">1.1 全体の形</a></li>
+<li><a href="#12-受け取り">1.2 受け取り</a></li>
+<li><a href="#13-構成の行の書き方">1.3 構成の行の書き方</a></li>
+<li><a href="#14-変数-">1.4 変数 <code>{…}</code></a></li>
+</ul>
+</li>
+<li><a href="#第2章-画面に部品を置く">第2章 画面に部品を置く</a>
+<ul>
+<li><a href="#21-見出し段落区切り文字">2.1 見出し・段落・区切り・文字</a></li>
+<li><a href="#22-リンクとパス">2.2 リンクとパス</a></li>
+<li><a href="#23-画像">2.3 画像</a></li>
+<li><a href="#24-段落の中に複数の部品を並べる">2.4 段落の中に複数の部品を並べる</a></li>
+<li><a href="#25-通知">2.5 通知</a></li>
+</ul>
+</li>
+<li><a href="#第3章-表と箇条書き">第3章 表と箇条書き</a>
+<ul>
+<li><a href="#31-一覧の表--表列">3.1 一覧の表 ― 表（列）</a></li>
+<li><a href="#32-詳細の表--表行">3.2 詳細の表 ― 表（行）</a></li>
+<li><a href="#33-箇条書き">3.3 箇条書き</a></li>
+</ul>
+</li>
+<li><a href="#第4章-見た目を整える">第4章 見た目を整える</a>
+<ul>
+<li><a href="#41-値の書式">4.1 値の書式</a></li>
+<li><a href="#42-cssクラス">4.2 CSSクラス</a></li>
+</ul>
+</li>
+<li><a href="#第5章-条件で表示を切り替える">第5章 条件で表示を切り替える</a>
+<ul>
+<li><a href="#51-条件の書き方">5.1 条件の書き方</a></li>
+<li><a href="#52-条件を付ける場所">5.2 条件を付ける場所</a></li>
+<li><a href="#53-条件を取り除いても正しい行にする">5.3 条件を取り除いても正しい行にする</a></li>
+</ul>
+</li>
+<li><a href="#第6章-フォーム">第6章 フォーム</a>
+<ul>
+<li><a href="#61-入力画面の基本">6.1 入力画面の基本</a></li>
+<li><a href="#62-入力項目の種類">6.2 入力項目の種類</a></li>
+<li><a href="#63-編集画面--表示だけの項目と-hidden">6.3 編集画面 ― 表示だけの項目と hidden</a></li>
+<li><a href="#64-ボタンを並べる">6.4 ボタンを並べる</a></li>
+<li><a href="#65-ボタンだけのフォーム">6.5 ボタンだけのフォーム</a></li>
+<li><a href="#66-選択肢をリストから作る">6.6 選択肢をリストから作る</a></li>
+<li><a href="#67-フォームクラスを使わない入力">6.7 フォームクラスを使わない入力</a></li>
+</ul>
+</li>
+<li><a href="#第7章-まとめ">第7章 まとめ</a>
+<ul>
+<li><a href="#71-完全な例">7.1 完全な例</a></li>
+<li><a href="#72-よくある間違い">7.2 よくある間違い</a></li>
+<li><a href="#73-記号の早見表">7.3 記号の早見表</a></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="第1章-テンプレートspdの全体像"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第1章 テンプレートSPDの全体像</a></h2>
+<h3 id="11-全体の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.1 全体の形</a></h3>
+<p>テンプレートの SPD は、タイトルを <strong><code>テンプレート：&lt;名前&gt;</code></strong> とし、その下に設定の項目と <strong><code>構成</code></strong> を書きます。
+<code>構成</code> が画面の中身です。</p>
+<pre><code>テンプレート：member/list
+│
+├─目的：会員の一覧を表示する
+├─レイアウト：なし
+├─タイトル：会員一覧
+├─css：css/style.css
+│
+├─受け取り
+│  ├─会員リスト：List&lt;Member&gt; memberList
+│  └─メッセージ：String message　※任意
+│
+└─構成
+     ├─［見出し］会員一覧
+     └─［リンク］新規登録 → /members/new
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>テンプレート：member/list</code></td>
+<td>作るファイル。<code>templates/member/list.html</code> になります</td>
+</tr>
+<tr>
+<td><code>目的</code></td>
+<td>何の画面か。ファイルの先頭のコメントに残ります</td>
+</tr>
+<tr>
+<td><code>レイアウト</code></td>
+<td>共通レイアウトを使うかどうか。初めは <strong><code>なし</code></strong> で構いません</td>
+</tr>
+<tr>
+<td><code>タイトル</code></td>
+<td>ブラウザのタブに出る題（<code>&lt;title&gt;</code>）</td>
+</tr>
+<tr>
+<td><code>css</code></td>
+<td>読み込むスタイルシート。<code>static/</code> からの位置で書きます</td>
+</tr>
+<tr>
+<td><code>受け取り</code></td>
+<td>コントローラーから渡される値</td>
+</tr>
+<tr>
+<td><code>構成</code></td>
+<td>画面に並べるもの（第2章から説明します）</td>
+</tr>
+</tbody>
+</table>
+<p>生成されるテンプレートの骨格は、次のようになります。</p>
+<pre><code class="language-html">&lt;!--/*
+テンプレート：member/list
+…（SPD 全体がここに残る）…
+*/--&gt;
+&lt;!doctype html&gt;
+&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot; lang=&quot;ja&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; th:href=&quot;@{/css/style.css}&quot;&gt;
+  &lt;title&gt;会員一覧&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;会員一覧&lt;/h1&gt;
+  &lt;a th:href=&quot;@{/members/new}&quot;&gt;新規登録&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<ul>
+<li><code>構成</code> の中身が <code>&lt;body&gt;</code> の中に、書いた順に並びます。</li>
+<li><strong>SPD はテンプレートの先頭にコメントとして残ります。</strong> このコメント（<code>&lt;!--/* … */--&gt;</code>）はブラウザには送られません。</li>
+</ul>
+<h3 id="12-受け取り"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.2 受け取り</a></h3>
+<p><strong><code>受け取り</code></strong> には、コントローラーがテンプレートに渡す値を <strong><code>&lt;説明&gt;：&lt;型&gt; &lt;名前&gt;</code></strong> の形で書きます。</p>
+<pre><code>├─受け取り
+│  ├─会員リスト：List&lt;Member&gt; memberList
+│  └─メッセージ：String message　※任意
+</code></pre>
+<ul>
+<li><strong><code>&lt;名前&gt;</code> は、コントローラーの SPD で「〜をテンプレートに渡す」と書いた名前と同じにします。</strong> ここがずれると、画面に値が出ません。</li>
+<li>画面の中では、この名前を使って値を取り出します（<code>{memberList}</code>・<code>{message}</code>。1.4 で説明します）。</li>
+<li>渡されないことがある値には <strong><code>※任意</code></strong> を付けます。<code>※任意</code> の値は、条件を付けて表示します（第5章）。</li>
+<li>何も受け取らない画面は <code>受け取り：なし</code> と書きます。</li>
+</ul>
+<h3 id="13-構成の行の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.3 構成の行の書き方</a></h3>
+<p><code>構成</code> の中の行は、次の <strong>4つの形</strong> のどれかで書きます。形によって意味が決まります。</p>
+<table>
+<thead>
+<tr>
+<th>形</th>
+<th>意味</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>［種類］…</code></strong></td>
+<td><strong>ノード</strong>：見出し・リンク・表などの部品</td>
+<td><code>［見出し］会員一覧</code></td>
+</tr>
+<tr>
+<td><strong><code>ラベル：値</code></strong></td>
+<td><strong>表示</strong>：ラベルと値を並べて見せる</td>
+<td><code>名前：{m.name}</code></td>
+</tr>
+<tr>
+<td><strong><code>ラベル＜種類＞：名前</code></strong></td>
+<td><strong>入力</strong>：入力欄を作る</td>
+<td><code>名前＜text＞：name</code></td>
+</tr>
+<tr>
+<td><strong><code>キャプション＜種類＞</code></strong></td>
+<td><strong>ボタン</strong></td>
+<td><code>登録する＜submit＞</code></td>
+</tr>
+</tbody>
+</table>
+<p>これに加えて、次の印を使います。</p>
+<table>
+<thead>
+<tr>
+<th>印</th>
+<th>意味</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>→ パス</code></strong></td>
+<td>リンクの行き先・フォームの送信先</td>
+<td><code>［リンク］戻る → /members</code></td>
+</tr>
+<tr>
+<td><strong><code>(条件)</code></strong></td>
+<td>条件が成り立つときだけ表示する（第5章）</td>
+<td><code>({message}は空ではない) ［通知］{message}</code></td>
+</tr>
+<tr>
+<td><strong><code>&lt;&lt;…&gt;&gt;</code></strong></td>
+<td>書式・クラス名・画像のサイズ（第4章）</td>
+<td><code>{m.joinedOn} &lt;&lt;&quot;yyyy年MM月dd日&quot;&gt;&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>覚えておきたい決まりは次の3つです。</p>
+<ul>
+<li><strong><code>［…］</code> で始まる行だけがノードです。</strong> <code>：</code> はいつもラベルと値の区切りです。</li>
+<li><strong><code>ラベル：値</code> を書けるのは、表（第3章）の中とフォーム（第6章）の中だけです。</strong>
+<code>構成</code> の直下に値を1つ出したいときは、<code>［段落］</code>・<code>［文字］</code> を使います。</li>
+<li><strong><code>［…］</code> も <code>：</code> も <code>＜…＞</code> も無い、文字だけの行は書けません。</strong> 文字を出すときも <code>［文字］在庫あり</code> のように書きます。</li>
+</ul>
+<h3 id="14-変数-"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.4 変数 <code>{…}</code></a></h3>
+<p>値の中で <strong>半角の <code>{…}</code> で囲んだ部分が変数</strong>で、それ以外は書いたとおりの文字として表示されます。
+<code>{…}</code> の中は、<code>受け取り</code> の名前（または繰り返しの変数）から書き始めます。</p>
+<pre><code>└─構成
+     ├─［見出し］会員一覧
+     ├─［見出し］{title}
+     └─［段落］{member.name}さん、ようこそ
+</code></pre>
+<pre><code class="language-html">&lt;h1&gt;会員一覧&lt;/h1&gt;
+&lt;h1 th:text=&quot;${title}&quot;&gt;表題&lt;/h1&gt;
+&lt;p th:text=&quot;|${member.name}さん、ようこそ|&quot;&gt;nameさん、ようこそ&lt;/p&gt;
+</code></pre>
+<ul>
+<li><strong><code>{…}</code> の無い文字は、HTML にそのまま書かれます。</strong></li>
+<li><strong><code>{…}</code> のある値は <code>th:text</code> で出力されます。</strong> 文字と変数が混ざっていれば <code>|…|</code> の形になります。</li>
+<li>タグの中の <code>表題</code>・<code>name</code> は、<strong>プレビュー用のダミー</strong>です。テンプレートをブラウザで直接開いたときに表示され、
+アプリとして動かしたときは本当の値に置き換わります。ダミーは規則に従って自動で決まるので、SPD に書く必要はありません。</li>
+<li><strong><code>{…}</code> は必ず半角で書きます。</strong> 全角の <code>｛…｝</code> は変数になりません。</li>
+</ul>
+<hr />
+<h2 id="第2章-画面に部品を置く"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第2章 画面に部品を置く</a></h2>
+<h3 id="21-見出し段落区切り文字"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.1 見出し・段落・区切り・文字</a></h3>
+<p>画面の部品は <strong><code>［種類］値</code></strong> の形で書きます。よく使うものは次のとおりです。</p>
+<pre><code>└─構成
+     ├─［見出し］会員一覧
+     ├─［小見出し］お知らせ
+     ├─［段落］毎月1日に更新します。
+     ├─［区切り］
+     └─［文字］{member.name}
+</code></pre>
+<pre><code class="language-html">&lt;h1&gt;会員一覧&lt;/h1&gt;
+&lt;h2&gt;お知らせ&lt;/h2&gt;
+&lt;p&gt;毎月1日に更新します。&lt;/p&gt;
+&lt;hr&gt;
+&lt;span th:text=&quot;${member.name}&quot;&gt;name&lt;/span&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>ノード</th>
+<th>生成される要素</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>［見出し］</code></strong></td>
+<td><code>&lt;h1&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>［小見出し］</code></strong></td>
+<td><code>&lt;h2&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>［段落］</code></strong></td>
+<td><code>&lt;p&gt;</code></td>
+</tr>
+<tr>
+<td><strong><code>［区切り］</code></strong></td>
+<td><code>&lt;hr&gt;</code>（値を書きません）</td>
+</tr>
+<tr>
+<td><strong><code>［文字］</code></strong></td>
+<td>変数があれば <code>&lt;span&gt;</code>、無ければ文字だけ</td>
+</tr>
+<tr>
+<td><strong><code>［通知］</code></strong></td>
+<td><code>&lt;div class=&quot;message&quot;&gt;</code>（2.5）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-リンクとパス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.2 リンクとパス</a></h3>
+<p><strong><code>［リンク］&lt;表示する文字&gt; → &lt;パス&gt;</code></strong> と書きます。パスには変数を入れられます。</p>
+<pre><code>└─構成
+     ├─［リンク］新規登録 → /members/new
+     └─［リンク］{member.name}を編集 → /members/{member.id}/edit
+</code></pre>
+<pre><code class="language-html">&lt;a th:href=&quot;@{/members/new}&quot;&gt;新規登録&lt;/a&gt;
+&lt;a th:href=&quot;@{/members/{id}/edit(id=${member.id})}&quot; th:text=&quot;|${member.name}を編集|&quot;&gt;nameを編集&lt;/a&gt;
+</code></pre>
+<ul>
+<li>パスは <strong><code>/</code> から始まる絶対パス</strong>で書きます。コントローラーの URL と同じにします。</li>
+<li>パスの中の <code>{member.id}</code> のような変数は、Thymeleaf の <strong><code>{id}(id=…)</code></strong> の形に変換されます。</li>
+</ul>
+<h3 id="23-画像"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.3 画像</a></h3>
+<p><strong><code>［画像］&lt;パス&gt; &quot;&lt;代替文字列&gt;&quot; &lt;&lt;サイズ&gt;&gt;</code></strong> と書きます。代替文字列とサイズは省略できます。</p>
+<pre><code>└─構成
+     ├─［画像］/images/logo.png &quot;会社のロゴ&quot; &lt;&lt;120px&gt;&gt;
+     └─［画像］/images/{member.photo}
+</code></pre>
+<pre><code class="language-html">&lt;img th:src=&quot;@{/images/logo.png}&quot; alt=&quot;会社のロゴ&quot; width=&quot;120&quot;&gt;
+&lt;img th:src=&quot;@{/images/{photo}(photo=${member.photo})}&quot; alt=&quot;&quot;&gt;
+</code></pre>
+<ul>
+<li>パスは <strong><code>static/</code> フォルダーからの位置</strong>を <code>/</code> から書きます（<code>static/images/logo.png</code> → <code>/images/logo.png</code>）。</li>
+<li>サイズは <strong>幅を <code>px</code> 付きで</strong>書きます。高さは縦横の比を保って自動で決まります。</li>
+<li>代替文字列を省略すると <code>alt=&quot;&quot;</code> になります。</li>
+</ul>
+<h3 id="24-段落の中に複数の部品を並べる"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.4 段落の中に複数の部品を並べる</a></h3>
+<p>文字・変数・リンク・画像を1つの文の中に並べたいときは、<strong>値を書かずに <code>［段落］</code> の子に並べます</strong>。</p>
+<pre><code>└─構成
+     └─［段落］
+          ├─［文字］ようこそ、
+          ├─［文字］{member.name}
+          ├─［文字］さん。
+          ├─［改行］
+          ├─［文字］詳しくは
+          └─［リンク］こちら → /about
+</code></pre>
+<pre><code class="language-html">&lt;p&gt;ようこそ、&lt;span th:text=&quot;${member.name}&quot;&gt;name&lt;/span&gt;さん。&lt;br&gt;
+詳しくは&lt;a th:href=&quot;@{/about}&quot;&gt;こちら&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<ul>
+<li>子に書けるのは <strong><code>［文字］</code>・<code>［リンク］</code>・<code>［画像］</code>・<code>［改行］</code></strong> の4つだけです。</li>
+<li><strong><code>［改行］</code></strong> は、このように部品を並べる途中でだけ使えます（<code>&lt;br&gt;</code>）。段落と段落の間を空けるためには使いません（間隔は CSS で決めます）。</li>
+<li>子が <code>［文字］</code> だけなら、<code>［段落］ようこそ、{member.name}さん。</code> と1行で書けます。</li>
+</ul>
+<h3 id="25-通知"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.5 通知</a></h3>
+<p>処理の結果のメッセージ（「登録しました」など）は <strong><code>［通知］</code></strong> で表示します。</p>
+<pre><code>└─構成
+     └─［通知］{message}
+</code></pre>
+<pre><code class="language-html">&lt;div class=&quot;message&quot; th:text=&quot;${message}&quot;&gt;メッセージ&lt;/div&gt;
+</code></pre>
+<ul>
+<li><code>class=&quot;message&quot;</code> が必ず付くので、CSS でメッセージの見た目を決めておけます。</li>
+<li>メッセージは渡されないこともあるので、実際には条件を付けて書きます（第5章の 5.1）。</li>
+</ul>
+<hr />
+<h2 id="第3章-表と箇条書き"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第3章 表と箇条書き</a></h2>
+<h3 id="31-一覧の表--表列"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.1 一覧の表 ― 表（列）</a></h3>
+<p>リストの要素を1行ずつ並べる表は <strong><code>［表（列）］&lt;リスト&gt;の各要素を&lt;変数&gt;とする</code></strong> と書きます。
+<strong>子の1行が表の1列</strong>になります。列は <strong><code>見出し：値</code></strong> の形で書きます。</p>
+<pre><code>└─構成
+     └─［表（列）］memberListの各要素をmとする
+          ├─番号：{m.id}
+          ├─名前：{m.name}
+          └─：［リンク］編集 → /members/{m.id}/edit
+</code></pre>
+<pre><code class="language-html">&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;番号&lt;/th&gt;
+      &lt;th&gt;名前&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr th:each=&quot;m : ${memberList}&quot;&gt;
+      &lt;td th:text=&quot;${m.id}&quot;&gt;番号&lt;/td&gt;
+      &lt;td th:text=&quot;${m.name}&quot;&gt;名前&lt;/td&gt;
+      &lt;td&gt;&lt;a th:href=&quot;@{/members/{id}/edit(id=${m.id})}&quot;&gt;編集&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</code></pre>
+<ul>
+<li><code>：</code> の左が列見出し（<code>&lt;th&gt;</code>）、右がマスの値（<code>&lt;td&gt;</code>）になります。</li>
+<li><strong>「〜の各要素を〜とする」の変数（ここでは <code>m</code>）</strong> で、1行分の要素を指します。<code>th:each</code> は <code>&lt;tr&gt;</code> に付きます。</li>
+<li>見出しの要らない列は、<code>：</code> の左を空にします（<code>：［リンク］編集 → …</code>）。</li>
+<li>値の位置には、<code>［リンク］</code>・<code>［画像］</code>・<code>［文字］</code>・<code>［通知］</code> を書けます。</li>
+</ul>
+<p><strong>1つのマスに複数の部品を置く</strong></p>
+<p>値を書かずに <strong><code>見出し：</code> の子に並べる</strong>と、子が1つのマスに入ります。行ごとの「編集」「削除」などに使います。</p>
+<pre><code>└─構成
+     └─［表（列）］memberListの各要素をmとする
+          ├─名前：{m.name}
+          └─操作：
+               ├─［リンク］編集 → /members/{m.id}/edit
+               ├─［文字］|
+               └─［フォーム］→ POST /members/{m.id}/delete
+                    └─削除＜submit＞
+</code></pre>
+<pre><code class="language-html">&lt;tr th:each=&quot;m : ${memberList}&quot;&gt;
+  &lt;td th:text=&quot;${m.name}&quot;&gt;名前&lt;/td&gt;
+  &lt;td&gt;
+    &lt;a th:href=&quot;@{/members/{id}/edit(id=${m.id})}&quot;&gt;編集&lt;/a&gt;
+    |
+    &lt;form th:action=&quot;@{/members/{id}/delete(id=${m.id})}&quot; method=&quot;post&quot;&gt;
+      &lt;button type=&quot;submit&quot;&gt;削除&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+<ul>
+<li>削除のように <strong>ボタンを置くときは、ボタンだけの <code>［フォーム］</code> を子に置きます</strong>（フォームは第6章）。</li>
+</ul>
+<h3 id="32-詳細の表--表行"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.2 詳細の表 ― 表（行）</a></h3>
+<p>1件のデータを「左に項目名・右に値」の形で見せる表は <strong><code>［表（行）］</code></strong> と書きます。<strong>子の1行が表の1行</strong>になります。繰り返しはありません。</p>
+<pre><code>├─受け取り
+│  └─会員：Member member
+│
+└─構成
+     ├─［見出し］会員詳細
+     └─［表（行）］
+          ├─番号：{member.id}
+          ├─名前：{member.name}
+          ├─写真：［画像］/images/{member.photo} &lt;&lt;120px&gt;&gt;
+          └─［リンク］一覧へ戻る → /members
+</code></pre>
+<pre><code class="language-html">&lt;h1&gt;会員詳細&lt;/h1&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;番号&lt;/td&gt;
+    &lt;td th:text=&quot;${member.id}&quot;&gt;番号&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;名前&lt;/td&gt;
+    &lt;td th:text=&quot;${member.name}&quot;&gt;名前&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;写真&lt;/td&gt;
+    &lt;td&gt;&lt;img th:src=&quot;@{/images/{photo}(photo=${member.photo})}&quot; alt=&quot;&quot; width=&quot;120&quot;&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;2&quot;&gt;&lt;a th:href=&quot;@{/members}&quot;&gt;一覧へ戻る&lt;/a&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<ul>
+<li><strong><code>：</code> がある行は2マス</strong>（左がラベル、右が値）になります。</li>
+<li><strong><code>：</code> が無い <code>［…］</code> の行は、2マスを結合した1マス</strong>（<code>colspan=&quot;2&quot;</code>）になります。</li>
+<li>表（列）と同じく、<code>ラベル：</code> の子に並べれば、右のマスに複数の部品を置けます。</li>
+<li>表（行）は、フォームの入力画面でもよく使います（第6章）。</li>
+</ul>
+<h3 id="33-箇条書き"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.3 箇条書き</a></h3>
+<p>リストの要素を箇条書きにするときは <strong><code>［箇条書き］&lt;リスト&gt;の各要素を&lt;変数&gt;とする</code></strong> と書き、子に <strong><code>［項目］</code></strong> を1行書きます。</p>
+<pre><code>└─構成
+     └─［箇条書き］memberListの各要素をmとする
+          └─［項目］{m.name}
+</code></pre>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li th:each=&quot;m : ${memberList}&quot; th:text=&quot;${m.name}&quot;&gt;name&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p><code>［項目］</code> も、<code>［段落］</code> と同じく値を書かずに子に並べられます。リンクの一覧などに使います。</p>
+<pre><code>└─構成
+     └─［箇条書き］memberListの各要素をmとする
+          └─［項目］
+               ├─［リンク］{m.name} → /members/{m.id}
+               └─［文字］（{m.age}歳）
+</code></pre>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li th:each=&quot;m : ${memberList}&quot;&gt;&lt;a th:href=&quot;@{/members/{id}(id=${m.id})}&quot; th:text=&quot;${m.name}&quot;&gt;name&lt;/a&gt;&lt;span th:text=&quot;|（${m.age}歳）|&quot;&gt;（age歳）&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<ul>
+<li><code>［箇条書き］</code> の子は <strong><code>［項目］</code> の1行だけ</strong>です。</li>
+</ul>
+<hr />
+<h2 id="第4章-見た目を整える"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第4章 見た目を整える</a></h2>
+<h3 id="41-値の書式"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.1 値の書式</a></h3>
+<p>値の後に <strong><code>&lt;&lt;書式&gt;&gt;</code></strong> を書くと、日付や数を整えて表示します。</p>
+<pre><code>└─［表（行）］
+     ├─入会日：{member.joinedOn} &lt;&lt;&quot;yyyy年MM月dd日&quot;&gt;&gt;
+     └─ポイント：{member.point} &lt;&lt;3桁区切り&gt;&gt;
+</code></pre>
+<pre><code class="language-html">&lt;tr&gt;
+  &lt;td&gt;入会日&lt;/td&gt;
+  &lt;td th:text=&quot;${member.joinedOn == null ? &#x27;&#x27; : #temporals.format(member.joinedOn, &#x27;yyyy年MM月dd日&#x27;)}&quot;&gt;入会日&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+  &lt;td&gt;ポイント&lt;/td&gt;
+  &lt;td th:text=&quot;${member.point == null ? &#x27;&#x27; : #numbers.formatInteger(member.point, 1, &#x27;COMMA&#x27;)}&quot;&gt;ポイント&lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+<p>使える書式は次の4つです。</p>
+<table>
+<thead>
+<tr>
+<th>書式</th>
+<th>表示の例</th>
+<th>使える型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>&quot;yyyy年MM月dd日&quot;</code></strong>（日付・時刻のパターン）</td>
+<td><code>2026年03月05日</code></td>
+<td><code>LocalDate</code>・<code>LocalDateTime</code>・<code>LocalTime</code></td>
+</tr>
+<tr>
+<td><strong><code>3桁区切り</code></strong></td>
+<td><code>12,345</code></td>
+<td>整数</td>
+</tr>
+<tr>
+<td><strong><code>円表示</code></strong></td>
+<td><code>12,345円</code></td>
+<td>整数</td>
+</tr>
+<tr>
+<td><strong><code>&quot;、&quot;で連結</code></strong></td>
+<td><code>国語、数学</code></td>
+<td><code>List</code> など</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>値が <code>null</code> のときは空欄になります。</li>
+<li>書式を付けられるのは、<strong><code>{…}</code> が1つだけの値</strong>です（<code>{a}と{b}</code> のような値には付けられません）。</li>
+<li>日付のパターンでは、<strong><code>MM</code> が月、<code>mm</code> が分</strong>です。取り違えに注意してください。</li>
+</ul>
+<h3 id="42-cssクラス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.2 CSSクラス</a></h3>
+<p><code>&lt;&lt;…&gt;&gt;</code> の中に <strong><code>.クラス名</code></strong> を書くと、その要素に <code>class</code> が付きます。見た目はクラスを使って CSS ファイルで決めます。</p>
+<pre><code>└─構成
+     ├─［見出し］会員一覧 &lt;&lt;.中央揃え&gt;&gt;
+     ├─［段落］{member.note} &lt;&lt;.改行保持&gt;&gt;
+     └─［表（行）］ &lt;&lt;.詳細表&gt;&gt;
+          └─価格：{price} &lt;&lt;円表示 .右寄せ&gt;&gt;
+</code></pre>
+<pre><code class="language-html">&lt;h1 class=&quot;中央揃え&quot;&gt;会員一覧&lt;/h1&gt;
+&lt;p th:text=&quot;${member.note}&quot; class=&quot;改行保持&quot;&gt;note&lt;/p&gt;
+&lt;table class=&quot;詳細表&quot;&gt;
+  &lt;tr&gt;
+    &lt;td&gt;価格&lt;/td&gt;
+    &lt;td th:text=&quot;${price == null ? &#x27;&#x27; : #numbers.formatInteger(price, 1, &#x27;COMMA&#x27;) + &#x27;円&#x27;}&quot; class=&quot;右寄せ&quot;&gt;価格&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<pre><code class="language-css">/* css：に書いたファイル（例：static/css/style.css）に定義する */
+.中央揃え { text-align: center; }
+.改行保持 { white-space: pre-wrap; }
+.右寄せ   { text-align: right; }
+</code></pre>
+<ul>
+<li><strong>書式とクラス名の両方を書くときは、書式を先に書きます</strong>（<code>&lt;&lt;円表示 .右寄せ&gt;&gt;</code>）。</li>
+<li>クラス名を付けられる主なものは、見出し・段落・箇条書き・項目・表・画像・リンクと、<code>{…}</code> を含む値です。</li>
+<li>表は <code>&lt;table&gt;</code> に付けたクラスを使って、行の縞模様などを CSS で決めます（<code>.詳細表 tr:nth-child(even)</code>）。</li>
+<li><strong><code>style</code> 属性は生成されません。</strong> 見た目の指定は、すべて CSS ファイルに書きます。</li>
+</ul>
+<hr />
+<h2 id="第5章-条件で表示を切り替える"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第5章 条件で表示を切り替える</a></h2>
+<h3 id="51-条件の書き方"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.1 条件の書き方</a></h3>
+<p>行の先頭か値の先頭に <strong><code>(条件)</code></strong> を書くと、条件が成り立つときだけ表示します（<code>th:if</code>）。
+条件は <strong><code>{変数}は&lt;比べる値&gt;&lt;言い方&gt;</code></strong> と書きます。</p>
+<pre><code>└─構成
+     ├─({message}は空ではない) ［通知］{message}
+     ├─({memberList}は空である) ［段落］会員が登録されていません。
+     └─({member.point}は100以上) ［段落］ゴールド会員です。
+</code></pre>
+<pre><code class="language-html">&lt;div class=&quot;message&quot; th:if=&quot;${not #strings.isEmpty(message)}&quot; th:text=&quot;${message}&quot;&gt;メッセージ&lt;/div&gt;
+&lt;p th:if=&quot;${#lists.isEmpty(memberList)}&quot;&gt;会員が登録されていません。&lt;/p&gt;
+&lt;p th:if=&quot;${member.point ge 100}&quot;&gt;ゴールド会員です。&lt;/p&gt;
+</code></pre>
+<p>使える言い方は次のとおりです。</p>
+<table>
+<thead>
+<tr>
+<th>言い方</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>より大きい</code></strong>・<strong><code>より小さい</code></strong>・<strong><code>以上</code></strong>・<strong><code>以下</code></strong></td>
+<td>大小を比べる（<code>{a}は10以上</code>）</td>
+</tr>
+<tr>
+<td><strong><code>である</code></strong>・<strong><code>ではない</code></strong></td>
+<td>等しいか（<code>{kind}は&quot;general&quot;である</code>）</td>
+</tr>
+<tr>
+<td><strong><code>({flag})</code></strong>・<code>{flag}はfalseである</code></td>
+<td><code>boolean</code> の値</td>
+</tr>
+<tr>
+<td><strong><code>空である</code></strong>・<strong><code>空ではない</code></strong></td>
+<td>文字列やリストが空か</td>
+</tr>
+<tr>
+<td><code>nullである</code>・<code>nullではない</code></td>
+<td>値が無いか</td>
+</tr>
+<tr>
+<td><strong><code>かつ</code></strong>・<strong><code>または</code></strong></td>
+<td>条件をつなぐ（<code>{a}は10以上かつ20以下</code>）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>文字列は <code>&quot;…&quot;</code> で囲みます。</li>
+<li><strong>文字列を表示できるか確かめるときは <code>空ではない</code> を使います。</strong> <code>nullではない</code> では空文字を通してしまいます。</li>
+<li><strong>「そうでなければ」の書き方はありません。</strong> 反対の条件を書いた行を並べます（5.2 の在庫の例）。</li>
+<li>計算（<code>{a}は{b}*2より大きい</code>）や件数（<code>{list}の件数は5以上</code>）は書けません。</li>
+</ul>
+<h3 id="52-条件を付ける場所"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.2 条件を付ける場所</a></h3>
+<p><code>(条件)</code> は、<strong>すぐ後に書いたものに付きます</strong>。どこに書くかで、消えるものが変わります。</p>
+<table>
+<thead>
+<tr>
+<th>書き方</th>
+<th>消えるもの</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>(条件) ［ノード］…</code></strong></td>
+<td>そのノード（入力項目・ボタンも同じ）</td>
+</tr>
+<tr>
+<td><strong><code>(条件) ラベル：値</code></strong></td>
+<td>表（行）の行ごと</td>
+</tr>
+<tr>
+<td><strong><code>ラベル：(条件) 値</code></strong></td>
+<td>値だけ（ラベルは残る）</td>
+</tr>
+<tr>
+<td><strong><code>(条件)</code> だけの行に子を置く</strong></td>
+<td>子全部</td>
+</tr>
+</tbody>
+</table>
+<p>表（行）の中での例を示します。</p>
+<pre><code>└─［表（行）］
+     ├─({member.note}は空ではない) 備考：{member.note}
+     ├─会員種別：({member.premium}) プレミアム
+     └─在庫：
+          ├─({stock}は10未満) ［文字］残りわずか
+          └─({stock}は10以上) ［文字］在庫あり
+</code></pre>
+<pre><code class="language-html">&lt;table&gt;
+  &lt;tr th:if=&quot;${not #strings.isEmpty(member.note)}&quot;&gt;
+    &lt;td&gt;備考&lt;/td&gt;
+    &lt;td th:text=&quot;${member.note}&quot;&gt;備考&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;会員種別&lt;/td&gt;
+    &lt;td&gt;&lt;span th:if=&quot;${member.premium}&quot;&gt;プレミアム&lt;/span&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;在庫&lt;/td&gt;
+    &lt;td&gt;
+      &lt;span th:if=&quot;${stock lt 10}&quot;&gt;残りわずか&lt;/span&gt;
+      &lt;span th:if=&quot;${stock ge 10}&quot;&gt;在庫あり&lt;/span&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre>
+<ul>
+<li>1行目は行の先頭に書いたので、<strong>行ごと</strong>消えます。</li>
+<li>2行目は値の先頭に書いたので、<strong>値だけ</strong>消え、ラベルの <code>会員種別</code> は残ります。</li>
+<li>3行目は子の1つずつに条件を付け、反対の条件を並べて「そうでなければ」を表しています。</li>
+</ul>
+<p><strong>まとめて消す</strong></p>
+<p>複数の部品をまとめて消すときは、<strong><code>(条件)</code> だけの行</strong>を書き、その子に部品を並べます。</p>
+<pre><code>└─構成
+     ├─({memberList}は空ではない)
+     │    ├─［小見出し］会員一覧
+     │    └─［表（列）］memberListの各要素をmとする
+     │         ├─番号：{m.id}
+     │         └─名前：{m.name}
+     └─({memberList}は空である) ［段落］会員がいません
+</code></pre>
+<pre><code class="language-html">&lt;th:block th:if=&quot;${not #lists.isEmpty(memberList)}&quot;&gt;
+  &lt;h2&gt;会員一覧&lt;/h2&gt;
+  &lt;table&gt;…&lt;/table&gt;
+&lt;/th:block&gt;
+&lt;p th:if=&quot;${#lists.isEmpty(memberList)}&quot;&gt;会員がいません&lt;/p&gt;
+</code></pre>
+<ul>
+<li><code>&lt;th:block&gt;</code> は Thymeleaf だけの要素で、ブラウザには何も出力されません。</li>
+</ul>
+<p><strong>繰り返しの中の条件</strong></p>
+<p>表（列）や箇条書きの中では、条件に要素の変数を使えます。</p>
+<pre><code>└─［箇条書き］memberListの各要素をmとする
+     └─({m.active}) ［項目］{m.name}
+</code></pre>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li th:each=&quot;m : ${memberList}&quot; th:if=&quot;${m.active}&quot; th:text=&quot;${m.name}&quot;&gt;name&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<ul>
+<li>表（列）で条件を付けられるのは、マスの値（<code>名前：({m.active}) {m.name}</code>）です。列の行頭には書けません（列見出しは消せないため）。</li>
+</ul>
+<h3 id="53-条件を取り除いても正しい行にする"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.3 条件を取り除いても正しい行にする</a></h3>
+<p><strong><code>(条件)</code> は、正しい行の先頭に付ける印</strong>です。条件を取り除いた行が正しくなければ、書けません。</p>
+<table>
+<thead>
+<tr>
+<th>書けない</th>
+<th>正しい書き方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>({flag}) 在庫あり</code>（条件を除くと文字だけの行）</td>
+<td><code>({flag}) ［文字］在庫あり</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="第6章-フォーム"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第6章 フォーム</a></h2>
+<h3 id="61-入力画面の基本"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.1 入力画面の基本</a></h3>
+<p>入力画面は、<strong><code>［フォーム］&lt;オブジェクト名&gt; → &lt;メソッド&gt; &lt;パス&gt;</code></strong> の子に、入力項目とボタンを書きます。
+入力項目は <strong><code>ラベル＜種類＞：フィールド名</code></strong>、ボタンは <strong><code>キャプション＜種類＞</code></strong> です。</p>
+<pre><code>├─受け取り
+│  └─入力内容：MemberForm memberForm
+│
+└─構成
+     ├─［見出し］会員登録
+     └─［フォーム］memberForm → POST /members
+          ├─［表（行）］
+          │    ├─名前＜text＞：name
+          │    ├─入会日＜date＞：joinedOn
+          │    └─会員種別＜radio＞：kind
+          │         ├─一般：general
+          │         └─学生：student
+          └─登録する＜submit＞
+</code></pre>
+<pre><code class="language-html">&lt;h1&gt;会員登録&lt;/h1&gt;
+&lt;form th:object=&quot;${memberForm}&quot; th:action=&quot;@{/members}&quot; method=&quot;post&quot;&gt;
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;label for=&quot;name&quot;&gt;名前&lt;/label&gt;&lt;/td&gt;
+      &lt;td&gt;
+        &lt;input type=&quot;text&quot; th:field=&quot;*{name}&quot;&gt;
+        &lt;span class=&quot;error-msg&quot; th:if=&quot;${#fields.hasErrors(&#x27;name&#x27;)}&quot; th:errors=&quot;*{name}&quot;&gt;エラー&lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;label for=&quot;joinedOn&quot;&gt;入会日&lt;/label&gt;&lt;/td&gt;
+      &lt;td&gt;
+        &lt;input type=&quot;date&quot; th:field=&quot;*{joinedOn}&quot;&gt;
+        &lt;span class=&quot;error-msg&quot; th:if=&quot;${#fields.hasErrors(&#x27;joinedOn&#x27;)}&quot; th:errors=&quot;*{joinedOn}&quot;&gt;エラー&lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;会員種別&lt;/td&gt;
+      &lt;td&gt;
+        &lt;label&gt;&lt;input type=&quot;radio&quot; th:field=&quot;*{kind}&quot; value=&quot;general&quot;&gt; 一般&lt;/label&gt;
+        &lt;label&gt;&lt;input type=&quot;radio&quot; th:field=&quot;*{kind}&quot; value=&quot;student&quot;&gt; 学生&lt;/label&gt;
+        &lt;span class=&quot;error-msg&quot; th:if=&quot;${#fields.hasErrors(&#x27;kind&#x27;)}&quot; th:errors=&quot;*{kind}&quot;&gt;エラー&lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+  &lt;button type=&quot;submit&quot;&gt;登録する&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<ul>
+<li><strong>オブジェクト名</strong>は、フォームクラスの名前の先頭を小文字にしたもの（<code>MemberForm</code> → <code>memberForm</code>）で、<code>受け取り</code> にも書きます。</li>
+<li><strong><code>＜種類＞</code> は省略できません。</strong> 1行の文字入力も <code>＜text＞</code> と書きます。</li>
+<li><strong>フィールド名は <code>{…}</code> で囲みません。</strong> <code>：</code> の右に書いた名前で、値が送られます。</li>
+<li>入力項目には、<strong>入力エラーの表示が自動で付きます</strong>（<code>class=&quot;error-msg&quot;</code>）。</li>
+<li>入力項目を <code>［表（行）］</code> に入れると、ラベルと入力欄が左右に並びます。入れずに <code>［フォーム］</code> の直下に書くと、1項目が1つの <code>&lt;div&gt;</code> になります。</li>
+</ul>
+<h3 id="62-入力項目の種類"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.2 入力項目の種類</a></h3>
+<table>
+<thead>
+<tr>
+<th>種類</th>
+<th>入力欄</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>＜text＞</code></strong></td>
+<td>1行の文字</td>
+</tr>
+<tr>
+<td><code>＜number＞</code>・<code>＜date＞</code>・<code>＜time＞</code>・<code>＜email＞</code>・<code>＜password＞</code> など</td>
+<td>数・日付・時刻・メール・パスワードなど</td>
+</tr>
+<tr>
+<td><strong><code>＜textarea＞</code></strong></td>
+<td>複数行の文字</td>
+</tr>
+<tr>
+<td><strong><code>＜radio＞</code></strong></td>
+<td>ラジオボタン（選択肢を子に書く）</td>
+</tr>
+<tr>
+<td><strong><code>＜select＞</code></strong></td>
+<td>プルダウン（選択肢を子に書く）</td>
+</tr>
+<tr>
+<td><strong><code>＜checkbox＞</code></strong></td>
+<td>チェックボックス（子が無ければ1つ、子があれば選択肢ごと）</td>
+</tr>
+<tr>
+<td><strong><code>＜hidden＞</code></strong></td>
+<td>画面に出さずに送る値（更新画面の番号など）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>選択肢は、子に <strong><code>表示名：値</code></strong> と書きます（<code>一般：general</code>）。</li>
+<li>ボタンは <strong><code>＜submit＞</code></strong>（送信）と <strong><code>＜reset＞</code></strong>（入力を元に戻す）の2つです。</li>
+</ul>
+<h3 id="63-編集画面--表示だけの項目と-hidden"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.3 編集画面 ― 表示だけの項目と hidden</a></h3>
+<p>フォームの中でも <strong><code>ラベル：{…}</code></strong> と書いた項目は、入力欄にならず値を表示するだけです。
+編集画面で、変えられない会員番号を見せるときなどに使います。</p>
+<pre><code>└─［フォーム］memberForm → POST /members/update
+     ├─［表（行）］
+     │    ├─会員番号：{memberForm.id}
+     │    └─名前＜text＞：name
+     ├─番号＜hidden＞：id
+     └─更新する＜submit＞
+</code></pre>
+<pre><code class="language-html">&lt;form th:object=&quot;${memberForm}&quot; th:action=&quot;@{/members/update}&quot; method=&quot;post&quot;&gt;
+  &lt;input type=&quot;hidden&quot; th:field=&quot;*{id}&quot;&gt;
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;td&gt;会員番号&lt;/td&gt;
+      &lt;td th:text=&quot;*{id}&quot;&gt;会員番号&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;label for=&quot;name&quot;&gt;名前&lt;/label&gt;&lt;/td&gt;
+      &lt;td&gt;
+        &lt;input type=&quot;text&quot; th:field=&quot;*{name}&quot;&gt;
+        &lt;span class=&quot;error-msg&quot; th:if=&quot;${#fields.hasErrors(&#x27;name&#x27;)}&quot; th:errors=&quot;*{name}&quot;&gt;エラー&lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+  &lt;button type=&quot;submit&quot;&gt;更新する&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<ul>
+<li><strong><code>{…}</code> で書くのは画面に出す値、<code>：</code> の後にそのまま書くのは送る名前</strong>です。この違いが、表示と入力の違いになります。</li>
+<li>表示だけの項目は送信されません。値を送るには、別に <strong><code>＜hidden＞</code></strong> を書きます。</li>
+<li>表示する値は、フォームの中でも <code>{memberForm.id}</code> のように受け取りの名前から書きます。生成するときに <code>*{id}</code> に変換されます。</li>
+</ul>
+<h3 id="64-ボタンを並べる"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.4 ボタンを並べる</a></h3>
+<p>フォームの中の <code>［表（行）］</code> では、ボタンやリンクを1つのマスに並べられます。並べ方は2つあります。</p>
+<pre><code>└─［フォーム］memberForm → POST /members
+     └─［表（行）］
+          ├─名前＜text＞：name
+          └─［空］：
+               ├─登録する＜submit＞
+               └─［リンク］キャンセル → /members
+</code></pre>
+<pre><code class="language-html">&lt;tr&gt;
+  &lt;td&gt;&lt;/td&gt;
+  &lt;td&gt;
+    &lt;button type=&quot;submit&quot;&gt;登録する&lt;/button&gt;
+    &lt;a th:href=&quot;@{/members}&quot;&gt;キャンセル&lt;/a&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+<ul>
+<li><strong><code>［空］：</code> の子に並べる</strong>と、右のマス（入力欄の列）にそろいます。<code>［空］</code> は、ラベルが空であることを表す印です。</li>
+<li><strong><code>┬</code> でまとめる</strong>と、2マスを結合した1マスに並びます。1つ目を <code>┬</code> の右に、2つ目からを <code>┬</code> の下に書きます。</li>
+</ul>
+<pre><code>          └─┬─登録する＜submit＞ &lt;&lt;.中央揃え&gt;&gt;
+             └─［リンク］キャンセル → /members
+</code></pre>
+<pre><code class="language-html">&lt;tr&gt;
+  &lt;td colspan=&quot;2&quot; class=&quot;中央揃え&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;登録する&lt;/button&gt;
+    &lt;a th:href=&quot;@{/members}&quot;&gt;キャンセル&lt;/a&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+<h3 id="65-ボタンだけのフォーム"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.5 ボタンだけのフォーム</a></h3>
+<p><strong>オブジェクト名を省略したフォーム</strong>は、削除ボタンや、別の画面へ移るボタンに使います。</p>
+<pre><code>└─構成
+     ├─［フォーム］→ POST /members/{member.id}/delete
+     │    └─削除＜submit＞
+     └─［フォーム］→ GET /members
+          └─戻る＜submit＞
+</code></pre>
+<pre><code class="language-html">&lt;form th:action=&quot;@{/members/{id}/delete(id=${member.id})}&quot; method=&quot;post&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;削除&lt;/button&gt;
+&lt;/form&gt;
+&lt;form th:action=&quot;@{/members}&quot; method=&quot;get&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;戻る&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<ul>
+<li>メソッドを省略すると <code>POST</code> になります。</li>
+<li><strong>フォームの中にフォームは置けません。</strong> 入力フォームの表の中に削除ボタンを置くことはできません。</li>
+</ul>
+<h3 id="66-選択肢をリストから作る"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.6 選択肢をリストから作る</a></h3>
+<p>部署の一覧のように、コントローラーから受け取ったリストで選択肢を作るときは、入力項目の子に
+<strong><code>&lt;リスト&gt;の各要素を&lt;変数&gt;とする</code></strong> を書き、その子に <strong><code>{表示名}：{値}</code></strong> を1行書きます。</p>
+<pre><code>├─受け取り
+│  ├─入力内容：MemberForm memberForm
+│  └─部署リスト：List&lt;Department&gt; departments
+…
+          ├─所属＜select＞：departmentId
+          │    └─departmentsの各要素をdとする
+          │         └─{d.name}：{d.id}
+</code></pre>
+<pre><code class="language-html">&lt;select th:field=&quot;*{departmentId}&quot;&gt;
+  &lt;option value=&quot;&quot;&gt;選択してください&lt;/option&gt;
+  &lt;option th:each=&quot;d : ${departments}&quot; th:value=&quot;${d.id}&quot; th:text=&quot;${d.name}&quot;&gt;name&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>
+<ul>
+<li>固定の選択肢（<code>一般：general</code>）とは、<strong><code>{…}</code> の有無</strong>で見分けます。</li>
+<li><code>＜select＞</code> には、先頭に「選択してください」が自動で付きます。</li>
+</ul>
+<h3 id="67-フォームクラスを使わない入力"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.7 フォームクラスを使わない入力</a></h3>
+<p>入力した値をそのまま受け取るだけの簡単な画面では、オブジェクト名を省略したフォームに入力項目を置けます。
+このとき <code>：</code> の右は、<strong>リクエストパラメーターの名前</strong>になります。</p>
+<pre><code>└─［フォーム］→ POST /test
+     ├─名前＜text＞：name
+     └─送信する＜submit＞
+</code></pre>
+<pre><code class="language-html">&lt;form th:action=&quot;@{/test}&quot; method=&quot;post&quot;&gt;
+  &lt;div&gt;&lt;label for=&quot;name&quot;&gt;名前&lt;/label&gt; &lt;input type=&quot;text&quot; id=&quot;name&quot; name=&quot;name&quot;&gt;&lt;/div&gt;
+  &lt;button type=&quot;submit&quot;&gt;送信する&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<ul>
+<li>入力エラーの表示は付きません。送信後に同じ画面を出すと、入力した値は消えます。</li>
+<li>値を残したい画面や、入力をチェックしたい画面では、フォームクラスを使います（6.1）。</li>
+</ul>
+<hr />
+<h2 id="第7章-まとめ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第7章 まとめ</a></h2>
+<h3 id="71-完全な例"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.1 完全な例</a></h3>
+<p>これまでの書き方を使った、会員一覧の画面です。</p>
+<pre><code>テンプレート：member/list
+│
+├─目的：会員の一覧を表示する
+├─レイアウト：なし
+├─タイトル：会員一覧
+├─css：css/style.css
+│
+├─受け取り
+│  ├─会員リスト：List&lt;Member&gt; memberList
+│  └─メッセージ：String message　※任意
+│
+└─構成
+     ├─［見出し］会員一覧
+     ├─({message}は空ではない) ［通知］{message}
+     ├─({memberList}は空である) ［段落］会員が登録されていません。
+     ├─({memberList}は空ではない) ［表（列）］memberListの各要素をmとする
+     │  ├─番号：{m.id}
+     │  ├─名前：{m.name}
+     │  ├─入会日：{m.joinedOn} &lt;&lt;&quot;yyyy年MM月dd日&quot;&gt;&gt;
+     │  └─操作：
+     │        ├─［リンク］編集 → /members/{m.id}/edit
+     │        ├─［文字］|
+     │        └─［フォーム］→ POST /members/{m.id}/delete
+     │              └─削除＜submit＞
+     └─［リンク］新規登録 → /members/new
+</code></pre>
+<pre><code class="language-html">&lt;!--/*
+（SPD 全体）
+*/--&gt;
+&lt;!doctype html&gt;
+&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot; lang=&quot;ja&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; th:href=&quot;@{/css/style.css}&quot;&gt;
+  &lt;title&gt;会員一覧&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;会員一覧&lt;/h1&gt;
+
+  &lt;div class=&quot;message&quot; th:if=&quot;${not #strings.isEmpty(message)}&quot; th:text=&quot;${message}&quot;&gt;メッセージ&lt;/div&gt;
+
+  &lt;p th:if=&quot;${#lists.isEmpty(memberList)}&quot;&gt;会員が登録されていません。&lt;/p&gt;
+
+  &lt;table th:if=&quot;${not #lists.isEmpty(memberList)}&quot;&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;番号&lt;/th&gt;
+        &lt;th&gt;名前&lt;/th&gt;
+        &lt;th&gt;入会日&lt;/th&gt;
+        &lt;th&gt;操作&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr th:each=&quot;m : ${memberList}&quot;&gt;
+        &lt;td th:text=&quot;${m.id}&quot;&gt;番号&lt;/td&gt;
+        &lt;td th:text=&quot;${m.name}&quot;&gt;名前&lt;/td&gt;
+        &lt;td th:text=&quot;${m.joinedOn == null ? &#x27;&#x27; : #temporals.format(m.joinedOn, &#x27;yyyy年MM月dd日&#x27;)}&quot;&gt;入会日&lt;/td&gt;
+        &lt;td&gt;
+          &lt;a th:href=&quot;@{/members/{id}/edit(id=${m.id})}&quot;&gt;編集&lt;/a&gt;
+          |
+          &lt;form th:action=&quot;@{/members/{id}/delete(id=${m.id})}&quot; method=&quot;post&quot;&gt;
+            &lt;button type=&quot;submit&quot;&gt;削除&lt;/button&gt;
+          &lt;/form&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+
+  &lt;a th:href=&quot;@{/members/new}&quot;&gt;新規登録&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="72-よくある間違い"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.2 よくある間違い</a></h3>
+<p>規約に合わない書き方は、推測で補われることはなく、生成されずに <strong>【確認事項】として報告されます</strong>。よくある間違いを挙げます。</p>
+<table>
+<thead>
+<tr>
+<th>間違い</th>
+<th>正しい書き方</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>構成</code> の直下に <code>名前：{member.name}</code></td>
+<td><code>［段落］{member.name}</code>、または <code>［表（行）］</code> の子に書く</td>
+<td><code>ラベル：値</code> は表とフォームの中だけ</td>
+</tr>
+<tr>
+<td><code>在庫あり</code>（文字だけの行）</td>
+<td><code>［文字］在庫あり</code></td>
+<td>文字だけの行は書けない</td>
+</tr>
+<tr>
+<td><code>名前：name</code>（フォームの中）</td>
+<td><code>名前＜text＞：name</code></td>
+<td><code>＜種類＞</code> の書き忘れ</td>
+</tr>
+<tr>
+<td><code>名前＜text＞：{name}</code></td>
+<td><code>名前＜text＞：name</code></td>
+<td>フィールド名は <code>{…}</code> で囲まない</td>
+</tr>
+<tr>
+<td><code>｛m.name｝</code>（全角の中括弧）</td>
+<td><code>{m.name}</code>（半角）</td>
+<td>変数の中括弧は半角だけ</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;&quot;yyyy/mm/dd&quot;&gt;&gt;</code></td>
+<td><code>&lt;&lt;&quot;yyyy/MM/dd&quot;&gt;&gt;</code></td>
+<td><code>mm</code> は分、<code>MM</code> が月</td>
+</tr>
+<tr>
+<td><code>({flag}) 在庫あり</code></td>
+<td><code>({flag}) ［文字］在庫あり</code></td>
+<td>条件を除いて正しい行にする</td>
+</tr>
+<tr>
+<td><code>案内：詳しくは［リンク］こちら → /about</code></td>
+<td><code>案内：</code> の子に <code>［文字］詳しくは</code> と <code>［リンク］こちら → /about</code> を並べる</td>
+<td>値の位置には部品を1つだけ置ける。文字と混ぜられない</td>
+</tr>
+<tr>
+<td><code>受け取り</code> に無い名前を使う</td>
+<td><code>受け取り</code> に書き、コントローラーと名前をそろえる</td>
+<td>値がテンプレートに渡らない</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-記号の早見表"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.3 記号の早見表</a></h3>
+<table>
+<thead>
+<tr>
+<th>記号</th>
+<th>使い方</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>［…］</code></td>
+<td>ノードの種類</td>
+<td><code>［見出し］</code>・<code>［表（列）］</code></td>
+</tr>
+<tr>
+<td><code>：</code></td>
+<td>ラベルと値の区切り</td>
+<td><code>名前：{m.name}</code></td>
+</tr>
+<tr>
+<td><code>{…}</code></td>
+<td>変数（<strong>半角だけ</strong>）</td>
+<td><code>{member.name}</code></td>
+</tr>
+<tr>
+<td><code>＜…＞</code></td>
+<td>入力項目・ボタンの種類</td>
+<td><code>＜text＞</code>・<code>＜submit＞</code></td>
+</tr>
+<tr>
+<td><code>→</code></td>
+<td>行き先・送信先</td>
+<td><code>→ /members/new</code>・<code>→ POST /members</code></td>
+</tr>
+<tr>
+<td><code>&lt;&lt;…&gt;&gt;</code></td>
+<td>書式・クラス名・画像のサイズ</td>
+<td><code>&lt;&lt;3桁区切り .右寄せ&gt;&gt;</code>・<code>&lt;&lt;120px&gt;&gt;</code></td>
+</tr>
+<tr>
+<td><code>(…)</code></td>
+<td>条件</td>
+<td><code>({message}は空ではない)</code></td>
+</tr>
+<tr>
+<td><code>［空］</code></td>
+<td>空のラベル</td>
+<td><code>［空］：</code></td>
+</tr>
+<tr>
+<td><code>┬</code></td>
+<td>表（行）の1マスに部品を並べる</td>
+<td><code>┬─登録する＜submit＞</code></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
