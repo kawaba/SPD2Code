@@ -1,5 +1,18 @@
 # SPDからプログラムのソースコードを生成するルール
 
+## SPD関連リンク
+
+| リポジトリ | 内容 |
+|---|---|
+| [SPDエディター](https://github.com/kawaba/spd-editor) | SPDを作成するエディターです |
+| [SPD Editor for VS Code](https://github.com/kawaba/vscode-spd-extension) | SPDエディタのVS Code用拡張機能です |
+| [SPD Editor for Eclipse](https://github.com/kawaba/eclipse-spd-plugin) | SPDエディタのEclipse用プラグインです |
+| [Autosetup VS Code for C](https://github.com/kawaba/portable-c-vscode) | VS CodeによるC開発環境の自動セットアップスクリプトです |
+| [Autosetup VS Code for Python](https://github.com/kawaba/autosetup-vscode-python-book) | VS CodeによるPython開発環境の自動セットアップスクリプトです |
+| [Autosetup Eclipse for Java](https://github.com/kawaba/auto-setup-eclipse) | Eclipse（Java）を自動セットアップするスクリプトです |
+
+## このリポジトリについて
+
 AIエージェントが、SPDからプログラム言語のソースコードを生成するためのルールです。<br>
 Python版は安定版です。Java版は2026年内にSpringBoot用のルールを追加します。
 
