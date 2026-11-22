@@ -1008,7 +1008,7 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <li><strong>オブジェクト名</strong>は、フォームクラスの名前の先頭を小文字にしたもの（<code>MemberForm</code> → <code>memberForm</code>）で、<code>受け取り</code> にも書きます。</li>
 <li><strong><code>＜種類＞</code> は省略できません。</strong> 1行の文字入力も <code>＜text＞</code> と書きます。</li>
 <li><strong>フィールド名は <code>{…}</code> で囲みません。</strong> <code>：</code> の右に書いた名前で、値が送られます。</li>
-<li>入力項目には、<strong>入力エラーの表示が自動で付きます</strong>（<code>class=&quot;error-msg&quot;</code>）。</li>
+<li>入力項目には、<strong>入力エラーの表示が自動で付きます</strong>（<code>class=&quot;error-msg&quot;</code>）。ただし、フォームクラス（フォームの SPD か Java のクラス）を確認でき、そのどこかのフィールドに検証（<code>＠必須</code> など）が書かれている場合だけです。フォームクラスを一緒に渡さなかったときや、検証が1つも無いときは付かず、その理由が報告されます。この章の例は、<code>MemberForm</code> に検証がある場合のものです。</li>
 <li>入力項目を <code>［表（行）］</code> に入れると、ラベルと入力欄が左右に並びます。入れずに <code>［フォーム］</code> の直下に書くと、1項目が1つの <code>&lt;div&gt;</code> になります。</li>
 </ul>
 <h3 id="62-入力項目の種類"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.2 入力項目の種類</a></h3>
