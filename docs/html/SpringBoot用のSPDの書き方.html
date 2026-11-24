@@ -547,22 +547,67 @@ public class BookForm {
 <tr>
 <td><strong><code>N以上</code></strong>・<strong><code>M以下</code></strong></td>
 <td>数の範囲</td>
-<td><code>@Min(N)</code>・<code>@Max(M)</code></td>
+<td><code>@Min(N)</code>・<code>@Max(M)</code>（N・M が小数なら <code>@DecimalMin(&quot;N&quot;)</code>・<code>@DecimalMax(&quot;M&quot;)</code>）</td>
 </tr>
 <tr>
-<td><code>メール形式</code></td>
-<td>メールアドレス</td>
-<td><code>@Email</code></td>
+<td><code>N超</code>（<code>Nより大きい</code>）・<code>M未満</code></td>
+<td>境の値を含まない数の範囲</td>
+<td><code>@DecimalMin(value = &quot;N&quot;, inclusive = false)</code>・<code>@DecimalMax(value = &quot;M&quot;, inclusive = false)</code></td>
 </tr>
 <tr>
-<td><code>正の数</code></td>
-<td>0より大きい</td>
-<td><code>@Positive</code></td>
+<td><code>整数N桁以内</code>・<code>整数N桁・小数M桁以内</code></td>
+<td>数の桁数</td>
+<td><code>@Digits(integer = N, fraction = 0)</code>・<code>@Digits(integer = N, fraction = M)</code></td>
+</tr>
+<tr>
+<td><code>正の数</code>・<code>正の数または0</code></td>
+<td>0より大きい・0以上</td>
+<td><code>@Positive</code>・<code>@PositiveOrZero</code></td>
+</tr>
+<tr>
+<td><code>負の数</code>・<code>負の数または0</code></td>
+<td>0より小さい・0以下</td>
+<td><code>@Negative</code>・<code>@NegativeOrZero</code></td>
+</tr>
+<tr>
+<td><code>trueである</code>・<code>falseである</code></td>
+<td>チェックの有無</td>
+<td><code>@AssertTrue</code>・<code>@AssertFalse</code></td>
 </tr>
 <tr>
 <td><code>過去の日付</code>・<code>未来の日付</code></td>
 <td>日付の範囲</td>
 <td><code>@Past</code>・<code>@Future</code></td>
+</tr>
+<tr>
+<td><code>今日以前の日付</code>・<code>今日以降の日付</code></td>
+<td>今日を含む日付の範囲</td>
+<td><code>@PastOrPresent</code>・<code>@FutureOrPresent</code></td>
+</tr>
+<tr>
+<td><code>値なし</code></td>
+<td>値が無いこと</td>
+<td><code>@Null</code></td>
+</tr>
+<tr>
+<td><code>メール</code></td>
+<td>メールアドレス</td>
+<td><code>@Email</code></td>
+</tr>
+<tr>
+<td><code>URL</code></td>
+<td>URL</td>
+<td><code>@URL</code></td>
+</tr>
+<tr>
+<td><code>クレジットカード番号</code></td>
+<td>クレジットカード番号</td>
+<td><code>@CreditCardNumber</code></td>
+</tr>
+<tr>
+<td><code>ISBN</code>・<code>ISBN-10</code></td>
+<td>ISBN（13桁・10桁）</td>
+<td><code>@ISBN</code>・<code>@ISBN(type = ISBN.Type.ISBN_10)</code></td>
 </tr>
 <tr>
 <td><code>&quot;&lt;正規表現&gt;&quot;に一致</code></td>
@@ -573,6 +618,9 @@ public class BookForm {
 </table>
 <ul>
 <li><strong>エラーメッセージは、検証の直後の <code>(&quot;…&quot;)</code> に書きます</strong>（<code>必須(&quot;表題を入力してください&quot;)</code>）。書かなければ、標準のメッセージになります。</li>
+<li>範囲は組み合わせて書けます（<code>N以上M以下</code>・<code>N以上M未満</code>・<code>N超M以下</code>・<code>N超M未満</code>）。</li>
+<li>チェックボックス（<code>boolean</code>）に <code>必須</code> を書いても、チェックは求められません。チェックしないと <code>false</code> が送られるからです。利用規約への同意などには <code>trueである</code> と書きます。</li>
+<li><code>値なし</code> は、文字列（<code>String</code>）には使えません。空の入力欄は空の文字列（<code>&quot;&quot;</code>）を送るからです。</li>
 <li>表に無い書き方は、検証として使えません。</li>
 </ul>
 <hr />

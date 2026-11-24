@@ -92,7 +92,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
    | JPQL | `org.springframework.data.jpa.repository.Query`、`org.springframework.data.repository.query.Param` |
    | ページング | `org.springframework.data.domain.Page`、`org.springframework.data.domain.Pageable` |
    | エンティティ | `jakarta.persistence.*` |
-   | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*` |
+   | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*`、`org.hibernate.validator.constraints.*`（`@URL`・`@CreditCardNumber`・`@ISBN`） |
    | 日付・時刻の入力 | `org.springframework.format.annotation.DateTimeFormat` |
    | ログ | `org.slf4j.Logger`、`org.slf4j.LoggerFactory` |
 

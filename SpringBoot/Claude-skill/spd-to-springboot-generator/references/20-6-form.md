@@ -50,16 +50,51 @@
 | `N以上` | `@Min(N)` |
 | `M以下` | `@Max(M)` |
 | `N以上M以下` | `@Min(N)` + `@Max(M)` |
-| `メール形式` | `@Email` |
+| `N以上`（N が小数） | `@DecimalMin("N")` |
+| `M以下`（M が小数） | `@DecimalMax("M")` |
+| `N以上M以下`（N・M のどちらかが小数） | `@DecimalMin("N")` + `@DecimalMax("M")` |
+| `N超`・`Nより大きい` | `@DecimalMin(value = "N", inclusive = false)` |
+| `M未満` | `@DecimalMax(value = "M", inclusive = false)` |
+| `N以上M未満` | `@DecimalMin("N")` + `@DecimalMax(value = "M", inclusive = false)` |
+| `N超M以下`・`Nより大きくM以下` | `@DecimalMin(value = "N", inclusive = false)` + `@DecimalMax("M")` |
+| `N超M未満`・`Nより大きくM未満` | `@DecimalMin(value = "N", inclusive = false)` + `@DecimalMax(value = "M", inclusive = false)` |
+| `整数N桁以内` | `@Digits(integer = N, fraction = 0)` |
+| `整数N桁・小数M桁以内` | `@Digits(integer = N, fraction = M)` |
 | `正の数` | `@Positive` |
+| `正の数または0` | `@PositiveOrZero` |
+| `負の数` | `@Negative` |
+| `負の数または0` | `@NegativeOrZero` |
+| `trueである` | `@AssertTrue` |
+| `falseである` | `@AssertFalse` |
 | `過去の日付` | `@Past` |
+| `今日以前の日付` | `@PastOrPresent` |
 | `未来の日付` | `@Future` |
+| `今日以降の日付` | `@FutureOrPresent` |
+| `値なし` | `@Null` |
+| `メール` | `@Email` |
+| `URL` | `@URL` |
+| `クレジットカード番号` | `@CreditCardNumber` |
+| `ISBN` | `@ISBN` |
+| `ISBN-10` | `@ISBN(type = ISBN.Type.ISBN_10)` |
 | `"<正規表現>"に一致` | `@Pattern(regexp = "…")` |
 
 - 対応表に無い表現は、**推測でアノテーションを作らず**、`## 0.8` の報告の
   【確認事項】に載せること。
 - コレクションの `必須` を `@NotNull` にしてはならない。チェックボックスを1つも選ばずに送信すると、
   Spring は `null` ではなく空のコレクションを設定するため、`@NotNull` では検証が働かない。
+- **`boolean`・`Boolean` の `必須` は、チェックを強制しない。** `th:field` のチェックボックスは、
+  チェックしないと `false` を送るため、`必須`（`@NotNull`）では検証が働かない。
+  チェックを求める場合（利用規約への同意など）は `trueである`（`@AssertTrue`）と書く。
+- **小数の判定**：`N以上`・`M以下`・`N以上M以下` は、N・M に小数点が無ければ `@Min`・`@Max` を、
+  あれば `@DecimalMin`・`@DecimalMax` を生成する。`@DecimalMin`・`@DecimalMax` の値は文字列で書く。
+  `超`・`より大きい`・`未満` は、整数でも `@DecimalMin`・`@DecimalMax` に `inclusive = false` を付けて生成する
+  （`M未満` を `@Max(M-1)` のように読み替えない）。N・M には負の数（`-10以上`）も書ける。
+- `正の数または0` は `0以上`（`@Min(0)`）とほぼ同じ働きをするが、`double` にも使える。どちらを書いてもよい。
+- `今日以前の日付`・`今日以降の日付` の「今日」は、`LocalDateTime`・`LocalTime` では現在の時刻を意味する。
+- **`値なし`（`@Null`）は、`String` には使えない。** 空の入力欄は `null` ではなく `""` を送るため、
+  何も入力しなくても検証に失敗する。`String` 以外の型か、画面に置かない項目にだけ使う。
+  `String` の `値なし` は生成せず、【確認事項】に載せること。
+- `@Length`（Hibernate Validator）は使わない。文字数の検証は `@Size` で生成する。
 - 正規表現は、Javaの文字列リテラルとして正しくなるよう、`\` を `\\` に、`"` を `\"` にして `regexp` に書く
   （`"^\d{3}$"に一致` → `@Pattern(regexp = "^\\d{3}$")`）。
 - **メッセージ（`message = "…"`）は、SPDに明示された場合だけ付ける。**
@@ -68,6 +103,8 @@
 - 1つのフィールドに複数の検証がある場合、アノテーションは**SPDに書かれた順**に並べる。
 - **フォームに永続化アノテーション（`@Entity`・`@Column` など）を付けてはならない。**
 - 検証アノテーションは `jakarta.validation.constraints.*` を使う（`javax.*` ではない）。
+  ただし `@URL`・`@CreditCardNumber`・`@ISBN` は Hibernate Validator のもので、
+  `org.hibernate.validator.constraints.*` から取る（`spring-boot-starter-validation` に含まれる）。
 
 ### 日付・時刻のフィールド
 

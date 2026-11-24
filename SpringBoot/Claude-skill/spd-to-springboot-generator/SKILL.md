@@ -103,7 +103,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/30-9-example.md` | `30.9 完全な変換例` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v1.7.0、SPD-CORE v2.17.0、SPRINGBOOT-JAVA v2.4.0、THYMELEAF v8.7.0
+元の規約：`copilot-instructions.md` v1.7.0、SPD-CORE v2.17.0、SPRINGBOOT-JAVA v2.5.0、THYMELEAF v8.7.0
 
 # スキルでの運用（`## 10`）
 
@@ -349,6 +349,7 @@ int taxIncluded = (int) Math.round(price * 1.1);
 - [ ] 検証の対応表に無い表現を、推測でアノテーション化していないか（`## 20.6`）
 - [ ] フォームの検証をフィールドの行末（`@` の右）から読んだか。正規表現・メッセージの引用符の中の `、`・`,` で区切っていないか。`検証` の枝が書かれていた場合、生成せずに報告したか（`## 20.6`）
 - [ ] コレクションの `必須` を `@NotEmpty` にしたか。メッセージはSPDに明示された場合だけ付けたか（`## 20.6`）
+- [ ] 小数を含む範囲を `@DecimalMin`・`@DecimalMax` に、`超`・`より大きい`・`未満` を `inclusive = false` にしたか。`String` の `値なし` を生成せず報告したか。`@URL`・`@CreditCardNumber`・`@ISBN` を `org.hibernate.validator.constraints` から取ったか（`## 20.6`）
 - [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
 - [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）

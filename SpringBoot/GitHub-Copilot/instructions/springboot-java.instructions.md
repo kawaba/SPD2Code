@@ -3,7 +3,7 @@ applyTo: "**/*.java, **/src/main/resources/templates/**/*.html"
 description: SPDからSpring Boot（MVC + JPA）のコードを生成する規約。コントローラー・サービス・リポジトリ・エンティティ・フォームの記法と生成規則。
 ---
 
-<!-- ===== SPRINGBOOT-JAVA v2.4.0 / 2026-11-14 =====
+<!-- ===== SPRINGBOOT-JAVA v2.5.0 / 2026-11-24 =====
      このファイルは Spring Boot 版ワークスペース固有である。SE版・要件定義版には存在しない。
      テンプレート（.html）編集時にも読み込まれるのは、コントローラーとテンプレートが
      互いに依存するためである（copilot-instructions.md `## 11`）。 -->
@@ -858,16 +858,51 @@ JPQL が処理の本体に当たるからである。
 | `N以上` | `@Min(N)` |
 | `M以下` | `@Max(M)` |
 | `N以上M以下` | `@Min(N)` + `@Max(M)` |
-| `メール形式` | `@Email` |
+| `N以上`（N が小数） | `@DecimalMin("N")` |
+| `M以下`（M が小数） | `@DecimalMax("M")` |
+| `N以上M以下`（N・M のどちらかが小数） | `@DecimalMin("N")` + `@DecimalMax("M")` |
+| `N超`・`Nより大きい` | `@DecimalMin(value = "N", inclusive = false)` |
+| `M未満` | `@DecimalMax(value = "M", inclusive = false)` |
+| `N以上M未満` | `@DecimalMin("N")` + `@DecimalMax(value = "M", inclusive = false)` |
+| `N超M以下`・`Nより大きくM以下` | `@DecimalMin(value = "N", inclusive = false)` + `@DecimalMax("M")` |
+| `N超M未満`・`Nより大きくM未満` | `@DecimalMin(value = "N", inclusive = false)` + `@DecimalMax(value = "M", inclusive = false)` |
+| `整数N桁以内` | `@Digits(integer = N, fraction = 0)` |
+| `整数N桁・小数M桁以内` | `@Digits(integer = N, fraction = M)` |
 | `正の数` | `@Positive` |
+| `正の数または0` | `@PositiveOrZero` |
+| `負の数` | `@Negative` |
+| `負の数または0` | `@NegativeOrZero` |
+| `trueである` | `@AssertTrue` |
+| `falseである` | `@AssertFalse` |
 | `過去の日付` | `@Past` |
+| `今日以前の日付` | `@PastOrPresent` |
 | `未来の日付` | `@Future` |
+| `今日以降の日付` | `@FutureOrPresent` |
+| `値なし` | `@Null` |
+| `メール` | `@Email` |
+| `URL` | `@URL` |
+| `クレジットカード番号` | `@CreditCardNumber` |
+| `ISBN` | `@ISBN` |
+| `ISBN-10` | `@ISBN(type = ISBN.Type.ISBN_10)` |
 | `"<正規表現>"に一致` | `@Pattern(regexp = "…")` |
 
 - 対応表に無い表現は、**推測でアノテーションを作らず**、`## 0.8` の報告の
   【確認事項】に載せること。
 - コレクションの `必須` を `@NotNull` にしてはならない。チェックボックスを1つも選ばずに送信すると、
   Spring は `null` ではなく空のコレクションを設定するため、`@NotNull` では検証が働かない。
+- **`boolean`・`Boolean` の `必須` は、チェックを強制しない。** `th:field` のチェックボックスは、
+  チェックしないと `false` を送るため、`必須`（`@NotNull`）では検証が働かない。
+  チェックを求める場合（利用規約への同意など）は `trueである`（`@AssertTrue`）と書く。
+- **小数の判定**：`N以上`・`M以下`・`N以上M以下` は、N・M に小数点が無ければ `@Min`・`@Max` を、
+  あれば `@DecimalMin`・`@DecimalMax` を生成する。`@DecimalMin`・`@DecimalMax` の値は文字列で書く。
+  `超`・`より大きい`・`未満` は、整数でも `@DecimalMin`・`@DecimalMax` に `inclusive = false` を付けて生成する
+  （`M未満` を `@Max(M-1)` のように読み替えない）。N・M には負の数（`-10以上`）も書ける。
+- `正の数または0` は `0以上`（`@Min(0)`）とほぼ同じ働きをするが、`double` にも使える。どちらを書いてもよい。
+- `今日以前の日付`・`今日以降の日付` の「今日」は、`LocalDateTime`・`LocalTime` では現在の時刻を意味する。
+- **`値なし`（`@Null`）は、`String` には使えない。** 空の入力欄は `null` ではなく `""` を送るため、
+  何も入力しなくても検証に失敗する。`String` 以外の型か、画面に置かない項目にだけ使う。
+  `String` の `値なし` は生成せず、【確認事項】に載せること。
+- `@Length`（Hibernate Validator）は使わない。文字数の検証は `@Size` で生成する。
 - 正規表現は、Javaの文字列リテラルとして正しくなるよう、`\` を `\\` に、`"` を `\"` にして `regexp` に書く
   （`"^\d{3}$"に一致` → `@Pattern(regexp = "^\\d{3}$")`）。
 - **メッセージ（`message = "…"`）は、SPDに明示された場合だけ付ける。**
@@ -876,6 +911,8 @@ JPQL が処理の本体に当たるからである。
 - 1つのフィールドに複数の検証がある場合、アノテーションは**SPDに書かれた順**に並べる。
 - **フォームに永続化アノテーション（`@Entity`・`@Column` など）を付けてはならない。**
 - 検証アノテーションは `jakarta.validation.constraints.*` を使う（`javax.*` ではない）。
+  ただし `@URL`・`@CreditCardNumber`・`@ISBN` は Hibernate Validator のもので、
+  `org.hibernate.validator.constraints.*` から取る（`spring-boot-starter-validation` に含まれる）。
 
 ### 日付・時刻のフィールド
 
@@ -1015,7 +1052,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
    | JPQL | `org.springframework.data.jpa.repository.Query`、`org.springframework.data.repository.query.Param` |
    | ページング | `org.springframework.data.domain.Page`、`org.springframework.data.domain.Pageable` |
    | エンティティ | `jakarta.persistence.*` |
-   | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*` |
+   | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*`、`org.hibernate.validator.constraints.*`（`@URL`・`@CreditCardNumber`・`@ISBN`） |
    | 日付・時刻の入力 | `org.springframework.format.annotation.DateTimeFormat` |
    | ログ | `org.slf4j.Logger`、`org.slf4j.LoggerFactory` |
 
@@ -1075,6 +1112,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] 検証の対応表に無い表現を、推測でアノテーション化していないか（`## 20.6`）
 - [ ] フォームの検証をフィールドの行末（`@` の右）から読んだか。正規表現・メッセージの引用符の中の `、`・`,` で区切っていないか。`検証` の枝が書かれていた場合、生成せずに報告したか（`## 20.6`）
 - [ ] コレクションの `必須` を `@NotEmpty` にしたか。メッセージはSPDに明示された場合だけ付けたか（`## 20.6`）
+- [ ] 小数を含む範囲を `@DecimalMin`・`@DecimalMax` に、`超`・`より大きい`・`未満` を `inclusive = false` にしたか。`String` の `値なし` を生成せず報告したか。`@URL`・`@CreditCardNumber`・`@ISBN` を `org.hibernate.validator.constraints` から取ったか（`## 20.6`）
 - [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
 - [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
@@ -1446,3 +1484,4 @@ public class MemberForm {
 | 2.2.0 | 2026-10-08 | **旧名の読み替えを廃止**：`## 20.1` の「旧名の読み替え」を「規約に無い書き方」に改め、規約に無い書き方は推測で読み替えず、生成せず報告する規則にした。以前の版の `依存`・`基底パス`・`フォームへ詰め替え` と、マーカーの無い `パス変数：`・`パラメータ：` の引数もこれに当たる（`## 20.1`・`## 20.2`）。`ベースパス`・`インジェクション`・`フォームに詰め替え` の節の読み替えの記述を削除（`## 20.2`・`## 20.3`）。`処理` の「テンプレートへ渡す」「画面に渡す」などの言い回しは、従来どおり同じに扱う（`## 20.2`）。チェックリストの読み替えの項目を、報告の項目に改め37項目に（`## 20.8`） |
 | 2.3.0 | 2026-10-27 | `マッピング` のパスが `ベースパス` と同じ文字列で始まる場合（`ベースパス：/date` に `マッピング：GET /date`）は、URL がベースパスを2回重ねたもの（`/date/date`）になるため、SPDのとおりに生成したうえで【確認事項】で知らせる規則を追加（`## 20.2`）。チェックリストに1項目追加し38項目に（`## 20.8`） |
 | 2.4.0 | 2026-11-14 | 引数が1つだけのときは `引数：会員番号：@パス変数 Long id` のように1行で書いてもよいことを明記（`## 20.2`。`spd-core.instructions.md` v2.14.0 の `## 9.6.5` に合わせた） |
+| 2.5.0 | 2026-11-24 | フォームの検証の対応表に、`N超`・`Nより大きい`・`M未満` とその組み合わせ（→ `@DecimalMin`・`@DecimalMax` の `inclusive = false`）、小数を含む `N以上`・`M以下`（→ `@DecimalMin`・`@DecimalMax`）、`整数N桁以内`・`整数N桁・小数M桁以内`（→ `@Digits`）、`正の数または0`・`負の数`・`負の数または0`、`trueである`・`falseである`、`今日以前の日付`・`今日以降の日付`、`値なし`（→ `@Null`。`String` には使えないため報告）、`URL`・`クレジットカード番号`・`ISBN`・`ISBN-10`（Hibernate Validator）を追加。`メール形式` を `メール` に改めた（`メール形式` は規約に無い書き方として報告される）。`boolean` の `必須` はチェックを強制しないことを明記。`@Length` は使わず `@Size` で生成することを明記（`## 20.6`）。インポート表に `org.hibernate.validator.constraints.*` を追加（`## 20.7`）。チェックリストに1項目追加し39項目に（`## 20.8`） |
