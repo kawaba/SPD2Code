@@ -72,7 +72,7 @@
      │    └─入力内容：@検証 MemberForm memberForm
      ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
-           ├─◇─resultにエラーがある
+           ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
            ├─memberServiceを使って、memberFormから会員を登録する
            ├─"登録しました"をフラッシュメッセージとして渡す
@@ -239,7 +239,7 @@ public class MemberService {
      │    └─入力内容：@検証 MemberForm memberForm
      ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
-           ├─◇─resultにエラーがある
+           ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
            ├─memberServiceを使って、memberFormから会員を登録する
            ├─"登録しました"をフラッシュメッセージとして渡す

@@ -1075,6 +1075,10 @@ public class MemberController {
 <td><code>return &quot;member/list&quot;;</code>（テンプレートを表示）</td>
 </tr>
 <tr>
+<td><strong><code>◇─検証結果にエラーがある</code></strong></td>
+<td><code>if (result.hasErrors()) {</code>（入力にエラーがあるか）</td>
+</tr>
+<tr>
 <td><strong><code>&lt;名前&gt;をテンプレートに渡す</code></strong></td>
 <td><code>model.addAttribute(&quot;&lt;名前&gt;&quot;, &lt;名前&gt;);</code></td>
 </tr>
@@ -1141,7 +1145,7 @@ public class MemberController {
      │    └─入力内容：@検証 MemberForm memberForm
      ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
-           ├─◇─resultにエラーがある
+           ├─◇─検証結果にエラーがある
            │  └─&quot;member/form&quot;を返す
            ├─memberServiceを使って、memberFormから会員を登録する
            ├─&quot;登録しました&quot;をフラッシュメッセージとして渡す
@@ -1162,7 +1166,8 @@ public String create(@Valid MemberForm memberForm,
 }
 </code></pre>
 <ul>
-<li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。<code>処理</code> では、この名前で書きます（<code>resultにエラーがある</code>）。</li>
+<li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。</li>
+<li><strong>入力にエラーがあるかどうかは、<code>検証結果にエラーがある</code> と書きます。</strong> 変数名を知らなくても書けます。<code>resultにエラーがある</code> と書いても同じです。</li>
 <li>入力にエラーがあれば、同じ入力画面をもう一度表示します。入力した値とエラーメッセージは、そのまま画面に出ます。</li>
 </ul>
 <hr />
@@ -1253,7 +1258,7 @@ public String create(@Valid MemberForm memberForm,
 │  ├─引数：入力内容：@検証 MemberForm memberForm
 │  ├─戻り値：String、表示するテンプレート名またはリダイレクト先
 │  └─処理
-│        ├─◇─resultにエラーがある
+│        ├─◇─検証結果にエラーがある
 │        │  └─&quot;member/edit&quot;を返す
 │        ├─memberServiceを使って、memberFormで会員を更新する
 │        ├─&quot;更新しました&quot;をフラッシュメッセージとして渡す
@@ -1508,7 +1513,7 @@ public String delete(@PathVariable Long id) {
 <tbody>
 <tr>
 <td><code>result</code></td>
-<td>検証の結果（<code>resultにエラーがある</code>）</td>
+<td>検証の結果（<code>処理</code> では <code>検証結果にエラーがある</code> と書ける）</td>
 </tr>
 <tr>
 <td><code>model</code></td>
