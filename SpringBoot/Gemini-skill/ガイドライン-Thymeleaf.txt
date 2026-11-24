@@ -1,7 +1,7 @@
 ﻿# Gemini SKILL用 ガイドライン（Thymeleaf）— `## 30.x`
 
 > **このファイルは自動生成したものである。直接編集しないこと。**
-> 元：`SpringBoot/GitHub-Copilot/instructions/thymeleaf.instructions.md`（THYMELEAF v8.7.0）
+> 元：`SpringBoot/GitHub-Copilot/instructions/thymeleaf.instructions.md`（THYMELEAF v8.7.1）
 > 変換：`SpringBoot/Gemini-skill/build/build-skill.ps1`
 > `## 0`〜`## 11` と `## 9.x` は `ガイドライン-共通.txt`、`## 20.x` は `ガイドライン-SpringBoot.txt` にある。
 > 「ワークスペース」などの読み替えは、`ガイドライン-共通.txt` の冒頭の「読み替え」に従う。
@@ -1122,7 +1122,7 @@
 - **フォームクラスは、`受け取り` に書かれたフォームオブジェクトの型（`MemberForm memberForm` の `MemberForm`）で探す。**
   確認に使えるのは、フォームの SPD（タイトルが `フォーム：MemberForm`）か Java のフォームクラス（`MemberForm.java`）である。
   同時に生成する場合と、ワークスペースや会話の中にある場合に、確認できたとする。
-- **検証の指定**とは、フォームの SPD ではフィールドの行の末尾の `@` の右に書いた検証（`＠必須`・`20文字以内` など。`springboot-java` の `## 20.6`）、
+- **検証の指定**とは、フォームの SPD ではフィールドの行の末尾か、その下の行に `@` を付けて書いた検証（`＠必須`・`＠20文字以内` など。`springboot-java` の `## 20.6`）、
   Java のフォームクラスではフィールドに付けた検証アノテーション（`jakarta.validation.constraints.*` の `@NotBlank`・`@Size`・`@Min` など）をいう。
   `@DateTimeFormat` は検証ではない。
 - 次の場合は、**エラー表示をどの入力項目にも付けず、【確認事項】に理由を載せること。** 同じテンプレート SPD でも、

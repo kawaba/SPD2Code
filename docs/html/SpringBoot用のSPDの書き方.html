@@ -490,9 +490,11 @@ private Department department; // 所属
 ├─目的：書籍の入力フォーム
 ├─フィールド
 │    ├─主キー：Long id
-│    ├─表題：String title　　　＠必須(&quot;表題を入力してください&quot;)、20文字以内
+│    ├─表題：String title　　　＠必須(&quot;表題を入力してください&quot;)、＠20文字以内
 │    ├─発行日：LocalDate issuedOn　＠過去の日付
-│    └─価格：Integer price　　　＠正の数
+│    └─価格：Integer price
+│              ＠必須(&quot;価格を入力してください&quot;)
+│              ＠正の数(&quot;価格は1円以上で入力してください&quot;)
 └─自動生成
       ├─コンストラクタ：引数なし
       ├─ゲッター
@@ -511,14 +513,17 @@ public class BookForm {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate issuedOn; // 発行日
 
-    @Positive
+    @NotNull(message = &quot;価格を入力してください&quot;)
+    @Positive(message = &quot;価格は1円以上で入力してください&quot;)
     private Integer price; // 価格
 
     …（コンストラクタ・ゲッター・セッター）…
 }
 </code></pre>
 <ul>
-<li><strong>検証は、フィールドの行の末尾に <code>@</code> を書き、その右に並べます。</strong> 区切りは <code>、</code> か <code>,</code> です。</li>
+<li><strong>検証には、1つずつ <code>@</code> を付けます</strong>（<code>＠必須、＠20文字以内</code>）。並べるときの区切りは <code>、</code> か空白です。</li>
+<li><strong>検証は、フィールドの行の末尾か、そのすぐ下の行に書きます。</strong> 下の行には枝（<code>├─</code>・<code>└─</code>）を付けず、フィールドの枝より右から書きます。検証が多いときやメッセージが長いときは、下の行に1つずつ書くと読みやすくなります。</li>
+<li>1つのフィールドで、行の末尾と下の行の両方に書くことはできません。</li>
 <li>位置をそろえるために、<code>@</code> の前に空白を入れて構いません。</li>
 <li><strong>エンティティのマーカーは型の前、フォームの検証は変数名の後</strong>です。取り違えに注意してください。</li>
 <li>日付・時刻のフィールドには、画面から送られた値を変換するための <code>@DateTimeFormat</code> が自動で付きます。</li>
@@ -1406,6 +1411,11 @@ public String delete(@PathVariable Long id) {
 <td>フォームの検証は変数名の後</td>
 </tr>
 <tr>
+<td>フォームで <code>String name　＠必須、20文字以内</code></td>
+<td><code>String name　＠必須、＠20文字以内</code></td>
+<td>検証ごとに <code>@</code> を付ける</td>
+</tr>
+<tr>
 <td><code>Date birthday</code></td>
 <td><code>LocalDate birthday</code></td>
 <td>日付は <code>java.time</code> の型</td>
@@ -1433,7 +1443,7 @@ public String delete(@PathVariable Long id) {
 </tr>
 <tr>
 <td><code>フォーム：</code></td>
-<td><code>目的</code>・<code>フィールド</code>（行末に検証）・<code>自動生成</code></td>
+<td><code>目的</code>・<code>フィールド</code>（行末か下の行に検証）・<code>自動生成</code></td>
 </tr>
 <tr>
 <td><code>リポジトリ：</code></td>
@@ -1466,7 +1476,7 @@ public String delete(@PathVariable Long id) {
 </tr>
 <tr>
 <td><code>＠必須</code>・<code>＠N文字以内</code> など</td>
-<td>フォームのフィールド（変数名の後）</td>
+<td>フォームのフィールド（変数名の後か下の行）</td>
 <td>入力の検証</td>
 </tr>
 <tr>

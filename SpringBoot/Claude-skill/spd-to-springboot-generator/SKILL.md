@@ -103,7 +103,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/30-9-example.md` | `30.9 完全な変換例` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v1.7.0、SPD-CORE v2.17.0、SPRINGBOOT-JAVA v2.5.0、THYMELEAF v8.7.0
+元の規約：`copilot-instructions.md` v1.7.0、SPD-CORE v2.17.0、SPRINGBOOT-JAVA v2.6.0、THYMELEAF v8.7.1
 
 # スキルでの運用（`## 10`）
 
@@ -347,7 +347,7 @@ int taxIncluded = (int) Math.round(price * 1.1);
 - [ ] 日付・時刻のフィールドに `@Temporal` を付けていないか。`Date`・`Calendar` が書かれていた場合、生成せずに報告したか（`## 20.5`）
 - [ ] フォームに永続化アノテーションを付けていないか。検証を `jakarta.validation.constraints.*` から取ったか（`## 20.6`）
 - [ ] 検証の対応表に無い表現を、推測でアノテーション化していないか（`## 20.6`）
-- [ ] フォームの検証をフィールドの行末（`@` の右）から読んだか。正規表現・メッセージの引用符の中の `、`・`,` で区切っていないか。`検証` の枝が書かれていた場合、生成せずに報告したか（`## 20.6`）
+- [ ] フォームの検証を、フィールドの行末と、その下の枝の無い `@` の行から読んだか。検証ごとに `@` が付いているか（1つの `@` の後に2つ以上書かれていたら報告したか）。行末と下の行の両方に書かれていたら報告したか。引用符の中の `@`・`、`・空白で区切っていないか。`検証` の枝が書かれていた場合、生成せずに報告したか（`## 20.6`）
 - [ ] コレクションの `必須` を `@NotEmpty` にしたか。メッセージはSPDに明示された場合だけ付けたか（`## 20.6`）
 - [ ] 小数を含む範囲を `@DecimalMin`・`@DecimalMax` に、`超`・`より大きい`・`未満` を `inclusive = false` にしたか。`String` の `値なし` を生成せず報告したか。`@URL`・`@CreditCardNumber`・`@ISBN` を `org.hibernate.validator.constraints` から取ったか（`## 20.6`）
 - [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
