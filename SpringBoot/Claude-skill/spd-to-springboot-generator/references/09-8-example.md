@@ -18,11 +18,8 @@
   └─平均を"平均＝〇〇"の書式でコンソールに表示する
 ```
 
-**生成Javaコード**（SPD全体を冒頭のブロックコメントとして残し、その下にコードを生成する）
+**生成Javaコード**（SPD全体をファイルの先頭にブロックコメントとして残し、その下に `import` 文とコードを生成する）
 ```java
-import java.util.List;
-import jp.kwebs.tools.Tools;
-
 /*
 リストの要素を集計する
   │
@@ -36,6 +33,10 @@ import jp.kwebs.tools.Tools;
   ├─合計を"合計＝〇〇"の書式でコンソールに表示する
   └─平均を"平均＝〇〇"の書式でコンソールに表示する
 */
+
+import java.util.List;
+import jp.kwebs.tools.Tools;
+
 public class ListAggregation {
     public static void main(String[] args) {
         var list = List.of(10, 20, 30);

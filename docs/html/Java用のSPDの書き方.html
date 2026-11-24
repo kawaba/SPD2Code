@@ -351,14 +351,15 @@ System.out.printf(&quot;税込=%d%n&quot;, Math.round(price * 1.1));
 </ul>
 <h3 id="14-spdはコードの先頭に残る"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.4 SPDはコードの先頭に残る</a></h3>
 <p>生成されるコードの先頭には、<strong>SPD 全体がブロックコメント（<code>/* … */</code>）としてそのまま残ります</strong>。</p>
-<pre class="java"><code class="language-java">import java.util.List;
-
-/*
+<pre class="java"><code class="language-java">/*
 リストの要素を集計する
   │
   ├─整数のリストを作成して、変数listに代入する
   …
 */
+
+import java.util.List;
+
 public class ListAggregation {
     …
 }
@@ -1191,12 +1192,13 @@ public record Product(
   ├─合計を&quot;合計＝〇〇&quot;の書式でコンソールに表示する
   └─平均を&quot;平均＝〇〇&quot;の書式でコンソールに表示する
 </code></pre>
-<pre class="java"><code class="language-java">import java.util.List;
-import jp.kwebs.tools.Tools;
-
-/*
+<pre class="java"><code class="language-java">/*
 （SPD 全体）
 */
+
+import java.util.List;
+import jp.kwebs.tools.Tools;
+
 public class ListAggregation {
     public static void main(String[] args) {
         var list = List.of(10, 20, 30);

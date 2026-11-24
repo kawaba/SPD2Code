@@ -3,9 +3,6 @@
 与えられたSPDから、次のように**SPD全体をブロックコメントで冒頭に残したうえで**コードを生成する。
 
 ```java
-import java.util.List;
-import jp.kwebs.tools.Tools;
-
 /*
 リストの要素を集計する
  │
@@ -19,6 +16,10 @@ import jp.kwebs.tools.Tools;
  ├─ 合計を"合計＝〇〇"の書式でコンソールに表示する
  └─ 平均を"平均＝〇〇"の書式でコンソールに表示する
 */
+
+import java.util.List;
+import jp.kwebs.tools.Tools;
+
 public class ListAggregation {
     public static void main(String[] args) {
         var list = List.of(10, 20, 30);

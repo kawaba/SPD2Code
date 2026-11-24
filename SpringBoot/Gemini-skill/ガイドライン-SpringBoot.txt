@@ -1,7 +1,7 @@
 ﻿# Gemini SKILL用 ガイドライン（Spring Boot）— `## 20.x`
 
 > **このファイルは自動生成したものである。直接編集しないこと。**
-> 元：`SpringBoot/GitHub-Copilot/instructions/springboot-java.instructions.md`（SPRINGBOOT-JAVA v2.6.0）
+> 元：`SpringBoot/GitHub-Copilot/instructions/springboot-java.instructions.md`（SPRINGBOOT-JAVA v2.7.0）
 > 変換：`SpringBoot/Gemini-skill/build/build-skill.ps1`
 > `## 0`〜`## 11` と `## 9.x` は `ガイドライン-共通.txt`、`## 30.x` は `ガイドライン-Thymeleaf.txt` にある。
 > 「ワークスペース」などの読み替えは、`ガイドライン-共通.txt` の冒頭の「読み替え」に従う。
@@ -1084,7 +1084,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 ### SPDの残し方
 
 `spd-core` の `## 9.10` と同じく、**与えられたSPD全体を1つのブロックコメント（`/* … */`）に
-まとめ、そのファイルの冒頭（`package` 文と `import` 文の後・型定義の直前）に残す。**
+まとめ、そのファイルの先頭（`package` 文・`import` 文より前）に残す。** SPDブロックの下に、`package` 文・`import` 文・型定義の順に書く。
 
 - 複数の型（コントローラー・サービス・エンティティなど）のSPDがまとめて与えられた場合は、
   **各Javaファイルに、そのファイルで定義する型のSPDだけ**を冒頭に置く。
@@ -1135,7 +1135,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
 - [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に `package` 文を書かずに生成し、パッケージの分からない同じプロジェクトのクラスの import を推測で書かなかったか（`## 10.4`）
-- [ ] 各Javaファイルの冒頭に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
+- [ ] 各Javaファイルの先頭（`package` 文・`import` 文より前）に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
 - [ ] REST API の指定があった場合、生成せずに報告したか（`## 20.1`）
 
 ---
@@ -1226,15 +1226,6 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 **Member.java**
 
 ```java
-package com.example.app.entity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 /*
 エンティティ：Member
 ├─目的：会員を表すエンティティ
@@ -1247,6 +1238,15 @@ import jakarta.persistence.Table;
      ├─ゲッター
      └─セッター
 */
+
+package com.example.app.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 // 会員を表すエンティティ
 @Entity
@@ -1287,17 +1287,6 @@ public class Member {
 **MemberService.java**
 
 ```java
-package com.example.app.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.example.app.entity.Member;
-import com.example.app.form.MemberForm;
-import com.example.app.repository.MemberRepository;
-
 /*
 サービス：MemberService
 ├─目的：会員に関する業務処理を行う
@@ -1321,6 +1310,17 @@ import com.example.app.repository.MemberRepository;
            ├─formのnameをmemberのnameに設定する
            └─memberRepositoryのsaveをmemberを引数にして呼び出す
 */
+
+package com.example.app.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.app.entity.Member;
+import com.example.app.form.MemberForm;
+import com.example.app.repository.MemberRepository;
 
 // 会員に関する業務処理を行う
 @Service
@@ -1359,21 +1359,6 @@ public class MemberService {
 **MemberController.java**
 
 ```java
-package com.example.app.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.app.form.MemberForm;
-import com.example.app.service.MemberService;
-
-import jakarta.validation.Valid;
-
 /*
 コントローラー：MemberController
 ├─目的：会員の一覧・登録を扱う
@@ -1402,6 +1387,21 @@ import jakarta.validation.Valid;
            ├─"登録しました"をフラッシュメッセージとして渡す
            └─ベースパスにリダイレクトする
 */
+
+package com.example.app.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.app.form.MemberForm;
+import com.example.app.service.MemberService;
+
+import jakarta.validation.Valid;
 
 // 会員の一覧・登録を扱う
 @Controller

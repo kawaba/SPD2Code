@@ -340,18 +340,19 @@ printf(&quot;税込=%.0f\n&quot;, round(price * 1.1));
 </ul>
 <h3 id="14-spdはコードの先頭に残る"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.4 SPDはコードの先頭に残る</a></h3>
 <p>生成されるコードには、<strong>SPD 全体がブロックコメント（<code>/* … */</code>）としてそのまま残ります</strong>。
-置かれる場所は、<strong><code>#include</code> の直後の1か所</strong>です。</p>
-<pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &quot;utils.h&quot;
-
-#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
-
-/*
+置かれる場所は、<strong>ファイルの先頭（<code>#include</code> より前）の1か所</strong>です。</p>
+<pre><code class="language-c">/*
 配列の要素を集計する
   │
   ├─整数の配列を作成して、変数array に代入する
   …
 */
+
+#include &lt;stdio.h&gt;
+#include &quot;utils.h&quot;
+
+#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
+
 int main(void) {
     …
 }
@@ -905,14 +906,15 @@ int totalScore = 0;
   ├─合計を &quot;合計=〇〇&quot; の書式でコンソールに表示する
   └─平均を &quot;平均=〇〇.〇&quot; の書式で小数点以下１桁まで表示する
 </code></pre>
-<pre><code class="language-c">#include &lt;stdio.h&gt;
+<pre><code class="language-c">/*
+（SPD 全体）
+*/
+
+#include &lt;stdio.h&gt;
 #include &quot;utils.h&quot;
 
 #define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
 
-/*
-（SPD 全体）
-*/
 int main(void) {
     int array[] = {10, 20, 30};
 

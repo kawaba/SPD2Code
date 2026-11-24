@@ -24,13 +24,9 @@
 
 **生成Cコード**
 
-（SPDは分割せず、`#include` 群の直後に1つのブロックコメントとしてそのまま残す）
+（SPDは分割せず、ファイルの先頭（`#include` 群より前）に1つのブロックコメントとしてそのまま残す）
 
 ```c
-#include <stdio.h>
-
-#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
-
 /*
 配列の要素を集計する
   │
@@ -48,6 +44,11 @@
   ├─合計を "合計= 〇〇" の書式でコンソールに表示する
   └─平均を "平均= 〇〇. 〇" の書式で小数点以下１桁まで表示する
 */
+
+#include <stdio.h>
+
+#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
+
 int main(void) {
     int array[] = {10, 20, 30};
 

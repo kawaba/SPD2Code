@@ -315,15 +315,16 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 ├─目的：書籍を表すエンティティ
 …
 </code></pre>
-<pre class="java"><code class="language-java">package jp.kwebs.bookshop.entity;
-
-…（import 文）…
-
-/*
+<pre class="java"><code class="language-java">/*
+※jp.kwebs.bookshop.entity
 エンティティ：Book
 ├─目的：書籍を表すエンティティ
 …
 */
+
+package jp.kwebs.bookshop.entity;
+
+…（import 文）…
 
 // 書籍を表すエンティティ
 @Entity
@@ -332,7 +333,7 @@ public class Book {
 <ul>
 <li><strong>パッケージ名は、タイトルの前の行に <code>※</code> を付けて書きます。</strong> そのまま <code>package</code> 文になります。</li>
 <li><strong><code>目的</code> は、クラスの直前のコメントになります。</strong></li>
-<li><strong>SPD 全体が、Java ファイルの先頭にコメントとして残ります。</strong></li>
+<li><strong>SPD 全体が、Java ファイルの先頭（<code>package</code> 文より前）にコメントとして残ります。</strong></li>
 <li><code>@主キー</code>・<code>@検証</code> のような <strong><code>@</code> で始まる指定をマーカー</strong>と呼びます。<code>@</code> は全角の <code>＠</code> でも構いません。</li>
 <li>import 文は自動で決まるので、SPD に書く必要はありません。</li>
 </ul>

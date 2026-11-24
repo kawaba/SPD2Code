@@ -84,15 +84,6 @@
 **Member.java**
 
 ```java
-package com.example.app.entity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 /*
 エンティティ：Member
 ├─目的：会員を表すエンティティ
@@ -105,6 +96,15 @@ import jakarta.persistence.Table;
      ├─ゲッター
      └─セッター
 */
+
+package com.example.app.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 // 会員を表すエンティティ
 @Entity
@@ -145,17 +145,6 @@ public class Member {
 **MemberService.java**
 
 ```java
-package com.example.app.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.example.app.entity.Member;
-import com.example.app.form.MemberForm;
-import com.example.app.repository.MemberRepository;
-
 /*
 サービス：MemberService
 ├─目的：会員に関する業務処理を行う
@@ -179,6 +168,17 @@ import com.example.app.repository.MemberRepository;
            ├─formのnameをmemberのnameに設定する
            └─memberRepositoryのsaveをmemberを引数にして呼び出す
 */
+
+package com.example.app.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.app.entity.Member;
+import com.example.app.form.MemberForm;
+import com.example.app.repository.MemberRepository;
 
 // 会員に関する業務処理を行う
 @Service
@@ -217,21 +217,6 @@ public class MemberService {
 **MemberController.java**
 
 ```java
-package com.example.app.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.app.form.MemberForm;
-import com.example.app.service.MemberService;
-
-import jakarta.validation.Valid;
-
 /*
 コントローラー：MemberController
 ├─目的：会員の一覧・登録を扱う
@@ -260,6 +245,21 @@ import jakarta.validation.Valid;
            ├─"登録しました"をフラッシュメッセージとして渡す
            └─ベースパスにリダイレクトする
 */
+
+package com.example.app.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.app.form.MemberForm;
+import com.example.app.service.MemberService;
+
+import jakarta.validation.Valid;
 
 // 会員の一覧・登録を扱う
 @Controller

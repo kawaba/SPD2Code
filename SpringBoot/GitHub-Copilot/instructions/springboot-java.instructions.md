@@ -3,7 +3,7 @@ applyTo: "**/*.java, **/src/main/resources/templates/**/*.html"
 description: SPDからSpring Boot（MVC + JPA）のコードを生成する規約。コントローラー・サービス・リポジトリ・エンティティ・フォームの記法と生成規則。
 ---
 
-<!-- ===== SPRINGBOOT-JAVA v2.6.0 / 2026-11-24 =====
+<!-- ===== SPRINGBOOT-JAVA v2.7.0 / 2026-11-24 =====
      このファイルは Spring Boot 版ワークスペース固有である。SE版・要件定義版には存在しない。
      テンプレート（.html）編集時にも読み込まれるのは、コントローラーとテンプレートが
      互いに依存するためである（copilot-instructions.md `## 11`）。 -->
@@ -1087,7 +1087,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 ### SPDの残し方
 
 `spd-core` の `## 9.10` と同じく、**与えられたSPD全体を1つのブロックコメント（`/* … */`）に
-まとめ、そのファイルの冒頭（`package` 文と `import` 文の後・型定義の直前）に残す。**
+まとめ、そのファイルの先頭（`package` 文・`import` 文より前）に残す。** SPDブロックの下に、`package` 文・`import` 文・型定義の順に書く。
 
 - 複数の型（コントローラー・サービス・エンティティなど）のSPDがまとめて与えられた場合は、
   **各Javaファイルに、そのファイルで定義する型のSPDだけ**を冒頭に置く。
@@ -1138,7 +1138,7 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
 - [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に基底パッケージから決め、それも分からないときは生成せずに尋ねたか（`## 20.7`）
-- [ ] 各Javaファイルの冒頭に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
+- [ ] 各Javaファイルの先頭（`package` 文・`import` 文より前）に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
 - [ ] REST API の指定があった場合、生成せずに報告したか（`## 20.1`）
 
 ---
@@ -1229,15 +1229,6 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 **Member.java**
 
 ```java
-package com.example.app.entity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 /*
 エンティティ：Member
 ├─目的：会員を表すエンティティ
@@ -1250,6 +1241,15 @@ import jakarta.persistence.Table;
      ├─ゲッター
      └─セッター
 */
+
+package com.example.app.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 // 会員を表すエンティティ
 @Entity
@@ -1290,17 +1290,6 @@ public class Member {
 **MemberService.java**
 
 ```java
-package com.example.app.service;
-
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.example.app.entity.Member;
-import com.example.app.form.MemberForm;
-import com.example.app.repository.MemberRepository;
-
 /*
 サービス：MemberService
 ├─目的：会員に関する業務処理を行う
@@ -1324,6 +1313,17 @@ import com.example.app.repository.MemberRepository;
            ├─formのnameをmemberのnameに設定する
            └─memberRepositoryのsaveをmemberを引数にして呼び出す
 */
+
+package com.example.app.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.example.app.entity.Member;
+import com.example.app.form.MemberForm;
+import com.example.app.repository.MemberRepository;
 
 // 会員に関する業務処理を行う
 @Service
@@ -1362,21 +1362,6 @@ public class MemberService {
 **MemberController.java**
 
 ```java
-package com.example.app.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.app.form.MemberForm;
-import com.example.app.service.MemberService;
-
-import jakarta.validation.Valid;
-
 /*
 コントローラー：MemberController
 ├─目的：会員の一覧・登録を扱う
@@ -1405,6 +1390,21 @@ import jakarta.validation.Valid;
            ├─"登録しました"をフラッシュメッセージとして渡す
            └─ベースパスにリダイレクトする
 */
+
+package com.example.app.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.app.form.MemberForm;
+import com.example.app.service.MemberService;
+
+import jakarta.validation.Valid;
 
 // 会員の一覧・登録を扱う
 @Controller
@@ -1507,3 +1507,4 @@ public class MemberForm {
 | 2.4.0 | 2026-11-14 | 引数が1つだけのときは `引数：会員番号：@パス変数 Long id` のように1行で書いてもよいことを明記（`## 20.2`。`spd-core.instructions.md` v2.14.0 の `## 9.6.5` に合わせた） |
 | 2.5.0 | 2026-11-24 | フォームの検証の対応表に、`N超`・`Nより大きい`・`M未満` とその組み合わせ（→ `@DecimalMin`・`@DecimalMax` の `inclusive = false`）、小数を含む `N以上`・`M以下`（→ `@DecimalMin`・`@DecimalMax`）、`整数N桁以内`・`整数N桁・小数M桁以内`（→ `@Digits`）、`正の数または0`・`負の数`・`負の数または0`、`trueである`・`falseである`、`今日以前の日付`・`今日以降の日付`、`値なし`（→ `@Null`。`String` には使えないため報告）、`URL`・`クレジットカード番号`・`ISBN`・`ISBN-10`（Hibernate Validator）を追加。`メール形式` を `メール` に改めた（`メール形式` は規約に無い書き方として報告される）。`boolean` の `必須` はチェックを強制しないことを明記。`@Length` は使わず `@Size` で生成することを明記（`## 20.6`）。インポート表に `org.hibernate.validator.constraints.*` を追加（`## 20.7`）。チェックリストに1項目追加し39項目に（`## 20.8`） |
 | 2.6.0 | 2026-11-24 | フォームの検証は、検証ごとに `@`（`＠`）を付けて書く記法に変更した（`＠必須、＠20文字以内`）。1行に複数書くときの区切りは `、` または1文字以上の空白（半角・全角）とし、`,` は区切りとして認めない。1つの `@` の後に2つ以上書く以前の書き方（`＠必須、20文字以内`）は、規約に無い書き方として報告する。行が横に長くならないよう、フィールドの行のすぐ下に枝を付けずに検証の行を書けるようにした（フィールドの枝より深く字下げする。行末と下の行の両方に書くことは報告。エンティティに `@` の行が書かれていた場合も報告）。引用符の中の `@` を検証の始まりとみなさないことを明記。記法例と生成例を新しい書き方に改めた（`## 20.6`・`## 20.9`）。チェックリストの項目を改めた（`## 20.8`） |
+| 2.7.0 | 2026-11-24 | SPDのブロックコメントを置く位置を、`package` 文・`import` 文の後から、ファイルの先頭（それらより前）に改めた（`## 20.7` の「SPDの残し方」）。完全な変換例（`## 20.9`）の3つのJavaファイルを改めた。`spd-core.instructions.md` v2.18.0 と同時に変更 |
