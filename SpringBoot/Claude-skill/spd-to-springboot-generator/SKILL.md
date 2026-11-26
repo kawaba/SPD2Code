@@ -90,7 +90,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/20-4-repository.md` | `20.4 リポジトリ` |
 | `references/20-5-entity.md` | `20.5 エンティティ` |
 | `references/20-6-form.md` | `20.6 フォーム` |
-| `references/20-7-conventions.md` | `20.7 Spring Boot コード生成規約` |
+| `references/20-7-conventions.md` | `20.7 共通の生成規約（入出力・例外・パッケージ・インポート・SPDの残し方）` |
 | `references/20-8-checklist.md` | `20.8 生成時のチェックリスト（Spring Boot 固有）` |
 | `references/20-9-example.md` | `20.9 完全な変換例` |
 | `references/20-10-properties.md` | `20.10 設定ファイル（application.properties）` |
@@ -105,7 +105,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/30-9-example.md` | `30.9 完全な変換例` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v1.10.0、SPD-CORE v2.18.0、SPRINGBOOT-JAVA v2.14.0、THYMELEAF v8.7.1
+元の規約：`copilot-instructions.md` v1.10.0、SPD-CORE v2.18.0、SPRINGBOOT-JAVA v2.15.0、THYMELEAF v8.7.1
 
 # スキルでの運用（`## 10`）
 
@@ -360,9 +360,12 @@ int taxIncluded = (int) Math.round(price * 1.1);
 - [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
 - [ ] フォームの検証を、フィールドの型と照らし合わせたか。型に合わない検証（`Integer` の `N文字以内`、コレクションの `N文字以内` など）を生成せず報告したか。コレクションの個数を `N個以内` などから `@Size` にしたか（`## 20.6`）
 - [ ] フォームの数値の基本型、主キーのフィールドの `必須`、`ゲッター`・`セッター` の無い `自動生成` を、生成したうえで報告したか。複数のフィールドを比べる検証・検証グループ・入れ子のフォームを、生成せず報告したか（`## 20.6`）
-- [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
+- [ ] `処理` にログの行があるとき、ロガー（`private static final Logger log`）をフィールドの先頭に補ったか。メッセージの `{…}` を SLF4J の `{}` と後ろの引数にし、文字列の `+` でつないでいないか。`例外<変数>とともに` の例外を最後の引数にしたか。`"…"` で囲まれていないメッセージを報告したか（`## 20.7`）
+- [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）。`コンソールに表示する` を読み替えずに報告したか（`## 20.7`）
+- [ ] SPDに無い `catch` を補っていないか。利用者が入力した値で `主キーで検索` を呼ぶ `処理` を、生成したうえで報告したか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
-- [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に `package` 文を書かずに生成し、パッケージの分からない同じプロジェクトのクラスの import を推測で書かなかったか（`## 10.4`）
+- [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に `package` 文を書かずに生成し、パッケージの分からない同じプロジェクトのクラスの import を推測で書かなかったか（`## 10.4`）。表に無い型（`クラス:` など）のパッケージを推測で作っていないか（`## 20.7`）
+- [ ] import を1クラスずつ書き（ワイルドカードなし）、使わないものを書かず、`java` → `javax` → `org` → `com` → そのほか の順に、グループの間を空行にして並べたか（`## 20.7`）
 - [ ] 各Javaファイルの先頭（`package` 文・`import` 文より前）に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
 - [ ] REST API の指定があった場合、生成せずに報告したか（`## 20.1`）
 - [ ] 設定ファイルのSPDを、`application.properties` の先頭に各行 `# ` を付けて原文のまま残し、項目をSPDの順に、対応表のキーで出力したか。見出し・`データベース`・ドライバークラス名・dialect を出力していないか（`## 20.10`）

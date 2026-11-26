@@ -244,6 +244,7 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <li><a href="#63-引数とマーカー">6.3 引数とマーカー</a></li>
 <li><a href="#64-処理の書き方">6.4 処理の書き方</a></li>
 <li><a href="#65-補われる引数">6.5 補われる引数</a></li>
+<li><a href="#66-ログを出す">6.6 ログを出す</a></li>
 </ul>
 </li>
 <li><a href="#第7章-コントローラーとテンプレートをつなぐ">第7章 コントローラーとテンプレートをつなぐ</a>
@@ -344,7 +345,8 @@ public class Book {
 <li><strong><code>目的</code> は、クラスの直前のコメントになります。</strong></li>
 <li><strong>SPD 全体が、Java ファイルの先頭（<code>package</code> 文より前）にコメントとして残ります。</strong></li>
 <li><code>@主キー</code>・<code>@検証</code> のような <strong><code>@</code> で始まる指定をマーカー</strong>と呼びます。<code>@</code> は全角の <code>＠</code> でも構いません。</li>
-<li>import 文は自動で決まるので、SPD に書く必要はありません。</li>
+<li>import 文は自動で決まるので、SPD に書く必要はありません。使うクラスだけが1つずつ、VS Code の「インポートの整理」と同じ順に並びます。</li>
+<li><code>クラス：</code>・<code>レコード：</code> など、エンティティ・フォーム・リポジトリ・サービス・コントローラー以外の型は、パッケージ名を決められないので、<code>※</code> で必ず書きます。</li>
 </ul>
 <h3 id="13-書く順番"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">1.3 書く順番</a></h3>
 <p>ほかの SPD の名前を使うので、使われる側から書くと迷いません。</p>
@@ -798,6 +800,7 @@ List&lt;Book&gt; findAllByOrderByPriceDesc();             // 価格の降順で�
 </table>
 <ul>
 <li><strong>名前の中のフィールド名は、エンティティのフィールドと同じつづりにします。</strong> <code>findByTitel</code> のように間違えると、コンパイルは通っても、アプリの起動でエラーになります（生成するときに確かめて報告されます）。</li>
+<li><strong><code>List</code> を返す検索は、見つからなければ空のリストになります。</strong> エラーにはなりません。画面では「リストが空なら『見つかりませんでした』」と表示すれば済みます。会員番号のように、利用者が入力した値で1件を探す画面でも、<code>List&lt;Member&gt; findByMemberNo(String memberNo)</code> のような検索メソッドを使います（5.2 の <code>主キーで検索</code> は使いません）。</li>
 </ul>
 <h3 id="43-jpqlで検索する"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.3 JPQLで検索する</a></h3>
 <p>名前で表しにくい検索は、<strong><code>メソッド：</code></strong> を書き、<code>処理</code> の代わりに <strong><code>JPQL</code></strong> に検索の内容を日本語で書きます。</p>
@@ -1023,6 +1026,7 @@ public void deleteById(Long id) {
 <p>（<code>E</code> はエンティティ、<code>K</code> は主キーの型、<code>F</code> はフォームの型です）</p>
 <ul>
 <li><strong>書いた項目だけが作られます。</strong></li>
+<li><strong><code>主キーで検索</code> は、見つからなければエラーの画面になります。</strong> 一覧のリンクから開く編集画面のように、アプリが渡した id で探すためのものだからです（見つからないのは、他の人が削除したなどの異常なときです）。利用者が入力した値で探す画面には、4.2 の検索メソッドを使います。</li>
 <li><strong>フォームの型は、書かなければ「エンティティ名＋<code>Form</code>」になります</strong>（<code>Book</code> → <code>BookForm</code>）。
 別の名前のフォームを使うときだけ、<code>新規作成 ← BookCreateForm</code> のように書きます。</li>
 <li><code>新規作成</code>・<code>更新</code> は、<strong>フォームとエンティティで名前と型が同じフィールド</strong>を1つずつコピーします。
@@ -1324,6 +1328,58 @@ public String create(@Valid MemberForm memberForm,
 <li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。<code>引数：なし</code> と書いても補われます。</li>
 <li><strong>入力にエラーがあるかどうかは、<code>検証結果にエラーがある</code> と書きます。</strong> 変数名を知らなくても書けます。<code>resultにエラーがある</code> と書いても同じです。</li>
 <li>入力にエラーがあれば、同じ入力画面をもう一度表示します。入力した値とエラーメッセージは、そのまま画面に出ます。</li>
+</ul>
+<h3 id="66-ログを出す"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.6 ログを出す</a></h3>
+<p>処理の様子をログ（コンソールやログファイル）に残すには、<code>処理</code> に <strong><code>&quot;…&quot;をログに出す</code></strong> と書きます。<code>System.out.println</code> は使いません。サービスでも同じ書き方です。</p>
+<pre><code>     └─処理
+           ├─◇─検証結果にエラーがある
+           │  ├─&quot;{memberForm.getName()} さんの入力に {result.getErrorCount()} 件のエラー&quot;を警告としてログに出す
+           │  └─&quot;member/form&quot;を返す
+           ├─memberServiceのcreateでmemberFormから会員を登録し、memberとする
+           ├─&quot;会員 {member.getId()} を登録した&quot;をログに出す
+           └─ベースパスにリダイレクトする
+</code></pre>
+<pre class="java"><code class="language-java">// SPDに無いため Logger log を補った
+private static final Logger log = LoggerFactory.getLogger(MemberController.class);
+…
+if (result.hasErrors()) {
+    log.warn(&quot;{} さんの入力に {} 件のエラー&quot;, memberForm.getName(), result.getErrorCount());
+    return &quot;member/form&quot;;
+}
+var member = memberService.create(memberForm);
+log.info(&quot;会員 {} を登録した&quot;, member.getId());
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>書き方</th>
+<th>生成されるコード</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>&quot;…&quot;をログに出す</code></strong></td>
+<td><code>log.info(…)</code></td>
+</tr>
+<tr>
+<td><code>&quot;…&quot;を警告としてログに出す</code></td>
+<td><code>log.warn(…)</code></td>
+</tr>
+<tr>
+<td><code>&quot;…&quot;をエラーとしてログに出す</code></td>
+<td><code>log.error(…)</code></td>
+</tr>
+<tr>
+<td><code>&quot;…&quot;を例外eとともにエラーとしてログに出す</code></td>
+<td><code>log.error(…, e)</code>（例外の詳しい情報も記録される）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>&quot;…&quot;をコンソールに表示する</code> とは書けません（報告されます）。<code>&quot;…&quot;をログに出す</code> と書きます。</li>
+<li><strong>メッセージは <code>&quot;…&quot;</code> で囲みます。</strong> 値は、メッセージの中に <strong><code>{…}</code> で Java の式</strong>を書いて埋め込みます（<code>{member.getId()}</code>）。テンプレートの <code>{member.id}</code> とは書き方が違うので注意してください。</li>
+<li><code>{…}</code> は、ログの <code>{}</code> と後ろに並ぶ値になります。文字列を <code>+</code> でつなぐ形にはなりません。</li>
+<li>ロガー（<code>Logger log</code>）は、ログの行があれば自動で補われます。<code>フィールド</code> に書く必要はありません。</li>
 </ul>
 <hr />
 <h2 id="第7章-コントローラーとテンプレートをつなぐ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第7章 コントローラーとテンプレートをつなぐ</a></h2>
@@ -1763,6 +1819,16 @@ spring.jpa.open-in-view=false
 <td><code>マッピング：DELETE /{id}</code></td>
 <td><code>マッピング：POST /{id}/delete</code></td>
 <td>書けるのは GET と POST だけ</td>
+</tr>
+<tr>
+<td><code>&quot;登録した&quot;をコンソールに表示する</code></td>
+<td><code>&quot;登録した&quot;をログに出す</code></td>
+<td>Web アプリではコンソールに出さず、ログに出す</td>
+</tr>
+<tr>
+<td>会員番号を入力して探すのに <code>主キーで検索</code> を使う</td>
+<td><code>List&lt;Member&gt; findByMemberNo(…)</code> の検索メソッド</td>
+<td><code>主キーで検索</code> は見つからないとエラーの画面になる</td>
 </tr>
 <tr>
 <td><code>マッピング：GET /{memberId}/edit</code> と <code>@パス変数 Long id</code></td>

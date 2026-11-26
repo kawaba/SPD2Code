@@ -3,7 +3,7 @@ applyTo: "**/*.java, **/src/main/resources/templates/**/*.html, **/src/main/reso
 description: SPDからSpring Boot（MVC + JPA）のコードを生成する規約。コントローラー・サービス・リポジトリ・エンティティ・フォームと設定ファイル（application.properties）の記法と生成規則。
 ---
 
-<!-- ===== SPRINGBOOT-JAVA v2.14.0 / 2026-11-26 =====
+<!-- ===== SPRINGBOOT-JAVA v2.15.0 / 2026-11-26 =====
      このファイルは Spring Boot 版ワークスペース固有である。SE版・要件定義版には存在しない。
      テンプレート（.html）編集時にも読み込まれるのは、コントローラーとテンプレートが
      互いに依存するためである（copilot-instructions.md `## 11`）。 -->
@@ -18,6 +18,8 @@ description: SPDからSpring Boot（MVC + JPA）のコードを生成する規�
   SPDに `REST` の指定があった場合は生成せず、`## 0.8` の報告の【確認事項】に載せること。
 - **データが見つからないときの扱い（404 の画面を出す、一覧へ戻すなど）と、例外処理（`@ExceptionHandler` など）は、当面の対象外である。**
   `findById` の結果は `orElseThrow()` で取り出す（`## 20.7`）ので、存在しない id では例外の画面になる。
+  これは、アプリが渡した主キーで探して見つからない（異常な）場合である。利用者が入力した条件で探す場合は、`List` を返す検索メソッドを使い、
+  見つからなければ空のリストになる（例外にはならない。`## 20.7`「例外処理」）。
   SPDにこれらの処理が書かれた場合は、推測で生成せず【確認事項】に載せること。
 - フォームの、複数のフィールドを比べる検証・検証グループ・入れ子のフォームは、当面の対象外である（`## 20.6`）。
 - ビルドは Maven、テンプレートエンジンは Thymeleaf を前提とする。
@@ -514,6 +516,7 @@ public String delete(@PathVariable Long id) {
 - `F f` の変数名は、型名の先頭を小文字にしたもの（`BookForm bookForm`）とする（`## 20.2` のフォームと同じ）。
   `E e` の変数名も同じく、型名の先頭を小文字にしたもの（`Book book`）とする。
 - `主キーで検索` の `orElseThrow()` は引数なしとする（見つからなければ `NoSuchElementException`）。
+  `主キーで検索` は、アプリが渡した主キーで探すためのものである。利用者が入力した値で探す画面には使わない（`## 20.7`「例外処理」）。
 - 自動生成したメソッドには、上の表のトランザクションを付ける。
   **`トランザクション` ノードが無ければ付けない、という規則（上の「生成規則」）の例外である。**
 - 同じシグネチャのメソッドを `メソッド：` で書いた場合は、そちらを優先し、自動生成はしない（`spd-core` の `## 9.5.1`）。
@@ -1165,7 +1168,7 @@ private List<String> mediaTypes; // メディア
 
 ---
 
-## 20.7 Spring Boot コード生成規約
+## 20.7 共通の生成規約（入出力・例外・パッケージ・インポート・SPDの残し方）
 
 `spd-core` の共通規約に、次を上乗せする。
 
@@ -1176,26 +1179,84 @@ SE版の `Input` クラスによるコンソール入出力も**使用しない*
 
 | SPDの記述 | 生成 |
 |---|---|
-| ログに出す／記録する | `log.info(...)`（下記のロガーを使う） |
-| 警告としてログに出す | `log.warn(...)` |
-| エラーとしてログに出す | `log.error(...)` |
+| `"<メッセージ>"をログに出す`・`記録する` | `log.info(...)` |
+| `"<メッセージ>"を警告としてログに出す` | `log.warn(...)` |
+| `"<メッセージ>"をエラーとしてログに出す` | `log.error(...)` |
+| `"<メッセージ>"を例外<変数>とともにエラーとしてログに出す` | `log.error("…", <変数>)`（`警告として` なら `log.warn`） |
 | 画面に表示する | Model経由で渡し、テンプレート側で表示（`## 11.2`） |
 
-```java
-private static final Logger log = LoggerFactory.getLogger(MemberService.class);
-```
+**ロガーは自動で補う。**
 
-- SPDに `コンソールに表示する` と書かれていた場合は、`log.info` に読み替え、
-  その旨を行コメント1行で明示する。
+- メソッドの `処理` に、上の表のログの行が1つでもあれば、クラスに次のフィールドを補う。
+  `フィールド` に書かなくてよい。
+  ```java
+  // SPDに無いため Logger log を補った
+  private static final Logger log = LoggerFactory.getLogger(MemberService.class);
+  ```
+- `getLogger` の引数は、生成するクラス自身とする。フィールドの先頭（インジェクションのフィールドより前）に置く。
+- SPDの `フィールド` に `Logger` 型のフィールドが書かれていれば、補わずにそれを使う（名前が `log` でなくてもその名前で呼ぶ）。
+- ログの行が無ければ、ロガーは補わない。
+- コントローラー・サービスのほか、`処理` を持つ型（`クラス:` など）でも同じに扱う。
+
+**メッセージの書き方**
+
+- メッセージは `"…"` で囲む。**値は、メッセージの中に `{…}` で Java の式を書いて埋め込む。**
+  `{…}` の部分を SLF4J のプレースホルダー `{}` にし、式を書かれた順に後ろの引数に並べる。
+  ```
+  ├─"会員 {member.getId()} を登録した"をログに出す
+  ├─"{memberForm.getName()} さんの登録で {result.getErrorCount()} 件のエラーがあった"を警告としてログに出す
+  ```
+  ```java
+  log.info("会員 {} を登録した", member.getId());
+  log.warn("{} さんの登録で {} 件のエラーがあった", memberForm.getName(), result.getErrorCount());
+  ```
+- **文字列の `+` でつないだ形（`"会員 " + member.getId() + " を登録した"`）は生成しない。**
+- `{…}` の中は、`処理` のほかの行と同じく Java の式として読む。`{member.id}` のような Thymeleaf の書き方は使えない
+  （`member.id` は Java ではフィールドを直接読む式になり、`private` のフィールドには使えない）。
+  式として成り立たない場合は、その行を生成せず【確認事項】に載せること。
+- **例外を一緒に記録するとき**は、`例外<変数>とともに` と書く。例外は最後の引数にする
+  （SLF4J は、最後の引数が例外ならスタックトレースを出す）。
+  ```
+  ├─"会員 {id} の削除に失敗した"を例外eとともにエラーとしてログに出す
+  ```
+  ```java
+  log.error("会員 {} の削除に失敗した", id, e);
+  ```
+- メッセージを `"…"` で囲まずに書いた行（`登録した会員のidをログに出す`）は、推測で文を作らず、
+  生成せず【確認事項】に載せること。
+
+- SPDに `コンソールに表示する`・`コンソールに出力する` と書かれていた場合は、`log.info` などに読み替えず、
+  その行を生成せず【確認事項】に載せ、`"…"をログに出す` と書くよう案内すること。
 
 ### 例外処理
 
-- `spd-core` の共通規則（握りつぶさない／try-with-resources を優先／`Optional` は
-  `orElseThrow()`）はそのまま適用する。
-- **コントローラー・サービスで `catch` して握りつぶすコードを生成しない。**
-  業務的に想定される失敗（該当データなし等）は、SPDの記述に従って
-  例外を投げるか、戻り値で表現する。
-- `findById` の戻り値 `Optional` からの取り出しは、引数なしの `orElseThrow()` を既定とする。
+`spd-core` の共通規則（握りつぶさない／try-with-resources を優先）はそのまま適用する。
+
+**生成するもの**
+
+- SPDの `処理` に書かれた `〜を投げる`・`try`・`catch` は、`spd-core` のとおりに生成する。
+
+**生成しないもの**
+
+- **SPDに書かれていない `catch` を補ってはならない。** コントローラー・サービスで例外を受け止めて握りつぶすコードも生成しない。
+- `@ExceptionHandler`・`@ControllerAdvice` による例外の受け止めと、データが見つからないときの画面の切り替え
+  （404 の画面・一覧へ戻すなど）は、当面の対象外である（`## 20.1`）。
+
+**「見つからない」の2つの場合**
+
+データが見つからない場合は、次の2つで扱いが違う。
+
+| 場合 | 例 | 使うもの | 見つからないとき |
+|---|---|---|---|
+| **利用者が入力した条件で探す** | 表題・名前で検索する画面 | `List` を返す検索メソッド（`## 20.4`） | **空のリスト**が返る。例外にはならない。テンプレートの条件表示で「見つかりませんでした」と表示する |
+| **アプリが渡した主キーで探す** | 一覧のリンクから開く編集・削除、更新の送信 | サービスの `主キーで検索`（`findById(id).orElseThrow()`） | **異常として** `NoSuchElementException` が投げられ、エラーの画面になる |
+
+- 後者で見つからないのは、他の利用者による削除・URL の書き換え・プログラムの誤りなどの異常な場合に限られるため、
+  処理を止めてエラーの画面を出す。
+- **利用者が主キーそのもの（会員番号など）を入力して探す画面**は前者に当たる。サービスの `主キーで検索` は使わず、
+  `List<Member> findByMemberNo(String memberNo)` のような検索メソッドを書いてもらう。
+  入力された値で `主キーで検索` を呼ぶ `処理` を見つけた場合は、生成したうえで【確認事項】にこのことを書く。
+- `Optional` からの取り出しは、引数なしの `orElseThrow()` を既定とする。
 
 ### 骨格
 
@@ -1244,26 +1305,44 @@ package jp.kwebs.bookshop.entity;
 - **基底パッケージも分からない場合は、そのSPDからコードを生成せず、パッケージ名を尋ねる。**
   推測でパッケージ名を作ってはならない（1ファイルずつ生成したときに、ファイルごとにパッケージがずれるため）。
   尋ねるときは、SPDのタイトル行の前に `※jp.kwebs.<アーティファクト名>.entity` の形で書くよう案内する。
+- **表に無い型**（`クラス:`・`レコード:`・`インタフェース:` など、`spd-core` の `## 9.5` で生成する型）は、
+  パッケージを決められないので、SPDのタイトル行の前の `※` の行で書いてもらう。
+  書かれていない場合は、上の「基底パッケージも分からない場合」と同じに扱う（推測で `dto`・`util` などを作らない）。
 
 ### インポート処理
+
+**import 文の書き方**
+
+- **使うクラスを1つずつ import する。** `jakarta.persistence.*` のようなワイルドカードは使わない。
+- 使わないクラスの import は書かない。同じパッケージのクラスと `java.lang` のクラスは import しない。
+- **並べ方は、VS Code の「インポートの整理」（Organize Imports）と同じにする。** 生成後に整理し直しても順が変わらないようにするためである。
+  1. `java.*`
+  2. `javax.*`
+  3. `org.*`
+  4. `com.*`
+  5. そのほか（`jakarta.*`・`jp.*` など）
+  - グループの間は空行を1つ入れ、グループの中はアルファベット順に並べる。
+  - 同じプロジェクトのクラスも、パッケージ名に従って上のどこかのグループに入る（`com.example.app.entity.Member` は4、`jp.kwebs.bookshop.entity.Book` は5）。
+
+**どこから import するか**
 
 SPDにインポート文の明示がない場合は、次の優先順位で決定する。
 
 1. **同一プロジェクト内のクラス**（エンティティ・フォーム・サービスなど）
 2. **pom.xml に記載された依存ライブラリ**から選択する
 
-   | 用途 | 代表的なインポート |
+   | 用途 | 主なパッケージ |
    |---|---|
-   | コントローラー | `org.springframework.stereotype.Controller`、`org.springframework.web.bind.annotation.*` |
-   | 画面への受け渡し | `org.springframework.ui.Model`、`org.springframework.web.servlet.mvc.support.RedirectAttributes` |
-   | サービス | `org.springframework.stereotype.Service`、`org.springframework.transaction.annotation.Transactional` |
-   | リポジトリ | `org.springframework.data.jpa.repository.JpaRepository` |
-   | JPQL | `org.springframework.data.jpa.repository.Query`、`org.springframework.data.repository.query.Param` |
-   | ページング | `org.springframework.data.domain.Page`、`org.springframework.data.domain.Pageable` |
-   | エンティティ | `jakarta.persistence.*` |
-   | 入力検証 | `jakarta.validation.Valid`、`jakarta.validation.constraints.*`、`org.hibernate.validator.constraints.*`（`@URL`・`@CreditCardNumber`・`@ISBN`） |
-   | 日付・時刻の入力 | `org.springframework.format.annotation.DateTimeFormat` |
-   | ログ | `org.slf4j.Logger`、`org.slf4j.LoggerFactory` |
+   | コントローラー | `org.springframework.stereotype`（`Controller`）、`org.springframework.web.bind.annotation`（`GetMapping`・`PostMapping`・`RequestMapping`・`PathVariable`・`RequestParam`） |
+   | 画面への受け渡し | `org.springframework.ui`（`Model`）、`org.springframework.web.servlet.mvc.support`（`RedirectAttributes`）、`org.springframework.validation`（`BindingResult`） |
+   | サービス | `org.springframework.stereotype`（`Service`）、`org.springframework.transaction.annotation`（`Transactional`） |
+   | リポジトリ | `org.springframework.data.jpa.repository`（`JpaRepository`） |
+   | JPQL | `org.springframework.data.jpa.repository`（`Query`）、`org.springframework.data.repository.query`（`Param`） |
+   | ページング | `org.springframework.data.domain`（`Page`・`Pageable`） |
+   | エンティティ | `jakarta.persistence`（`Entity`・`Table`・`Id`・`GeneratedValue`・`GenerationType`・`Column` など） |
+   | 入力検証 | `jakarta.validation`（`Valid`）、`jakarta.validation.constraints`（`NotBlank`・`Size` など）、`org.hibernate.validator.constraints`（`URL`・`CreditCardNumber`・`ISBN`） |
+   | 日付・時刻の入力 | `org.springframework.format.annotation`（`DateTimeFormat`） |
+   | ログ | `org.slf4j`（`Logger`・`LoggerFactory`） |
 
 3. **Java 標準ライブラリ**（`java.*`）
 
@@ -1331,9 +1410,12 @@ SPDにインポート文の明示がない場合は、次の優先順位で決�
 - [ ] フォームの `java.time` のフィールドに、型に合った `@DateTimeFormat` を付けたか（`## 20.6`）
 - [ ] フォームの検証を、フィールドの型と照らし合わせたか。型に合わない検証（`Integer` の `N文字以内`、コレクションの `N文字以内` など）を生成せず報告したか。コレクションの個数を `N個以内` などから `@Size` にしたか（`## 20.6`）
 - [ ] フォームの数値の基本型、主キーのフィールドの `必須`、`ゲッター`・`セッター` の無い `自動生成` を、生成したうえで報告したか。複数のフィールドを比べる検証・検証グループ・入れ子のフォームを、生成せず報告したか（`## 20.6`）
-- [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）
+- [ ] `処理` にログの行があるとき、ロガー（`private static final Logger log`）をフィールドの先頭に補ったか。メッセージの `{…}` を SLF4J の `{}` と後ろの引数にし、文字列の `+` でつないでいないか。`例外<変数>とともに` の例外を最後の引数にしたか。`"…"` で囲まれていないメッセージを報告したか（`## 20.7`）
+- [ ] `System.out` / `System.err` / `Input` クラスを使っていないか（`## 20.7`）。`コンソールに表示する` を読み替えずに報告したか（`## 20.7`）
+- [ ] SPDに無い `catch` を補っていないか。利用者が入力した値で `主キーで検索` を呼ぶ `処理` を、生成したうえで報告したか（`## 20.7`）
 - [ ] `javax.*` ではなく `jakarta.*` を使ったか（`## 20.7`）
-- [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に基底パッケージから決め、それも分からないときは生成せずに尋ねたか（`## 20.7`）
+- [ ] パッケージ名を、SPDのタイトル行の前の `※` の行から取り、そのまま `package` 文にしたか。無い場合に基底パッケージから決め、それも分からないときは生成せずに尋ねたか。表に無い型（`クラス:` など）のパッケージを推測で作っていないか（`## 20.7`）
+- [ ] import を1クラスずつ書き（ワイルドカードなし）、使わないものを書かず、`java` → `javax` → `org` → `com` → そのほか の順に、グループの間を空行にして並べたか（`## 20.7`）
 - [ ] 各Javaファイルの先頭（`package` 文・`import` 文より前）に、**その型のSPDだけ**をブロックコメントとして残したか（`## 20.7`）
 - [ ] REST API の指定があった場合、生成せずに報告したか（`## 20.1`）
 - [ ] 設定ファイルのSPDを、`application.properties` の先頭に各行 `# ` を付けて原文のまま残し、項目をSPDの順に、対応表のキーで出力したか。見出し・`データベース`・ドライバークラス名・dialect を出力していないか（`## 20.10`）
@@ -1873,3 +1955,4 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/bookstore
 | 2.12.0 | 2026-11-26 | **リポジトリの節の見直し**（`## 20.4`）。`検索メソッド` の名前に含まれるフィールド名がエンティティにあるかを照合し、無いものは報告する。`主キー` の型をエンティティの `@主キー` の型と照合する（エンティティが参照できなければ、生成したうえで照合できなかったことを知らせる）。`JPQL` は検索だけとし、更新・削除は報告する。自然文でフィールドを名指しすれば（`価格がminPrice以上かつmaxPrice以下`）引数名はフィールド名と違ってよいことにし、続く条件でフィールドを省いた場合は直前のフィールドに付くとした（範囲の検索を JPQL 文の直書きなしで書けるように）。名指しが無い条件は従来どおり引数名と同じフィールドとして読む。自然文の表に `以前`・`以降`・`より前`・`より後`・`等しくない`・`空である`・`空でない` を加えた。リポジトリの引数のマーカーは書かなくてよいとし、記法例から外した。チェックリストの項目を改めた（`## 20.8`） |
 | 2.13.0 | 2026-11-26 | **エンティティの節の見直し**（`## 20.5`）。`@桁数(N)` を `@文字数(N)` に改め（以前の書き方は報告）、`String` にだけ付けられるとした。`BigDecimal` の桁数を表す `@精度(P, S)`（→ `@Column(precision = P, scale = S)`）を加えた。`@自動採番` は `@主キー` の `Long`・`Integer` にだけ付けられるとし、基本型には生成したうえでラッパー型を勧める。主キーを対象とするエンティティの `等値判定` を、`spd-core` の形ではなく JPA 向けの形（id が `null` でないときだけ等しい `equals` と、一定の値を返す `hashCode`）で生成するとした。記法例と完全な変換例（`## 20.9`）を改めた。チェックリストに2項目追加した（`## 20.8`） |
 | 2.14.0 | 2026-11-26 | **フォームの節の見直し**（`## 20.6`）。検証と書ける型の表を設け、型に合わない検証（実行時に `UnexpectedTypeException` になる）は生成せず報告するとした。コレクションの個数を表す `N個以内`・`N個以上`・`N個以上M個以内`（→ `@Size`）を加えた。`N文字以上` と正規表現は `必須` が無くても空欄を受け付けないことを明記し、空欄を許すときは空文字にも一致する正規表現を書くとした（記法例の ISBN を改めた）。数値の基本型は生成したうえでラッパー型を勧める。主キーのフィールドの `必須` と、`ゲッター`・`セッター` の無い `自動生成` は、生成したうえで報告する。複数のフィールドを比べる検証・検証グループ・入れ子のフォームは当面の対象外とした（`## 20.1`）。チェックリストに2項目追加した（`## 20.8`） |
+| 2.15.0 | 2026-11-26 | **共通の生成規約の節の見直し**（`## 20.7`）。見出しを「共通の生成規約（入出力・例外・パッケージ・インポート・SPDの残し方）」に改めた。`コンソールに表示する` の `log.info` への読み替えをやめ、報告して `"…"をログに出す` を案内する。例外処理の記述を `## 20.1` とそろえ、SPDに書かれた `〜を投げる`・`try`・`catch` は生成し、書かれていない `catch` は補わないとした。「見つからない」を、利用者が入力した条件で探す場合（`List` を返す検索メソッドで空のリスト、例外にしない）と、アプリが渡した主キーで探す場合（`主キーで検索` で例外の画面）に書き分け、入力された値で `主キーで検索` を呼ぶ処理は報告する（`## 20.1`・`## 20.3`）。import は1クラスずつ書き、VS Code の「インポートの整理」と同じ順（`java`・`javax`・`org`・`com`・そのほか）に並べるとし、表をパッケージとクラス名の形に改めた。パッケージの表に無い型（`クラス:` など）は `※` でパッケージを書いてもらい、無ければ推測しない。**ログの書き方を決めた**。`処理` にログの行があればロガー（`private static final Logger log = LoggerFactory.getLogger(<クラス>.class)`）を補い、フィールドの先頭に置く（`フィールド` に `Logger` が書かれていればそれを使う）。メッセージは `"…"` で囲み、値は `{…}` に Java の式で書く。生成は SLF4J の `{}` と引数の形とし、文字列の `+` でつながない。`例外<変数>とともに` で例外を最後の引数として記録できるようにした。`"…"` で囲まれていないメッセージは報告する。チェックリストに3項目追加し、2項目を改めた（`## 20.8`） |
