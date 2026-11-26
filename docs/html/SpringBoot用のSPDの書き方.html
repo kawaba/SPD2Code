@@ -1687,6 +1687,7 @@ spring.jpa.open-in-view=false
 </code></pre>
 <ul>
 <li><strong><code>DB名</code> は必ず書きます。</strong> <code>ホスト名</code> と <code>ポート番号</code> は省略でき、省略すると <code>localhost</code> と既定のポート番号（PostgreSQL は <code>5432</code>、MySQL は <code>3306</code>）になります。</li>
+<li><strong><code>DB名</code> は、英小文字・数字・<code>_</code> で書きます</strong>（<code>bookstore</code>・<code>book_store</code>）。大文字や <code>-</code> を使うと、データベースの種類や OS によってはつながらなくなります。たとえば PostgreSQL で <code>CREATE DATABASE BookStore;</code> と打つと、できるのは小文字の <code>bookstore</code> です。そのため、<code>DB名：BookStore</code> の接続URL（<code>/BookStore</code>）ではつながりません。大文字や <code>-</code> を含む <code>DB名</code> は、書いたとおりに生成されますが、報告されます。</li>
 <li>H2 の <code>記録場所</code> を <code>ファイル</code> にすると、データがファイルに保存され、再起動しても消えません。<code>保存先</code> を省略すると <code>./data</code> になります。</li>
 <li><strong><code>H2コンソール</code> は H2 のときだけ書けます。</strong></li>
 <li>PostgreSQL と MySQL では、<code>create-drop</code> にすると起動のたびにテーブルとデータが消えます。<code>update</code> か <code>validate</code> を使います。</li>
@@ -1844,6 +1845,11 @@ spring.jpa.open-in-view=false
 <td>設定ファイルで <code>パスワード：</code>（値なし）</td>
 <td><code>パスワード：なし</code></td>
 <td>値が空の項目は未記入とみなされる</td>
+</tr>
+<tr>
+<td>設定ファイルで <code>DB名：BookStore</code>・<code>DB名：book-store</code></td>
+<td><code>DB名：bookstore</code>・<code>DB名：book_store</code></td>
+<td>大文字や <code>-</code> を使うとつながらないことがある</td>
 </tr>
 </tbody>
 </table>
