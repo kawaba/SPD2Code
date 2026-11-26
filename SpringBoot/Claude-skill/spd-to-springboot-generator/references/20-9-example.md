@@ -2,6 +2,9 @@
 
 ### 与えられたSPD
 
+この例は会員の一覧と登録だけを扱うので、`MemberForm` に主キーの `id` を置いていない。
+更新も扱う場合は、エンティティの主キーと同じ名前・型のフィールドを置く（`## 20.6`「主キーのフィールド」）。
+
 ```
 エンティティ：Member
 ├─目的：会員を表すエンティティ
@@ -57,7 +60,8 @@
      └─処理
            ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
-           ├─memberServiceを使って、memberFormから会員を登録する
+           ├─memberServiceのcreateでmemberFormから会員を登録し、memberとする
+           ├─"会員 {member.getId()} を登録した"をログに出す
            ├─"登録しました"をフラッシュメッセージとして渡す
            └─ベースパスにリダイレクトする
 ```
@@ -199,13 +203,16 @@ public class MemberService {
      └─処理
            ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
-           ├─memberServiceを使って、memberFormから会員を登録する
+           ├─memberServiceのcreateでmemberFormから会員を登録し、memberとする
+           ├─"会員 {member.getId()} を登録した"をログに出す
            ├─"登録しました"をフラッシュメッセージとして渡す
            └─ベースパスにリダイレクトする
 */
 
 package com.example.app.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -223,6 +230,9 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/members")
 public class MemberController {
+
+    // SPDに無いため Logger log を補った
+    private static final Logger log = LoggerFactory.getLogger(MemberController.class);
 
     private final MemberService memberService; // 会員サービス
 
@@ -260,23 +270,55 @@ public class MemberController {
         if (result.hasErrors()) {
             return "member/form";
         }
-        memberService.create(memberForm);
+        var member = memberService.create(memberForm);
+        log.info("会員 {} を登録した", member.getId());
         redirectAttrs.addFlashAttribute("message", "登録しました");
         return "redirect:/members";
     }
 }
 ```
 
-**MemberRepository.java**（SPDは同様に冒頭へ残す。以下は本体のみ）
+**MemberRepository.java**
 
 ```java
+/*
+リポジトリ：MemberRepository
+├─目的：会員の永続化を行う
+├─対象：Member
+├─主キー：Long
+└─検索メソッド：なし
+*/
+
+package com.example.app.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.app.entity.Member;
+
+// 会員の永続化を行う
 public interface MemberRepository extends JpaRepository<Member, Long> {
 }
 ```
 
-**MemberForm.java**（同上）
+**MemberForm.java**
 
 ```java
+/*
+フォーム：MemberForm
+├─目的：会員登録画面の入力項目
+├─フィールド
+│  └─名前：String name　＠必須、＠20文字以内
+└─自動生成
+     ├─コンストラクタ：引数なし
+     ├─ゲッター
+     └─セッター
+*/
+
+package com.example.app.form;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 // 会員登録画面の入力項目
 public class MemberForm {
 
@@ -288,11 +330,12 @@ public class MemberForm {
     public MemberForm() {
     }
 
-    // 自動生成：ゲッター／セッター
+    // 自動生成：ゲッター
     public String getName() {
         return name;
     }
 
+    // 自動生成：セッター
     public void setName(String name) {
         this.name = name;
     }
