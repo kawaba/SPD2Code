@@ -220,6 +220,7 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <ul>
 <li><a href="#31-基本の形">3.1 基本の形</a></li>
 <li><a href="#32-検証の書き方">3.2 検証の書き方</a></li>
+<li><a href="#33-検証と型の注意">3.3 検証と型の注意</a></li>
 </ul>
 </li>
 <li><a href="#第4章-リポジトリ">第4章 リポジトリ</a>
@@ -664,6 +665,11 @@ public class BookForm {
 <td>形の決まった文字列</td>
 <td><code>@Pattern(regexp = &quot;…&quot;)</code></td>
 </tr>
+<tr>
+<td><code>N個以内</code>・<code>N個以上</code></td>
+<td>リストの要素の数（チェックボックスで選んだ数など）</td>
+<td><code>@Size(max = N)</code>・<code>@Size(min = N)</code></td>
+</tr>
 </tbody>
 </table>
 <ul>
@@ -672,6 +678,61 @@ public class BookForm {
 <li>チェックボックス（<code>boolean</code>）に <code>必須</code> を書いても、チェックは求められません。チェックしないと <code>false</code> が送られるからです。利用規約への同意などには <code>trueである</code> と書きます。</li>
 <li><code>値なし</code> は、文字列（<code>String</code>）には使えません。空の入力欄は空の文字列（<code>&quot;&quot;</code>）を送るからです。</li>
 <li>表に無い書き方は、検証として使えません。</li>
+</ul>
+<h3 id="33-検証と型の注意"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">3.3 検証と型の注意</a></h3>
+<p><strong>検証は、型に合ったフィールドにだけ書けます。</strong> 型に合わない検証は、コンパイルは通っても、送信したときにエラーの画面になります。そのため、生成されずに報告されます。</p>
+<table>
+<thead>
+<tr>
+<th>検証</th>
+<th>書ける型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N文字以内</code> など</td>
+<td><code>String</code></td>
+</tr>
+<tr>
+<td><code>N個以内</code> など</td>
+<td><code>List</code>・<code>Set</code>・<code>Map</code></td>
+</tr>
+<tr>
+<td><code>N以上</code>・<code>M以下</code>・<code>N超</code>・<code>M未満</code>・桁・正の数・負の数</td>
+<td>数値の型（<code>Integer</code>・<code>Long</code>・<code>BigDecimal</code> など）</td>
+</tr>
+<tr>
+<td><code>過去の日付</code> など</td>
+<td><code>LocalDate</code>・<code>LocalDateTime</code>・<code>LocalTime</code></td>
+</tr>
+<tr>
+<td><code>trueである</code>・<code>falseである</code></td>
+<td><code>boolean</code>・<code>Boolean</code></td>
+</tr>
+<tr>
+<td><code>メール</code>・<code>URL</code>・<code>ISBN</code>・<code>&quot;…&quot;に一致</code> など</td>
+<td><code>String</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>文字の数は <code>文字</code>、リストの要素の数は <code>個</code> で書きます（<code>String name　＠20文字以内</code>、<code>List&lt;String&gt; mediaTypes　＠3個以内</code>）。</li>
+<li>郵便番号のように、数字でできた <code>String</code> の桁数は <code>&quot;^[0-9]{7}$&quot;に一致</code> のように正規表現で書きます。</li>
+</ul>
+<p><strong><code>必須</code> を書かなくても、空欄を受け付けない検証があります。</strong>
+入力欄を空のまま送信すると、<code>String</code> のフィールドには空の文字列（<code>&quot;&quot;</code>）が入ります。そのため、<code>N文字以上</code> と <code>&quot;…&quot;に一致</code> は、空欄だとエラーになります。空欄を許すときは、正規表現を <code>&quot;^$|^[0-9-]{10,17}$&quot;</code> のように、空の文字列にも一致する形で書きます（<code>^$|</code> が「空でもよい」の意味です）。</p>
+<p><strong>数値のフィールドは、<code>Integer</code>・<code>Long</code> などのラッパー型で書きます。</strong>
+<code>int price</code> のような基本型では、空欄で送信したときに変換のエラーになり、英語のメッセージが表示されます。<code>必須</code> も働きません。基本型で書くと、生成はされますが、ラッパー型にするよう報告されます。</p>
+<p><strong>次の場合も、生成はされますが報告されます。</strong></p>
+<ul>
+<li>主キーのフィールド（<code>id</code>）に <code>必須</code> を書いた場合。新規作成では id が無いので、必ずエラーになります。</li>
+<li><code>自動生成</code> に <code>ゲッター</code> と <code>セッター</code> の両方が無い場合。送信された値がフォームに入らなかったり、画面に表示されなかったりします。</li>
+</ul>
+<p><strong>次の検証は、まだ書けません。</strong></p>
+<ul>
+<li>2つの項目を比べる検証（パスワードと確認用のパスワードが同じ、開始日が終了日より前など）</li>
+<li>登録と更新で検証を変えること</li>
+<li>フォームの中に別のフォームを入れること</li>
 </ul>
 <hr />
 <h2 id="第4章-リポジトリ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第4章 リポジトリ</a></h2>
@@ -1677,6 +1738,21 @@ spring.jpa.open-in-view=false
 <td><code>Date birthday</code></td>
 <td><code>LocalDate birthday</code></td>
 <td>日付は <code>java.time</code> の型</td>
+</tr>
+<tr>
+<td>フォームで <code>int price　＠必須</code></td>
+<td><code>Integer price　＠必須</code></td>
+<td>基本型では空欄を受け取れない</td>
+</tr>
+<tr>
+<td>フォームで <code>Integer age　＠3文字以内</code></td>
+<td><code>Integer age　＠999以下</code></td>
+<td>文字数は <code>String</code> だけ</td>
+</tr>
+<tr>
+<td>フォームで <code>List&lt;String&gt; tags　＠3文字以内</code></td>
+<td><code>List&lt;String&gt; tags　＠3個以内</code></td>
+<td>リストの数は <code>個</code> で書く</td>
 </tr>
 <tr>
 <td>「フラッシュメッセージとして渡す」の後に <code>&quot;member/list&quot;を返す</code></td>
