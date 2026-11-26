@@ -655,6 +655,7 @@ public interface MemberRepository extends JpaRepository&lt;Member, Long&gt; {
 <ul>
 <li>これだけで、<code>findAll</code>（全件）・<code>findById</code>（主キーで1件）・<code>save</code>（保存）・<code>deleteById</code>（削除）・<code>count</code>（件数）などが使えます。</li>
 <li>メソッドの中身は Spring が自動で用意するので、<strong>リポジトリはインタフェース</strong>になります。</li>
+<li><strong><code>主キー</code> には、エンティティの主キー（<code>@主キー</code> のフィールド）と同じ型を書きます。</strong></li>
 </ul>
 <h3 id="42-検索メソッド"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.2 検索メソッド</a></h3>
 <p>条件を付けて検索したいときは、<strong><code>検索メソッド</code></strong> に <strong><code>&lt;説明&gt;：&lt;メソッドの宣言&gt;</code></strong> を並べます。
@@ -698,23 +699,43 @@ List&lt;Book&gt; findAllByOrderByPriceDesc();             // 価格の降順で�
 </tr>
 </tbody>
 </table>
+<ul>
+<li><strong>名前の中のフィールド名は、エンティティのフィールドと同じつづりにします。</strong> <code>findByTitel</code> のように間違えると、コンパイルは通っても、アプリの起動でエラーになります（生成するときに確かめて報告されます）。</li>
+</ul>
 <h3 id="43-jpqlで検索する"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">4.3 JPQLで検索する</a></h3>
 <p>名前で表しにくい検索は、<strong><code>メソッド：</code></strong> を書き、<code>処理</code> の代わりに <strong><code>JPQL</code></strong> に検索の内容を日本語で書きます。</p>
 <pre><code>└─メソッド：searchByPriceAndTitle
       ├─目的：価格と表題で検索する
       ├─引数
-      │    ├─上限価格：@パラメータ Integer price
-      │    └─表題のキーワード：@パラメータ String title
+      │    ├─上限価格：Integer price
+      │    └─表題のキーワード：String title
       ├─戻り値：List&lt;Book&gt;、書籍のリスト
       └─JPQL：価格がprice以下で表題にtitleを含む書籍を検索し、価格の昇順に並べて返す
 </code></pre>
 <pre class="java"><code class="language-java">// JPQL：価格がprice以下で表題にtitleを含む書籍を検索し、価格の昇順に並べて返す
-@Query(&quot;SELECT b FROM Book b WHERE b.price &lt;= :price AND b.title LIKE CONCAT(&#x27;%&#x27;, :title, &#x27;%&#x27;) ORDER BY b.price ASC&quot;)
+@Query(&quot;SELECT b FROM Book b WHERE b.price &lt;= :price AND b.title LIKE CONCAT(&#39;%&#39;, :title, &#39;%&#39;) ORDER BY b.price ASC&quot;)
 List&lt;Book&gt; searchByPriceAndTitle(@Param(&quot;price&quot;) Integer price, @Param(&quot;title&quot;) String title);
 </code></pre>
 <ul>
-<li><strong>引数の名前と型は、エンティティのフィールドと同じにします</strong>（<code>price</code>・<code>title</code>）。名前で条件を対応づけるためです。</li>
-<li>使える言い方は、<code>以下</code>・<code>以上</code>・<code>より小さい</code>・<code>より大きい</code>・<code>と等しい</code>・<code>を含む</code>・<code>で始まる</code>・<code>で終わる</code>・<code>かつ</code>・<code>または</code>・<code>昇順</code>・<code>降順</code> などです。</li>
+<li>条件は <strong>「&lt;フィールド&gt;が&lt;引数&gt;以下」</strong> のように書きます。フィールドは、エンティティのフィールドの説明（<code>価格</code>）かフィールド名（<code>price</code>）で書きます。</li>
+<li><strong>引数の型は、比べるフィールドと同じ型にします</strong>（<code>価格</code> が <code>Integer</code> なら <code>Integer</code>）。</li>
+<li>範囲の検索は、フィールドを1回書けば続けて書けます。この場合、引数名はフィールド名と違って構いません。</li>
+</ul>
+<pre><code>└─メソッド：searchByPriceRange
+      ├─目的：価格の範囲で検索する
+      ├─引数
+      │    ├─下限価格：Integer minPrice
+      │    └─上限価格：Integer maxPrice
+      ├─戻り値：List&lt;Book&gt;、書籍のリスト
+      └─JPQL：価格がminPrice以上かつmaxPrice以下の書籍を検索し、価格の昇順に並べて返す
+</code></pre>
+<pre class="java"><code class="language-java">@Query(&quot;SELECT b FROM Book b WHERE b.price &gt;= :minPrice AND b.price &lt;= :maxPrice ORDER BY b.price ASC&quot;)
+List&lt;Book&gt; searchByPriceRange(@Param(&quot;minPrice&quot;) Integer minPrice, @Param(&quot;maxPrice&quot;) Integer maxPrice);
+</code></pre>
+<ul>
+<li>使える言い方は、<code>以下</code>・<code>以上</code>・<code>より小さい</code>・<code>より大きい</code>・<code>以前</code>・<code>以降</code>・<code>より前</code>・<code>より後</code>・<code>と等しい</code>・<code>と等しくない</code>・<code>を含む</code>・<code>で始まる</code>・<code>で終わる</code>・<code>が空である</code>・<code>が空でない</code>・<code>かつ</code>・<code>または</code>・<code>昇順</code>・<code>降順</code> などです。</li>
+<li><code>JPQL</code> に書けるのは<strong>検索だけ</strong>です。削除や更新は書けません。</li>
+<li>引数には <code>@パラメータ</code> を書かなくて構いません（書いても同じです）。</li>
 <li>JPQL の文を直接書きたいときは、<code>JPQL：&quot;SELECT …&quot;</code> と引用符で囲みます。</li>
 </ul>
 <hr />
