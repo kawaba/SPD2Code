@@ -252,10 +252,17 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <li><a href="#74-登録編集削除の流れ">7.4 登録・編集・削除の流れ</a></li>
 </ul>
 </li>
-<li><a href="#第8章-まとめ">第8章 まとめ</a>
+<li><a href="#第8章-設定ファイル">第8章 設定ファイル</a>
 <ul>
-<li><a href="#81-よくある間違い">8.1 よくある間違い</a></li>
-<li><a href="#82-早見表">8.2 早見表</a></li>
+<li><a href="#81-基本の形">8.1 基本の形</a></li>
+<li><a href="#82-データベースごとの接続url">8.2 データベースごとの接続URL</a></li>
+<li><a href="#83-jpa-と-h2コンソールの項目">8.3 JPA と H2コンソールの項目</a></li>
+</ul>
+</li>
+<li><a href="#第9章-まとめ">第9章 まとめ</a>
+<ul>
+<li><a href="#91-よくある間違い">9.1 よくある間違い</a></li>
+<li><a href="#92-早見表">9.2 早見表</a></li>
 </ul>
 </li>
 </ul>
@@ -347,6 +354,7 @@ public class Book {
 <li><strong>コントローラー</strong>（サービスを使い、テンプレートを選ぶ）</li>
 <li><strong>テンプレート</strong>（コントローラーから受け取って表示する）</li>
 </ol>
+<p>データベースの接続先を決める<strong>設定ファイル</strong>（第8章）は、ほかの SPD とは関係しないので、いつ書いても構いません。</p>
 <hr />
 <h2 id="第2章-エンティティ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第2章 エンティティ</a></h2>
 <h3 id="21-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.1 基本の形</a></h3>
@@ -1364,8 +1372,170 @@ public String delete(@PathVariable Long id) {
 <li>編集画面のテンプレートでは、<code>番号＜hidden＞：id</code> で主キーを送ります。<code>更新</code> は、この主キーでエンティティを読み出して上書きします。</li>
 </ul>
 <hr />
-<h2 id="第8章-まとめ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第8章 まとめ</a></h2>
-<h3 id="81-よくある間違い"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.1 よくある間違い</a></h3>
+<h2 id="第8章-設定ファイル"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第8章 設定ファイル</a></h2>
+<h3 id="81-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.1 基本の形</a></h3>
+<p>データベースへの接続などの設定は、<code>src/main/resources/application.properties</code> に書きます。
+この設定も SPD で書けます。タイトルは <strong><code>設定ファイル：application.properties</code></strong> です。
+設定のキー（<code>spring.datasource.url</code> など）を覚える必要はなく、<strong>日本語の項目名</strong>で書きます。</p>
+<pre><code>設定ファイル：application.properties
+│
+└─データベース設定
+      ├─データベース：H2
+      │
+      ├─接続
+      │    ├─接続URL
+      │    │    ├─DB名：bookstore
+      │    │    └─記録場所：インメモリー
+      │    │
+      │    └─認証情報
+      │          ├─ユーザー名：sa
+      │          └─パスワード：なし
+      │
+      ├─JPA
+      │    ├─スキーマ自動生成：create-drop
+      │    ├─SQL ログを表示する
+      │    ├─SQL を見やすく整形する
+      │    │
+      │    │  ※トランザクションが終わると EntityManager が閉じる
+      │    └─Open Session in View を有効にしない
+      │
+      └─H2コンソール
+            ├─H2コンソールを有効にする
+            └─パス：/h2-console
+</code></pre>
+<pre><code># 設定ファイル：application.properties
+# │
+# └─データベース設定
+# …（SPD 全体がコメントとして残る）…
+
+spring.datasource.url=jdbc:h2:mem:bookstore
+spring.datasource.username=sa
+spring.datasource.password=
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+# トランザクションが終わると EntityManager が閉じる
+spring.jpa.open-in-view=false
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+</code></pre>
+<ul>
+<li><strong>見出し（<code>接続</code>・<code>JPA</code>・<code>H2コンソール</code>）は、設定の種類ごとの区切りです。</strong> 見出しそのものは出力されません。</li>
+<li><strong>オン・オフは「〜する」「〜しない」で書きます。</strong> 書かなかった項目は出力されず、Spring Boot の既定値になります。</li>
+<li><strong>値は書いたとおりに出力されます。</strong> <code>スキーマ自動生成</code> には <code>none</code>・<code>validate</code>・<code>update</code>・<code>create</code>・<code>create-drop</code> のどれかを書きます。</li>
+<li><strong>パスワードが空のときは <code>パスワード：なし</code> と書きます。</strong> <code>パスワード：</code> のように値を空にすると、未記入とみなされて生成されません。</li>
+<li><strong>ドライバークラス名は書きません。</strong> Spring Boot が接続URLから決めます。</li>
+<li><code>※</code> のコメントは、<code>#</code> のコメントとして出力されます。</li>
+<li><strong style="color: #1a5fb4;">SPD エディタのスケルトン（「設定ファイル（H2）」など）を使うと、ひな形を貼り付けられます。</strong></li>
+</ul>
+<h3 id="82-データベースごとの接続url"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.2 データベースごとの接続URL</a></h3>
+<p>対象のデータベースは、<strong>H2・PostgreSQL・MySQL</strong> の3つです。違うのは <code>接続URL</code> の項目と、<code>H2コンソール</code> の有無だけです。</p>
+<table>
+<thead>
+<tr>
+<th>データベース</th>
+<th><code>接続URL</code> の項目</th>
+<th>生成される URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H2</td>
+<td><code>DB名</code>・<code>記録場所</code>（<code>インメモリー</code>／<code>ファイル</code>）・<code>保存先</code></td>
+<td><code>jdbc:h2:mem:bookstore</code><br><code>jdbc:h2:file:./data/bookstore</code></td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td><code>ホスト名</code>・<code>ポート番号</code>・<code>DB名</code></td>
+<td><code>jdbc:postgresql://localhost:5432/bookstore</code></td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td><code>ホスト名</code>・<code>ポート番号</code>・<code>DB名</code></td>
+<td><code>jdbc:mysql://localhost:3306/bookstore</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code>設定ファイル：application.properties
+│
+└─データベース設定
+      ├─データベース：PostgreSQL
+      │
+      ├─接続
+      │    ├─接続URL
+      │    │    ├─ホスト名：localhost
+      │    │    ├─ポート番号：5432
+      │    │    └─DB名：bookstore
+      │    │
+      │    └─認証情報
+      │          ├─ユーザー名：postgres
+      │          └─パスワード：postgres
+      │
+      └─JPA
+            ├─スキーマ自動生成：update
+            ├─SQL ログを表示する
+            └─Open Session in View を有効にしない
+</code></pre>
+<pre><code>spring.datasource.url=jdbc:postgresql://localhost:5432/bookstore
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+</code></pre>
+<ul>
+<li><strong><code>DB名</code> は必ず書きます。</strong> <code>ホスト名</code> と <code>ポート番号</code> は省略でき、省略すると <code>localhost</code> と既定のポート番号（PostgreSQL は <code>5432</code>、MySQL は <code>3306</code>）になります。</li>
+<li>H2 の <code>記録場所</code> を <code>ファイル</code> にすると、データがファイルに保存され、再起動しても消えません。<code>保存先</code> を省略すると <code>./data</code> になります。</li>
+<li><strong><code>H2コンソール</code> は H2 のときだけ書けます。</strong></li>
+<li>PostgreSQL と MySQL では、<code>create-drop</code> にすると起動のたびにテーブルとデータが消えます。<code>update</code> か <code>validate</code> を使います。</li>
+<li>データベースのドライバーは、<code>pom.xml</code> に入れておく必要があります（H2：<code>h2</code>、PostgreSQL：<code>postgresql</code>、MySQL：<code>mysql-connector-j</code>）。</li>
+</ul>
+<h3 id="83-jpa-と-h2コンソールの項目"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.3 JPA と H2コンソールの項目</a></h3>
+<table>
+<thead>
+<tr>
+<th>SPD の項目</th>
+<th>生成される設定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>スキーマ自動生成：create-drop</code></td>
+<td><code>spring.jpa.hibernate.ddl-auto=create-drop</code></td>
+</tr>
+<tr>
+<td><code>SQL ログを表示する</code></td>
+<td><code>spring.jpa.show-sql=true</code></td>
+</tr>
+<tr>
+<td><code>SQL を見やすく整形する</code></td>
+<td><code>spring.jpa.properties.hibernate.format_sql=true</code></td>
+</tr>
+<tr>
+<td><code>Open Session in View を有効にしない</code></td>
+<td><code>spring.jpa.open-in-view=false</code></td>
+</tr>
+<tr>
+<td><code>H2コンソールを有効にする</code></td>
+<td><code>spring.h2.console.enabled=true</code></td>
+</tr>
+<tr>
+<td><code>パス：/h2-console</code></td>
+<td><code>spring.h2.console.path=/h2-console</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>「〜しない」と書くと <code>false</code> になります（<code>SQL ログを表示しない</code> → <code>spring.jpa.show-sql=false</code>）。</li>
+<li><strong>Open Session in View</strong> を有効にしないと、トランザクション（サービスのメソッド）が終わった後にデータベースを読みに行けなくなります。必要なデータはサービスの中で読んでおきます。</li>
+<li>表に無い設定は、<code>spring.jpa.properties.hibernate.jdbc.batch_size：50</code> のように、設定のキーをそのまま書きます。</li>
+</ul>
+<hr />
+<h2 id="第9章-まとめ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第9章 まとめ</a></h2>
+<h3 id="91-よくある間違い"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">9.1 よくある間違い</a></h3>
 <p>規約に合わない書き方は、推測で補われることはなく、生成されずに <strong>【確認事項】として報告されます</strong>。よくある間違いを挙げます。</p>
 <table>
 <thead>
@@ -1431,9 +1601,19 @@ public String delete(@PathVariable Long id) {
 <td>後に <code>〜へリダイレクトする</code></td>
 <td>フラッシュメッセージはリダイレクトと組</td>
 </tr>
+<tr>
+<td>設定ファイルで <code>H2コンソールを有効化</code></td>
+<td><code>H2コンソールを有効にする</code></td>
+<td>オン・オフは「〜する」「〜しない」</td>
+</tr>
+<tr>
+<td>設定ファイルで <code>パスワード：</code>（値なし）</td>
+<td><code>パスワード：なし</code></td>
+<td>値が空の項目は未記入とみなされる</td>
+</tr>
 </tbody>
 </table>
-<h3 id="82-早見表"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">8.2 早見表</a></h3>
+<h3 id="92-早見表"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">9.2 早見表</a></h3>
 <p><strong>タイトルと主な項目</strong></p>
 <table>
 <thead>
@@ -1462,6 +1642,10 @@ public String delete(@PathVariable Long id) {
 <tr>
 <td><code>コントローラー：</code></td>
 <td><code>目的</code>・<code>ベースパス</code>・<code>インジェクション</code>・<code>メソッド：</code>（<code>マッピング</code>）</td>
+</tr>
+<tr>
+<td><code>設定ファイル：</code></td>
+<td><code>データベース設定</code> の下に <code>データベース</code>・<code>接続</code>（<code>接続URL</code>・<code>認証情報</code>）・<code>JPA</code>・<code>H2コンソール</code></td>
 </tr>
 </tbody>
 </table>

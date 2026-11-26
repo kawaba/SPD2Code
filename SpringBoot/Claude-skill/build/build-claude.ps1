@@ -27,7 +27,7 @@ $claudeDir = Split-Path -Parent $buildDir
 $geminiDir = Join-Path (Split-Path -Parent $claudeDir) 'Gemini-skill'
 
 $skillName   = 'spd-to-springboot-generator'
-$description = 'SPD（構造化プログラム設計図）から、Spring Bootのエンティティ・フォーム・リポジトリ・サービス・コントローラーとThymeleafテンプレートを生成する。タイトルが「エンティティ:」「フォーム:」「リポジトリ:」「サービス:」「コントローラー:」「テンプレート:」のSPDを渡されたときと、SPDの作成を頼まれたとき（作成はしない）に使う'
+$description = 'SPD（構造化プログラム設計図）から、Spring Bootのエンティティ・フォーム・リポジトリ・サービス・コントローラー、Thymeleafテンプレート、設定ファイルを生成する。タイトルが「エンティティ:」「フォーム:」「リポジトリ:」「サービス:」「コントローラー:」「テンプレート:」「設定ファイル:」のSPDを渡されたときと、SPDの作成を頼まれたとき（作成はしない）に使う'
 
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
@@ -80,6 +80,7 @@ $rules = @(
     @('springboot', '## 20.7 ',                      '20-7-conventions.md',       '20.7'),
     @('springboot', '## 20.8 ',                      '20-8-checklist.md',         '20.8'),
     @('springboot', '## 20.9 ',                      '20-9-example.md',           '20.9'),
+    @('springboot', '## 20.10 ',                     '20-10-properties.md',       '20.10'),
     @('thymeleaf',  '# SPD（テンプレート定義）',     '30-1-scope.md',             ''),
     @('thymeleaf',  '## 30.1 ',                      '30-1-scope.md',             '30.1'),
     @('thymeleaf',  '## 30.2 ',                      '30-2-notation.md',          '30.2'),

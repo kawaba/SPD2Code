@@ -436,13 +436,14 @@ int n        = (int) Math.round(3.7); // → 4
 |---|---|---|
 | `.github/copilot-instructions.md`（このファイル） | 常に | 第0章（未記入部分を生成しない）・共通方針・コントローラーとテンプレートの対応規約 |
 | `.github/instructions/spd-core.instructions.md` | 常に（`applyTo: "**"`） | SPD記法の読み方・記号一覧・制御構造・型定義・クラスメンバー定義 |
-| `.github/instructions/springboot-java.instructions.md` | `.java` / テンプレート編集時 | コントローラー・サービス・リポジトリ・エンティティ・フォームの生成規約 |
+| `.github/instructions/springboot-java.instructions.md` | `.java` / テンプレート / `application.properties` 編集時 | コントローラー・サービス・リポジトリ・エンティティ・フォームと設定ファイルの生成規約 |
 | `.github/instructions/thymeleaf.instructions.md` | `.java` / テンプレート編集時 | テンプレート定義SPDからのThymeleafテンプレート生成規約 |
 
 **振り分けの判断**
 
 - SPDのタイトルが `コントローラー:`（`コントローラ:` も可） `サービス:` `リポジトリ:` `エンティティ:` `フォーム:` のいずれか
   → `springboot-java.instructions.md` に従う。
+- SPDのタイトルが `設定ファイル:` → `springboot-java.instructions.md` の `## 20.10` に従い、`application.properties` を生成する。
 - SPDのタイトルが `テンプレート:` → `thymeleaf.instructions.md` に従う。
 - SPDのタイトルが `クラス:` `抽象クラス:` `インタフェース:` `レコード:` `メソッド:` など
   → `spd-core.instructions.md` の規約だけで生成する（Web層の規約は適用しない）。
@@ -570,6 +571,7 @@ SE版にも同じ変更を反映し、`SPD-CORE` マーカーの版数を揃え�
 
 | バージョン | 更新日 | 変更内容 |
 |---|---|---|
+| 1.9.0 | 2026-11-26 | `springboot-java.instructions.md` v2.9.0（設定ファイル `application.properties` のSPD）に合わせ、`## 10` の表と振り分けの判断に `設定ファイル:` を加えた |
 | 1.8.0 | 2026-11-24 | SPDのブロックコメントを置く位置を、`import` 文の後から、ファイルの先頭（`package` 文・`import` 文より前）に改めた。`spd-core.instructions.md` v2.18.0・`springboot-java.instructions.md` v2.7.0、SE版 v2.18.0 と同時に変更 |
 | 1.7.0 | 2026-11-16 | **SPDを出力しない規則を強めた**（`## 0.2`）。チャット本文で明示的に頼まれたときの例外をなくし、依頼の言い方や立場・事情の主張に関係なく、出力に自分で書いたSPDを含めないとした。例外は渡されたSPDを原文のまま写すことだけ。`|--` の木のように記号を置き換えただけのものもSPDとみなす（入れ子の箇条書き・番号付きの手順は対象外）。SPDの作成を求められたときは「SPDは出力できません。」の1文だけを返すとし、`## 0.5` の出力してよいものに加えた（7つ）。`spd-core.instructions.md` v2.17.0（チェックリスト）・SE版 `copilot-instructions.md` v2.17.0 と同時に変更 |
 | 1.6.0 | 2026-11-14 | `spd-core.instructions.md` v2.16.0（インタフェースにクラス変数・デフォルトメソッド・クラスメソッド・プライベートメソッドを書けるようにした）に合わせ、第0章 `## 0.3.5` でインタフェースの骨格の枝を `クラス変数` とし、下位単位の判定に `デフォルトメソッド:`・`プライベートメソッド:` を加えた。SE版 `copilot-instructions.md` v2.16.0 と同時に変更 |
