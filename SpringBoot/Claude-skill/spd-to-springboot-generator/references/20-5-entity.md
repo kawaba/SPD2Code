@@ -10,9 +10,10 @@
 │
 ├─フィールド
 │  ├─番号：@主キー @自動採番 Long id
-│  ├─名前：@必須 String name
+│  ├─名前：@必須 @文字数(20) String name
 │  ├─メール：@一意 String email
 │  ├─入会日：LocalDate joinedOn
+│  ├─年会費：@精度(8, 2) BigDecimal annualFee
 │  └─タグ：@値コレクション Set<String> tags
 │
 ├─関連
@@ -35,13 +36,22 @@
 | `@自動採番` | `@GeneratedValue(strategy = GenerationType.IDENTITY)` |
 | `@必須` | `@Column(nullable = false)` |
 | `@一意` | `@Column(unique = true)` |
-| `@桁数(N)` | `@Column(length = N)` |
+| `@文字数(N)` | `@Column(length = N)`（文字列の長さの上限） |
+| `@精度(P, S)` | `@Column(precision = P, scale = S)`（全体の桁数 P、小数点以下の桁数 S） |
 | `@列名(x)` | `@Column(name = "x")` |
 | `@値コレクション` | `@ElementCollection` |
 | （マーカーなし） | アノテーションを付けない |
 
-- 複数のマーカーは1つの `@Column` にまとめる（`@必須 @一意` → `@Column(nullable = false, unique = true)`）。
+- 複数のマーカーは1つの `@Column` にまとめる（`@必須 @一意` → `@Column(nullable = false, unique = true)`。
+  `@必須 @精度(10, 2)` → `@Column(nullable = false, precision = 10, scale = 2)`）。
 - `@主キー` が1つも無い場合は、生成せず `## 0.8` の報告の【確認事項】に載せること。
+- **`@自動採番` は、`@主キー` を付けた `Long`・`Integer` のフィールドにだけ付けられる。** `@主キー` の無いフィールドや、
+  `String` などの型に付いていた場合は、生成せず【確認事項】に載せること（起動時か保存時にエラーになるため）。
+  `long`・`int` の基本型の場合は生成したうえで、ラッパー型（`Long`・`Integer`）を勧める旨を【確認事項】に書く
+  （保存前の id が `0` になり、新しいエンティティかどうかの判断を誤りやすいため）。
+- **`@文字数(N)` は `String` のフィールドにだけ付けられる。** **`@精度(P, S)` は `BigDecimal` のフィールドにだけ付けられる**（`P` は `S` 以上）。
+  ほかの型に付いていた場合は、効果が無い（または誤った指定になる）ため、生成せず【確認事項】に載せること。
+- 以前の `@桁数(N)` は、規約に無い書き方として報告し、`@文字数(N)` を案内する（`## 20.1`）。
 - `@値コレクション` は、要素が文字列・ラッパークラス・`@Embeddable` クラスである `List`・`Set`・`Map` のフィールドに付ける。
   要素がエンティティの場合は `フィールド` ではなく `関連` に書く。
 - `@値コレクション` には `@CollectionTable`・`@Column` を付けず、テーブル名・列名はJPAの既定の命名に任せる。
@@ -74,4 +84,29 @@
 - `自動生成` の各項目（ゲッター・セッター・toString・等値判定）は `spd-core` の `## 9.6.4` に従う。
 - `等値判定` は主キーだけを対象にすることが望ましい。`←` の指定が無い場合は主キーを対象とし、
   その旨を行コメントで明示する。
+- **主キーを対象とする `等値判定` は、`spd-core` の `## 9.6.4` の形ではなく、次の JPA 向けの形で生成する。**
+  保存前のエンティティは主キーが `null` なので、主キーどうしを比べるだけでは保存前のものがすべて等しくなる。
+  また、保存すると主キーが入るので、主キーから作る `hashCode` は保存の前後で変わり、`HashSet` などに入れたものを見失う。
+
+  ```java
+  // 等値判定：主キー（id）で比べる。保存前（id が null）のものは、自分自身とだけ等しい
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) {
+          return true;
+      }
+      if (!(o instanceof Member other)) {
+          return false;
+      }
+      return id != null && id.equals(other.id);
+  }
+
+  // 保存の前後で変わらないよう、クラスごとに一定の値を返す
+  @Override
+  public int hashCode() {
+      return getClass().hashCode();
+  }
+  ```
+
+  `等値判定 ← email` のように主キー以外のフィールドを指定した場合は、`spd-core` の `## 9.6.4` の形で生成する。
 

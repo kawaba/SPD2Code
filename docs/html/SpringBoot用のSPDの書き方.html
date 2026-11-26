@@ -213,6 +213,7 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
 <li><a href="#21-基本の形">2.1 基本の形</a></li>
 <li><a href="#22-フィールドのマーカー">2.2 フィールドのマーカー</a></li>
 <li><a href="#23-関連">2.3 関連</a></li>
+<li><a href="#24-等値判定">2.4 等値判定</a></li>
 </ul>
 </li>
 <li><a href="#第3章-フォーム">第3章 フォーム</a>
@@ -364,7 +365,7 @@ public class Book {
 ├─テーブル：members
 ├─フィールド
 │  ├─番号：@主キー @自動採番 Long id
-│  ├─名前：@必須 @桁数(20) String name
+│  ├─名前：@必須 @文字数(20) String name
 │  └─入会日：LocalDate joinedOn
 └─自動生成
      ├─コンストラクタ：引数なし
@@ -432,9 +433,14 @@ public class Member {
 <td><code>@Column(unique = true)</code></td>
 </tr>
 <tr>
-<td><code>@桁数(N)</code></td>
-<td>文字数の上限</td>
+<td><code>@文字数(N)</code></td>
+<td>文字列の長さの上限（<code>String</code> だけ）</td>
 <td><code>@Column(length = N)</code></td>
+</tr>
+<tr>
+<td><code>@精度(P, S)</code></td>
+<td>全体の桁数 P・小数点以下の桁数 S（<code>BigDecimal</code> だけ）</td>
+<td><code>@Column(precision = P, scale = S)</code></td>
 </tr>
 <tr>
 <td><code>@列名(x)</code></td>
@@ -451,6 +457,8 @@ public class Member {
 <ul>
 <li><strong>マーカーは型の前に書きます。</strong> 複数のマーカーは、1つの <code>@Column</code> にまとめられます。</li>
 <li><strong><code>@主キー</code> が無いエンティティは作れません。</strong></li>
+<li><strong><code>@自動採番</code> は、<code>@主キー</code> を付けた <code>Long</code>（または <code>Integer</code>）のフィールドに付けます。</strong></li>
+<li><code>@文字数</code> は <code>String</code> に、<code>@精度</code> は <code>BigDecimal</code> に付けます。ほかの型に付けると報告されます。金額のように小数の桁が決まっている値は、<code>年会費：@精度(8, 2) BigDecimal annualFee</code> のように書きます。</li>
 <li><strong>日付・時刻は <code>LocalDate</code>・<code>LocalDateTime</code>・<code>LocalTime</code> で書きます。</strong> 古い <code>Date</code>・<code>Calendar</code> は使えません。</li>
 </ul>
 <h3 id="23-関連"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.3 関連</a></h3>
@@ -490,6 +498,34 @@ private Department department; // 所属
 </table>
 <ul>
 <li>関連が無いときは <code>関連：なし</code> と書くか、<code>関連</code> の枝を省きます。</li>
+</ul>
+<h3 id="24-等値判定"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.4 等値判定</a></h3>
+<p><code>自動生成</code> に <strong><code>等値判定</code></strong> を書くと、<code>equals</code> と <code>hashCode</code> が作られます。エンティティでは、<strong>主キーで比べる</strong>のが基本です。</p>
+<pre><code>└─自動生成
+     ├─…
+     └─等値判定
+</code></pre>
+<pre class="java"><code class="language-java">// 等値判定：主キー（id）で比べる。保存前（id が null）のものは、自分自身とだけ等しい
+@Override
+public boolean equals(Object o) {
+    if (this == o) {
+        return true;
+    }
+    if (!(o instanceof Member other)) {
+        return false;
+    }
+    return id != null &amp;&amp; id.equals(other.id);
+}
+
+// 保存の前後で変わらないよう、クラスごとに一定の値を返す
+@Override
+public int hashCode() {
+    return getClass().hashCode();
+}
+</code></pre>
+<ul>
+<li>保存する前のエンティティは、主キーがまだ <code>null</code> です。主キーをそのまま比べると、保存前のものがすべて等しくなってしまうので、このような形になります。</li>
+<li><code>等値判定 ← email</code> のように主キー以外を指定すると、ふつうのクラスと同じ形で作られます。</li>
 </ul>
 <hr />
 <h2 id="第3章-フォーム"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第3章 フォーム</a></h2>
@@ -1716,7 +1752,7 @@ spring.jpa.open-in-view=false
 </thead>
 <tbody>
 <tr>
-<td><code>@主キー</code>・<code>@自動採番</code>・<code>@必須</code>・<code>@一意</code>・<code>@桁数(N)</code></td>
+<td><code>@主キー</code>・<code>@自動採番</code>・<code>@必須</code>・<code>@一意</code>・<code>@文字数(N)</code>・<code>@精度(P, S)</code></td>
 <td>エンティティのフィールド（型の前）</td>
 <td>列の性質</td>
 </tr>
