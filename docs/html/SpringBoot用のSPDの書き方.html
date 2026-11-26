@@ -720,21 +720,23 @@ List&lt;Book&gt; searchByPriceAndTitle(@Param(&quot;price&quot;) Integer price, 
 <hr />
 <h2 id="第5章-サービス"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第5章 サービス</a></h2>
 <h3 id="51-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.1 基本の形</a></h3>
-<p>サービスは、業務の処理を書く部品です。使うリポジトリを <strong><code>インジェクション</code></strong> に書き、処理を <strong><code>メソッド：</code></strong> で書きます。</p>
+<p>サービスは、業務の処理を書く部品です。使うリポジトリを <strong><code>インジェクション</code></strong> に書きます。
+リポジトリを呼ぶだけの決まりきったメソッドは <strong><code>自動生成</code></strong> で作り（5.2）、それ以外の処理だけを <strong><code>メソッド：</code></strong> で書きます。
+ここでは、<code>MemberForm</code> のフィールドが <code>name</code>・<code>joinedOn</code> で、<code>Member</code>（2.1）と同じ名前・型であるものとします。</p>
 <pre><code>サービス：MemberService
 ├─目的：会員に関する業務処理を行う
 ├─インジェクション
 │  └─会員リポジトリ：MemberRepository memberRepository
-└─メソッド：create
-     ├─目的：会員を登録する
-     ├─トランザクション：更新あり
-     ├─引数
-     │    └─入力フォーム：MemberForm form
-     ├─戻り値：なし
+├─自動生成：MemberRepository
+│     ├─全件検索
+│     └─新規作成
+└─メソッド：countJoinedAfter
+     ├─目的：指定した日より後に入会した会員の人数を数える
+     ├─トランザクション：参照のみ
+     ├─引数：基準日：LocalDate date
+     ├─戻り値：long、会員の人数
      └─処理
-           ├─Memberのインスタンスを作って変数memberに代入する
-           ├─formのnameをmemberのnameに設定する
-           └─memberRepositoryのsaveをmemberを引数にして呼び出す
+           └─memberRepositoryのfindAllの結果のうち、joinedOnがdateより後の要素の数を返す
 </code></pre>
 <pre class="java"><code class="language-java">// 会員に関する業務処理を行う
 @Service
@@ -746,21 +748,38 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    /**
-     * 会員を登録する
-     *
-     * @param form 入力フォーム
-     */
+    // 自動生成：全件検索
+    @Transactional(readOnly = true)
+    public List&lt;Member&gt; findAll() {
+        return memberRepository.findAll();
+    }
+
+    // 自動生成：新規作成
     @Transactional
-    public void create(MemberForm form) {
+    public Member create(MemberForm memberForm) {
         var member = new Member();
-        member.setName(form.getName());
-        memberRepository.save(member);
+        member.setName(memberForm.getName());
+        member.setJoinedOn(memberForm.getJoinedOn());
+        return memberRepository.save(member);
+    }
+
+    /**
+     * 指定した日より後に入会した会員の人数を数える
+     *
+     * @param date 基準日
+     * @return 会員の人数
+     */
+    @Transactional(readOnly = true)
+    public long countJoinedAfter(LocalDate date) {
+        return memberRepository.findAll().stream()
+                .filter(m -&gt; m.getJoinedOn().isAfter(date))
+                .count();
     }
 }
 </code></pre>
 <ul>
 <li><strong><code>インジェクション</code></strong> に書いた部品は、コンストラクタで受け取る形（コンストラクタインジェクション）で生成されます。コントローラーでも同じです。</li>
+<li>メソッドは、SPD に書いた順に並びます。<code>自動生成</code> のメソッドは、<code>自動生成</code> を書いた位置にまとめて置かれます。</li>
 <li><strong><code>トランザクション</code></strong> は、データベースを扱うメソッドに書きます。</li>
 </ul>
 <table>
@@ -785,7 +804,7 @@ public class MemberService {
 </tbody>
 </table>
 <ul>
-<li><code>トランザクション</code> を書かなければ、アノテーションは付きません。</li>
+<li><code>メソッド：</code> に <code>トランザクション</code> を書かなければ、アノテーションは付きません。<code>自動生成</code> のメソッドには自動で付きます。</li>
 </ul>
 <h3 id="52-自動生成"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.2 自動生成</a></h3>
 <p>「リポジトリを呼ぶだけ」の決まりきったメソッドは、<strong><code>自動生成：&lt;リポジトリ&gt;</code></strong> に項目名を並べるだけで作れます。
@@ -797,8 +816,8 @@ public class MemberService {
 └─自動生成：BookRepository
       ├─全件検索
       ├─主キーで検索
-      ├─新規作成 ← BookForm
-      ├─更新 ← BookForm
+      ├─新規作成
+      ├─更新
       └─削除
 </code></pre>
 <pre class="java"><code class="language-java">// 自動生成：全件検索
@@ -854,11 +873,11 @@ public void deleteById(Long id) {
 <td><code>E findById(K id)</code></td>
 </tr>
 <tr>
-<td><strong><code>新規作成 ← F</code></strong></td>
+<td><strong><code>新規作成</code></strong></td>
 <td><code>E create(F f)</code>：フォームから新しいエンティティを作って保存</td>
 </tr>
 <tr>
-<td><strong><code>更新 ← F</code></strong></td>
+<td><strong><code>更新</code></strong></td>
 <td><code>E update(F f)</code>：主キーで読み出し、フォームの値で上書きして保存</td>
 </tr>
 <tr>
@@ -878,7 +897,7 @@ public void deleteById(Long id) {
 <td>リポジトリの検索メソッドを呼ぶだけのメソッド</td>
 </tr>
 <tr>
-<td><code>詰め替え ← F</code>・<code>フォームに詰め替え → F</code></td>
+<td><strong><code>詰め替え</code></strong></td>
 <td>5.3 で説明します</td>
 </tr>
 </tbody>
@@ -886,25 +905,27 @@ public void deleteById(Long id) {
 <p>（<code>E</code> はエンティティ、<code>K</code> は主キーの型、<code>F</code> はフォームの型です）</p>
 <ul>
 <li><strong>書いた項目だけが作られます。</strong></li>
+<li><strong>フォームの型は、書かなければ「エンティティ名＋<code>Form</code>」になります</strong>（<code>Book</code> → <code>BookForm</code>）。
+別の名前のフォームを使うときだけ、<code>新規作成 ← BookCreateForm</code> のように書きます。</li>
 <li><code>新規作成</code>・<code>更新</code> は、<strong>フォームとエンティティで名前と型が同じフィールド</strong>を1つずつコピーします。
 フォームにだけあるフィールドがあると作れないので、そのときは <code>メソッド：</code> で処理を書きます。</li>
 <li><code>自動生成：</code> の後のリポジトリは、<code>インジェクション</code> に書いたものでなければなりません。</li>
 </ul>
 <h3 id="53-フォームとエンティティの詰め替え"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">5.3 フォームとエンティティの詰め替え</a></h3>
 <p>編集画面では、データベースから読んだエンティティの値を、フォームに移して画面に出します。
-このためのメソッドは、<strong><code>フォームに詰め替え → F</code></strong> で作ります。</p>
+逆に、登録・更新では、フォームの値をエンティティに移します。
+この両方向のメソッドは、<strong><code>詰め替え</code></strong> の1行で作れます。</p>
 <pre><code>└─自動生成：BookRepository
       ├─…
-      ├─詰め替え ← BookForm
-      └─フォームに詰め替え → BookForm
+      └─詰め替え
 </code></pre>
-<pre class="java"><code class="language-java">// 自動生成：詰め替え
+<pre class="java"><code class="language-java">// 自動生成：詰め替え（フォーム → エンティティ）
 private void copyFormToEntity(BookForm bookForm, Book book) {
     book.setTitle(bookForm.getTitle());
     book.setPrice(bookForm.getPrice());
 }
 
-// 自動生成：フォームに詰め替え
+// 自動生成：詰め替え（エンティティ → フォーム）
 public void copyEntityToForm(Book book, BookForm bookForm) {
     bookForm.setId(book.getId());
     bookForm.setTitle(book.getTitle());
@@ -914,24 +935,27 @@ public void copyEntityToForm(Book book, BookForm bookForm) {
 <table>
 <thead>
 <tr>
-<th>項目</th>
+<th>生成されるメソッド</th>
 <th>向き</th>
 <th>使う場所</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong><code>詰め替え ← F</code></strong></td>
+<td><strong><code>copyFormToEntity</code></strong></td>
 <td>フォーム → エンティティ（主キーは除く）</td>
 <td>サービスの中（<code>新規作成</code>・<code>更新</code> がこれを呼ぶようになる）</td>
 </tr>
 <tr>
-<td><strong><code>フォームに詰め替え → F</code></strong></td>
+<td><strong><code>copyEntityToForm</code></strong></td>
 <td>エンティティ → フォーム（主キーも含む）</td>
 <td>コントローラーの編集画面（6.4・7.4）</td>
 </tr>
 </tbody>
 </table>
+<ul>
+<li>フォームの型は、<code>新規作成</code> と同じく「エンティティ名＋<code>Form</code>」です。別の名前のときは <code>詰め替え：BookCreateForm</code> と書きます。</li>
+</ul>
 <hr />
 <h2 id="第6章-コントローラー"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">第6章 コントローラー</a></h2>
 <h3 id="61-基本の形"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.1 基本の形</a></h3>
@@ -946,9 +970,7 @@ public void copyEntityToForm(Book book, BookForm bookForm) {
 └─メソッド：list
    ├─目的：会員の一覧を表示する
    ├─マッピング：GET
-   ├─引数
-   │    └─モデル：Model model
-   ├─戻り値：String、表示するテンプレート名
+   ├─引数：なし
    └─処理
          ├─memberServiceを使って、全件を読み出した結果をmemberListとしてテンプレートに渡す
          └─&quot;member/list&quot;を返す
@@ -970,6 +992,7 @@ public class MemberController {
      * @param model モデル
      * @return 表示するテンプレート名
      */
+    // SPDに無いため Model model を補った
     @GetMapping({&quot;&quot;, &quot;/&quot;}) // 末尾の / の有無どちらでも受け付けるため
     public String list(Model model) {
         model.addAttribute(&quot;memberList&quot;, memberService.findAll());
@@ -978,7 +1001,9 @@ public class MemberController {
 }
 </code></pre>
 <ul>
-<li><strong>ハンドラーメソッドの戻り値は <code>String</code></strong> です。表示するテンプレートの名前か、リダイレクト先を返します。</li>
+<li><strong>ハンドラーメソッドの戻り値は <code>String</code></strong> です。表示するテンプレートの名前か、リダイレクト先を返します。
+決まっているので、<strong><code>戻り値</code> は書かなくて構いません。</strong></li>
+<li><code>引数：なし</code> と書いても、<code>Model model</code> のように必要な引数は自動で補われます（6.5）。</li>
 <li><code>処理</code> では、サービスの <strong>メソッド名を書かずに、何をするかを書けます</strong>（「全件を読み出した」→ <code>findAll()</code>）。
 サービスにあるメソッドの中から、意味の合うものが選ばれます。</li>
 </ul>
@@ -1021,9 +1046,9 @@ public class MemberController {
 </tbody>
 </table>
 <ul>
-<li>画面を表示するときは <strong><code>GET</code></strong>、データを登録・更新・削除するときは <strong><code>POST</code></strong> を使います。</li>
+<li>画面を表示するときは <strong><code>GET</code></strong>、データを登録・更新・削除するときは <strong><code>POST</code></strong> を使います。 <strong>書けるのは <code>GET</code> と <code>POST</code> だけです</strong>（<code>PUT</code>・<code>DELETE</code> は書けません）。</li>
 <li><strong>パスにベースパスを繰り返し書かないでください。</strong> <code>ベースパス：/members</code> で <code>マッピング：GET /members</code> と書くと、URL は <code>/members/members</code> になります。</li>
-<li>パスの <code>{id}</code> の部分は、引数の <code>@パス変数</code> で受け取ります（6.3）。</li>
+<li>パスの <code>{id}</code> の部分は、引数の <code>@パス変数</code> で受け取ります（6.3）。<strong><code>{id}</code> と引数の変数名（<code>Long id</code>）は同じ名前にします。</strong></li>
 </ul>
 <h3 id="63-引数とマーカー"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.3 引数とマーカー</a></h3>
 <p>引数は <strong><code>&lt;説明&gt;：&lt;マーカー&gt; &lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。<strong>マーカーで、値をどこから受け取るかを決めます。</strong></p>
@@ -1103,6 +1128,10 @@ public class MemberController {
 <td><code>return &quot;redirect:/members&quot;;</code></td>
 </tr>
 <tr>
+<td><strong><code>ベースパスの/{id}/editにリダイレクトする</code></strong></td>
+<td><code>return &quot;redirect:/members/&quot; + id + &quot;/edit&quot;;</code></td>
+</tr>
+<tr>
 <td><code>/members/{id}へリダイレクトする</code></td>
 <td><code>return &quot;redirect:/members/&quot; + id;</code></td>
 </tr>
@@ -1117,10 +1146,11 @@ public class MemberController {
 </tbody>
 </table>
 <ul>
-<li><strong>リダイレクト</strong>は、処理のあとで別の URL を開き直させることです。登録や削除のあとは、一覧へリダイレクトするのが基本です。</li>
+<li><strong>リダイレクト</strong>は、処理のあとで別の URL を開き直させることです。登録や削除のあとは、一覧へリダイレクトするのが基本です。
+リダイレクト先も、<code>ベースパスの…</code> と書けばベースパスからの続きで書けます。</li>
 <li><strong>フラッシュメッセージ</strong>は、リダイレクト先の画面に1回だけ渡すメッセージです。テンプレートでは <code>message</code> という名前で受け取ります。
 必ずリダイレクトと組で使います。</li>
-<li>「詰め替える」には、サービスに <code>フォームに詰め替え → MemberForm</code> が必要です（5.3）。</li>
+<li>「詰め替える」には、サービスの <code>自動生成</code> に <code>詰め替え</code> が必要です（5.3）。</li>
 </ul>
 <h3 id="65-補われる引数"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.5 補われる引数</a></h3>
 <p>次の引数は、<code>引数</code> に書かなくても自動で補われます。</p>
@@ -1151,7 +1181,6 @@ public class MemberController {
      ├─マッピング：POST
      ├─引数
      │    └─入力内容：@検証 MemberForm memberForm
-     ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
            ├─◇─検証結果にエラーがある
            │  └─&quot;member/form&quot;を返す
@@ -1174,7 +1203,7 @@ public String create(@Valid MemberForm memberForm,
 }
 </code></pre>
 <ul>
-<li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。</li>
+<li><strong>補われる引数の名前は決まっています</strong>（<code>result</code>・<code>model</code>・<code>redirectAttrs</code>）。<code>引数：なし</code> と書いても補われます。</li>
 <li><strong>入力にエラーがあるかどうかは、<code>検証結果にエラーがある</code> と書きます。</strong> 変数名を知らなくても書けます。<code>resultにエラーがある</code> と書いても同じです。</li>
 <li>入力にエラーがあれば、同じ入力画面をもう一度表示します。入力した値とエラーメッセージは、そのまま画面に出ます。</li>
 </ul>
@@ -1233,7 +1262,7 @@ public String create(@Valid MemberForm memberForm,
 <li>引数を <code>MemberForm form</code> のように別の名前にすると、テンプレートとつながらなくなります。</li>
 </ul>
 <h3 id="74-登録編集削除の流れ"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">7.4 登録・編集・削除の流れ</a></h3>
-<p>一覧・登録・編集・削除をそろえたコントローラーの例です。サービスには、<code>自動生成</code> で <code>全件検索</code>・<code>主キーで検索</code>・<code>新規作成 ← MemberForm</code>・<code>更新 ← MemberForm</code>・<code>削除</code>・<code>フォームに詰め替え → MemberForm</code> を書いておきます。</p>
+<p>一覧・登録・編集・削除をそろえたコントローラーの例です。サービスには、<code>自動生成</code> で <code>全件検索</code>・<code>主キーで検索</code>・<code>新規作成</code>・<code>更新</code>・<code>削除</code>・<code>詰め替え</code> を書いておきます。</p>
 <pre><code>コントローラー：MemberController
 ├─目的：会員の一覧・登録・編集・削除を扱う
 ├─ベースパス：/members
@@ -1244,7 +1273,6 @@ public String create(@Valid MemberForm memberForm,
 │  ├─目的：登録画面を表示する
 │  ├─マッピング：GET /new
 │  ├─引数：なし
-│  ├─戻り値：String、表示するテンプレート名
 │  └─処理
 │        ├─空のMemberFormを作ってテンプレートに渡す
 │        └─&quot;member/form&quot;を返す
@@ -1253,7 +1281,6 @@ public String create(@Valid MemberForm memberForm,
 │  ├─目的：編集画面を表示する
 │  ├─マッピング：GET /{id}/edit
 │  ├─引数：会員番号：@パス変数 Long id
-│  ├─戻り値：String、表示するテンプレート名
 │  └─処理
 │        ├─memberServiceを使って、idで会員を検索した結果を変数memberに代入する
 │        ├─memberをMemberForm型の変数memberFormに詰め替える
@@ -1264,7 +1291,6 @@ public String create(@Valid MemberForm memberForm,
 │  ├─目的：入力された内容で会員を更新する
 │  ├─マッピング：POST /update
 │  ├─引数：入力内容：@検証 MemberForm memberForm
-│  ├─戻り値：String、表示するテンプレート名またはリダイレクト先
 │  └─処理
 │        ├─◇─検証結果にエラーがある
 │        │  └─&quot;member/edit&quot;を返す
@@ -1276,7 +1302,6 @@ public String create(@Valid MemberForm memberForm,
    ├─目的：会員を削除する
    ├─マッピング：POST /{id}/delete
    ├─引数：会員番号：@パス変数 Long id
-   ├─戻り値：String、リダイレクト先
    └─処理
          ├─memberServiceを使って、idで会員を削除する
          └─ベースパスにリダイレクトする
@@ -1600,6 +1625,16 @@ spring.jpa.open-in-view=false
 <td>「フラッシュメッセージとして渡す」の後に <code>&quot;member/list&quot;を返す</code></td>
 <td>後に <code>〜へリダイレクトする</code></td>
 <td>フラッシュメッセージはリダイレクトと組</td>
+</tr>
+<tr>
+<td><code>マッピング：DELETE /{id}</code></td>
+<td><code>マッピング：POST /{id}/delete</code></td>
+<td>書けるのは GET と POST だけ</td>
+</tr>
+<tr>
+<td><code>マッピング：GET /{memberId}/edit</code> と <code>@パス変数 Long id</code></td>
+<td><code>{id}</code> と <code>Long id</code></td>
+<td>パスの名前と変数名を同じにする</td>
 </tr>
 <tr>
 <td>設定ファイルで <code>H2コンソールを有効化</code></td>

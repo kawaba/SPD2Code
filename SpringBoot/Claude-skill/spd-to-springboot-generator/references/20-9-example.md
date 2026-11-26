@@ -33,23 +33,9 @@
 ├─目的：会員に関する業務処理を行う
 ├─インジェクション
 │  └─会員リポジトリ：MemberRepository memberRepository
-├─メソッド：findAll
-│  ├─目的：全会員を取得する
-│  ├─トランザクション：参照のみ
-│  ├─引数：なし
-│  ├─戻り値：List<Member>、全会員のリスト
-│  └─処理
-│        └─memberRepositoryのfindAllの結果を返す
-└─メソッド：create
-     ├─目的：会員を登録する
-     ├─トランザクション：更新あり
-     ├─引数
-     │    └─入力フォーム：MemberForm form
-     ├─戻り値：なし
-     └─処理
-           ├─Memberのインスタンスを作って変数memberに代入する
-           ├─formのnameをmemberのnameに設定する
-           └─memberRepositoryのsaveをmemberを引数にして呼び出す
+└─自動生成：MemberRepository
+      ├─全件検索
+      └─新規作成
 
 コントローラー：MemberController
 ├─目的：会員の一覧・登録を扱う
@@ -59,9 +45,7 @@
 ├─メソッド：list
 │  ├─目的：会員の一覧を表示する
 │  ├─マッピング：GET
-│  ├─引数
-│  │    └─モデル：Model model
-│  ├─戻り値：String、表示するテンプレート名
+│  ├─引数：なし
 │  └─処理
 │        ├─memberServiceを使って、全件を読み出した結果をmemberListとしてテンプレートに渡す
 │        └─"member/list"を返す
@@ -70,7 +54,6 @@
      ├─マッピング：POST
      ├─引数
      │    └─入力内容：@検証 MemberForm memberForm
-     ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
            ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
@@ -150,23 +133,9 @@ public class Member {
 ├─目的：会員に関する業務処理を行う
 ├─インジェクション
 │  └─会員リポジトリ：MemberRepository memberRepository
-├─メソッド：findAll
-│  ├─目的：全会員を取得する
-│  ├─トランザクション：参照のみ
-│  ├─引数：なし
-│  ├─戻り値：List<Member>、全会員のリスト
-│  └─処理
-│        └─memberRepositoryのfindAllの結果を返す
-└─メソッド：create
-     ├─目的：会員を登録する
-     ├─トランザクション：更新あり
-     ├─引数
-     │    └─入力フォーム：MemberForm form
-     ├─戻り値：なし
-     └─処理
-           ├─Memberのインスタンスを作って変数memberに代入する
-           ├─formのnameをmemberのnameに設定する
-           └─memberRepositoryのsaveをmemberを引数にして呼び出す
+└─自動生成：MemberRepository
+      ├─全件検索
+      └─新規作成
 */
 
 package com.example.app.service;
@@ -190,26 +159,18 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    /**
-     * 全会員を取得する
-     *
-     * @return 全会員のリスト
-     */
+    // 自動生成：全件検索
     @Transactional(readOnly = true)
     public List<Member> findAll() {
         return memberRepository.findAll();
     }
 
-    /**
-     * 会員を登録する
-     *
-     * @param form 入力フォーム
-     */
+    // 自動生成：新規作成
     @Transactional
-    public void create(MemberForm form) {
+    public Member create(MemberForm memberForm) {
         var member = new Member();
-        member.setName(form.getName());
-        memberRepository.save(member);
+        member.setName(memberForm.getName());
+        return memberRepository.save(member);
     }
 }
 ```
@@ -226,9 +187,7 @@ public class MemberService {
 ├─メソッド：list
 │  ├─目的：会員の一覧を表示する
 │  ├─マッピング：GET
-│  ├─引数
-│  │    └─モデル：Model model
-│  ├─戻り値：String、表示するテンプレート名
+│  ├─引数：なし
 │  └─処理
 │        ├─memberServiceを使って、全件を読み出した結果をmemberListとしてテンプレートに渡す
 │        └─"member/list"を返す
@@ -237,7 +196,6 @@ public class MemberService {
      ├─マッピング：POST
      ├─引数
      │    └─入力内容：@検証 MemberForm memberForm
-     ├─戻り値：String、表示するテンプレート名またはリダイレクト先
      └─処理
            ├─◇─検証結果にエラーがある
            │  └─"member/form"を返す
@@ -278,6 +236,7 @@ public class MemberController {
      * @param model モデル
      * @return 表示するテンプレート名
      */
+    // SPDに無いため Model model を補った
     @GetMapping({"", "/"}) // 末尾の / の有無どちらでも受け付けるため
     public String list(Model model) {
         model.addAttribute("memberList", memberService.findAll());
