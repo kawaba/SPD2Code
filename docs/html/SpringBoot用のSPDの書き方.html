@@ -1451,6 +1451,14 @@ log.info(&quot;会員 {} を登録した&quot;, member.getId());
 ├─インジェクション
 │  └─会員サービス：MemberService memberService
 │
+├─メソッド：list
+│  ├─目的：会員の一覧を表示する
+│  ├─マッピング：GET
+│  ├─引数：なし
+│  └─処理
+│        ├─memberServiceを使って、全件を読み出した結果をmemberListとしてテンプレートに渡す
+│        └─&quot;member/list&quot;を返す
+│
 ├─メソッド：newForm
 │  ├─目的：登録画面を表示する
 │  ├─マッピング：GET /new
@@ -1458,6 +1466,17 @@ log.info(&quot;会員 {} を登録した&quot;, member.getId());
 │  └─処理
 │        ├─空のMemberFormを作ってテンプレートに渡す
 │        └─&quot;member/form&quot;を返す
+│
+├─メソッド：create
+│  ├─目的：入力された会員を登録する
+│  ├─マッピング：POST
+│  ├─引数：入力内容：@検証 MemberForm memberForm
+│  └─処理
+│        ├─◇─検証結果にエラーがある
+│        │  └─&quot;member/form&quot;を返す
+│        ├─memberServiceを使って、memberFormから会員を登録する
+│        ├─&quot;登録しました&quot;をフラッシュメッセージとして渡す
+│        └─ベースパスにリダイレクトする
 │
 ├─メソッド：editForm
 │  ├─目的：編集画面を表示する
@@ -1489,10 +1508,31 @@ log.info(&quot;会員 {} を登録した&quot;, member.getId());
          └─ベースパスにリダイレクトする
 </code></pre>
 <pre class="java"><code class="language-java">// SPDに無いため Model model を補った
+@GetMapping({&quot;&quot;, &quot;/&quot;}) // 末尾の / の有無どちらでも受け付けるため
+public String list(Model model) {
+    model.addAttribute(&quot;memberList&quot;, memberService.findAll());
+    return &quot;member/list&quot;;
+}
+
+// SPDに無いため Model model を補った
 @GetMapping(&quot;/new&quot;)
 public String newForm(Model model) {
     model.addAttribute(&quot;memberForm&quot;, new MemberForm());
     return &quot;member/form&quot;;
+}
+
+// SPDに無いため BindingResult result を補った
+// SPDに無いため RedirectAttributes redirectAttrs を補った
+@PostMapping({&quot;&quot;, &quot;/&quot;}) // 末尾の / の有無どちらでも受け付けるため
+public String create(@Valid MemberForm memberForm,
+                     BindingResult result,
+                     RedirectAttributes redirectAttrs) {
+    if (result.hasErrors()) {
+        return &quot;member/form&quot;;
+    }
+    memberService.create(memberForm);
+    redirectAttrs.addFlashAttribute(&quot;message&quot;, &quot;登録しました&quot;);
+    return &quot;redirect:/members&quot;;
 }
 
 // SPDに無いため Model model を補った
