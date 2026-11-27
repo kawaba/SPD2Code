@@ -367,8 +367,13 @@ public class Book {
 ├─目的：会員を表すエンティティ
 ├─テーブル：members
 ├─フィールド
-│  ├─番号：@主キー @自動採番 Long id
-│  ├─名前：@必須 @文字数(20) String name
+│  │  @主キー
+│  │  @自動採番
+│  ├─番号：Long id
+│  │
+│  │  @必須
+│  │  @文字数(20)
+│  ├─名前：String name
 │  └─入会日：LocalDate joinedOn
 └─自動生成
      ├─コンストラクタ：引数なし
@@ -401,7 +406,8 @@ public class Member {
 }
 </code></pre>
 <ul>
-<li>フィールドは <strong><code>&lt;説明&gt;：&lt;マーカー&gt; &lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。説明は行末のコメントになります。</li>
+<li>フィールドは <strong><code>&lt;説明&gt;：&lt;型&gt; &lt;変数名&gt;</code></strong> と書きます。説明は行末のコメントになります。</li>
+<li><strong>マーカーは、フィールドの枝のすぐ上の行に書きます</strong>（2.2）。Java のアノテーションと同じ並びです。</li>
 <li><strong><code>テーブル</code></strong> を書くと、表の名前を指定できます。省略すると、クラス名から決まります。</li>
 <li><strong>引数なしのコンストラクタは JPA に必須</strong>なので、書き忘れても補われます。</li>
 </ul>
@@ -458,10 +464,15 @@ public class Member {
 </tbody>
 </table>
 <ul>
-<li><strong>マーカーは型の前に書きます。</strong> 複数のマーカーは、1つの <code>@Column</code> にまとめられます。</li>
+<li><strong>マーカーは、フィールドの枝（<code>├─</code>・<code>└─</code>）のすぐ上の行に、枝を付けずに書きます。</strong> 1行に1つずつ書くと、生成される Java のアノテーションと同じ並びになります。</li>
+<li><strong>マーカーを付けるフィールドの前には、空行（縦線 <code>│</code> だけの行）を置きます。</strong> 最初のフィールドは、<code>フィールド</code> の行のすぐ下から書けます。
+前のフィールドのすぐ下にマーカーを書くと、どちらのフィールドに付けるのか分からないので、報告されます。</li>
+<li>マーカーの行とフィールドの枝の間には、空行を入れません。</li>
+<li>複数のマーカーは、1つの <code>@Column</code> にまとめられます。</li>
+<li>フォームの検証（3.2）は、逆にフィールドの後ろ（行の末尾か下の行）に書きます。エンティティのマーカーは「列の属性」、フォームの検証は「入力値の条件」で、意味が違うからです。</li>
 <li><strong><code>@主キー</code> が無いエンティティは作れません。</strong></li>
 <li><strong><code>@自動採番</code> は、<code>@主キー</code> を付けた <code>Long</code>（または <code>Integer</code>）のフィールドに付けます。</strong></li>
-<li><code>@文字数</code> は <code>String</code> に、<code>@精度</code> は <code>BigDecimal</code> に付けます。ほかの型に付けると報告されます。金額のように小数の桁が決まっている値は、<code>年会費：@精度(8, 2) BigDecimal annualFee</code> のように書きます。</li>
+<li><code>@文字数</code> は <code>String</code> に、<code>@精度</code> は <code>BigDecimal</code> に付けます。ほかの型に付けると報告されます。金額のように小数の桁が決まっている値は、上の行に <code>@精度(8, 2)</code> を書き、<code>年会費：BigDecimal annualFee</code> とします。</li>
 <li><strong>日付・時刻は <code>LocalDate</code>・<code>LocalDateTime</code>・<code>LocalTime</code> で書きます。</strong> 古い <code>Date</code>・<code>Calendar</code> は使えません。</li>
 </ul>
 <h3 id="23-関連"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">2.3 関連</a></h3>
@@ -573,7 +584,7 @@ public class BookForm {
 <li><strong>検証は、フィールドの行の末尾か、そのすぐ下の行に書きます。</strong> 下の行には枝（<code>├─</code>・<code>└─</code>）を付けず、フィールドの枝より右から書きます。検証が多いときやメッセージが長いときは、下の行に1つずつ書くと読みやすくなります。</li>
 <li>1つのフィールドで、行の末尾と下の行の両方に書くことはできません。</li>
 <li>位置をそろえるために、<code>@</code> の前に空白を入れて構いません。</li>
-<li><strong>エンティティのマーカーは型の前、フォームの検証は変数名の後</strong>です。取り違えに注意してください。</li>
+<li><strong>エンティティのマーカーはフィールドの上の行、フォームの検証はフィールドの後ろ</strong>です。取り違えに注意してください。</li>
 <li>日付・時刻のフィールドには、画面から送られた値を変換するための <code>@DateTimeFormat</code> が自動で付きます。</li>
 <li>更新画面で使うフォームには、エンティティの主キーと同じ名前・型のフィールド（ここでは <code>id</code>）を入れておきます（7.4）。</li>
 </ul>
@@ -1825,12 +1836,17 @@ spring.jpa.open-in-view=false
 <td>コントローラーからリポジトリを呼ばない</td>
 </tr>
 <tr>
-<td>エンティティで <code>String name ＠必須</code></td>
-<td><code>@必須 String name</code></td>
-<td>エンティティのマーカーは型の前</td>
+<td>エンティティで <code>名前：@必須 String name</code>・<code>名前：String name ＠必須</code></td>
+<td>上の行に <code>@必須</code>、その下に <code>├─名前：String name</code></td>
+<td>エンティティのマーカーはフィールドの上の行</td>
 </tr>
 <tr>
-<td>フォームで <code>@必須 String name</code></td>
+<td>エンティティで、前のフィールドのすぐ下にマーカーの行を書く</td>
+<td>前のフィールドとの間に空行（<code>│</code> だけの行）を置く</td>
+<td>どちらのフィールドに付けるのか分からない</td>
+</tr>
+<tr>
+<td>フォームで <code>@必須 String name</code>、またはフィールドの上の行に <code>＠必須</code></td>
 <td><code>String name　＠必須</code></td>
 <td>フォームの検証は変数名の後</td>
 </tr>
@@ -1949,7 +1965,7 @@ spring.jpa.open-in-view=false
 <tbody>
 <tr>
 <td><code>@主キー</code>・<code>@自動採番</code>・<code>@必須</code>・<code>@一意</code>・<code>@文字数(N)</code>・<code>@精度(P, S)</code></td>
-<td>エンティティのフィールド（型の前）</td>
+<td>エンティティのフィールドの上の行</td>
 <td>列の性質</td>
 </tr>
 <tr>
