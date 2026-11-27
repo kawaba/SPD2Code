@@ -105,7 +105,7 @@ description: SPD（構造化プログラム設計図）から、Spring Bootの�
 | `references/30-9-example.md` | `30.9 完全な変換例` |
 | `references/pom.xml` | 依存ライブラリの見本 |
 
-元の規約：`copilot-instructions.md` v1.10.0、SPD-CORE v2.18.0、SPRINGBOOT-JAVA v2.17.0、THYMELEAF v8.7.1
+元の規約：`copilot-instructions.md` v1.10.0、SPD-CORE v2.18.0、SPRINGBOOT-JAVA v2.18.0、THYMELEAF v8.7.1
 
 # スキルでの運用（`## 10`）
 
@@ -345,6 +345,7 @@ int taxIncluded = (int) Math.round(price * 1.1);
 - [ ] `ベースパスにリダイレクトする` を `ベースパス` の値へのリダイレクトにしたか。`ベースパスの<パス>にリダイレクトする` を、`ベースパス` の値にパスを続け、`{名前}` を変数の連結にしたものにしたか
 - [ ] フラッシュメッセージの名前が省略されたとき `message` にしたか。`addFlashAttribute` を、リダイレクトと**組で**使ったか
 - [ ] 「詰め替える」を、サービスの `copyEntityToForm` の呼び出しにしたか。コントローラーでフィールドをコピーしていないか
+- [ ] `エンティティ<変数>をフォームに詰め替える` のフォーム型を、変数の型を対象にするサービスの `詰め替え` から決め、変数名をフォーム型の先頭を小文字にした名前にしたか。決められないときと、フォームからエンティティへの詰め替えを報告したか
 
 ### サービス（`## 20.3`）
 

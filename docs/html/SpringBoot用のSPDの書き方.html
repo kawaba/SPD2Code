@@ -1262,8 +1262,12 @@ public class MemberController {
 <td><code>redirectAttrs.addFlashAttribute(&quot;message&quot;, &quot;登録しました&quot;);</code></td>
 </tr>
 <tr>
-<td><strong><code>memberをMemberForm型の変数memberFormに詰め替える</code></strong></td>
+<td><strong><code>エンティティmemberをフォームに詰め替える</code></strong></td>
 <td><code>var memberForm = new MemberForm();</code> ＋ <code>memberService.copyEntityToForm(member, memberForm);</code></td>
+</tr>
+<tr>
+<td><code>memberをMemberForm型の変数memberFormに詰め替える</code></td>
+<td>同上（フォームの型と変数名を書く形）</td>
 </tr>
 </tbody>
 </table>
@@ -1273,6 +1277,10 @@ public class MemberController {
 <li><strong>フラッシュメッセージ</strong>は、リダイレクト先の画面に1回だけ渡すメッセージです。テンプレートでは <code>message</code> という名前で受け取ります。
 必ずリダイレクトと組で使います。</li>
 <li>「詰め替える」には、サービスの <code>自動生成</code> に <code>詰め替え</code> が必要です（5.3）。</li>
+<li><code>エンティティmemberをフォームに詰め替える</code> と書くと、フォームの型はサービスの <code>詰め替え</code> から決まり（<code>MemberForm</code>）、
+変数名は型名の先頭を小文字にした <code>memberForm</code> になります。次の行からは <code>memberForm</code> の名前で使えます。
+別の名前にしたいときや、<code>詰め替え</code> のフォームが2つ以上あるときは、<code>memberをMemberForm型の変数memberFormに詰め替える</code> と書きます。</li>
+<li>逆向きの、フォームからエンティティへの詰め替えは、コントローラーには書きません。サービスの <code>新規作成</code>・<code>更新</code> が中で行います。</li>
 </ul>
 <h3 id="65-補われる引数"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.5 補われる引数</a></h3>
 <p>次の引数は、<code>引数</code> に書かなくても自動で補われます。</p>
@@ -1457,7 +1465,7 @@ log.info(&quot;会員 {} を登録した&quot;, member.getId());
 │  ├─引数：会員番号：@パス変数 Long id
 │  └─処理
 │        ├─memberServiceを使って、idで会員を検索した結果を変数memberに代入する
-│        ├─memberをMemberForm型の変数memberFormに詰め替える
+│        ├─エンティティmemberをフォームに詰め替える
 │        ├─memberFormをテンプレートに渡す
 │        └─&quot;member/edit&quot;を返す
 │
