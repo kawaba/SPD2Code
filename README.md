@@ -26,6 +26,17 @@ SPDの書き方を、言語ごとに説明した入門書をウェブで公開�
 
 ・[SPDによるテンプレートの書き方](https://kawaba.github.io/SPD2Code/docs/html/SPD%E3%81%AB%E3%82%88%E3%82%8B%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)（Spring Boot の Thymeleaf テンプレート）
 
+## ルールとスキルの使い方
+
+AIエージェントごとに、ルールやスキルの設置方法と使い方を説明しています。
+
+| 言語 | Claude SKILL | Gemini SKILL | GitHub Copilot |
+|---|---|---|---|
+| Java | [HowToClaude](https://kawaba.github.io/SPD2Code/Java/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/Java/Gemini-skill/HowToGemini.html) | 下の「ルールファイルの使い方」の表2 |
+| Python | [HowToClaude](https://kawaba.github.io/SPD2Code/Python/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/Python/Gemini-skill/HowToGemini.html) | 下の「ルールファイルの使い方」の表3 |
+| C | [HowToClaude](https://kawaba.github.io/SPD2Code/C/Claude-skill/HowToClaude.html) | [Geminiのskillとして設置する方法](C/Gemini-skill/Gemini%E3%81%AEskill%E3%81%A8%E3%81%97%E3%81%A6%E8%A8%AD%E7%BD%AE%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95.md) | 下の「ルールファイルの使い方」の表1 |
+| Spring Boot | [HowToClaude](https://kawaba.github.io/SPD2Code/SpringBoot/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/SpringBoot/Gemini-skill/HowToGemini.html) | [README](SpringBoot/GitHub-Copilot/README.md) |
+
 
 ## このリポジトリについて
 
