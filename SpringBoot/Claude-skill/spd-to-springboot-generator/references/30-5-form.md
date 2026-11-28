@@ -129,7 +129,6 @@
 
 ```html
 <form th:object="${memberForm}" th:action="@{/members}" method="post">
-  <input type="hidden" th:field="*{id}">
   <table>
     <tr>
       <td><label for="name">名前</label></td>
@@ -162,6 +161,7 @@
       </td>
     </tr>
   </table>
+  <input type="hidden" th:field="*{id}">
   <button type="submit">登録する</button>
 </form>
 
@@ -177,9 +177,12 @@
 - **`［表（行）］` の後ろにオブジェクト名を書くと、`<table>` に `th:object` を付ける**（`［表（行）］userForm <<.詳細表>>` →
   `<table th:object="${userForm}" class="詳細表">`）。中の値は `*{…}` で生成する（`## 30.3` の「オブジェクト名の指定」）。
   オブジェクト名と `<<…>>` 以外の値（文字・`{…}`・式）が書かれていた場合は生成せず、【確認事項】に載せること。
-- `＜hidden＞` の項目は行を作らない。`［表（行）］` の中に書かれていても、`<table>` の直前に置く。
+- **`＜hidden＞` は `［表（行）］` の中には書けない。** 書かれていた場合は生成せず、【確認事項】に載せること。
+  `<table>` の中で `<tr>` の間に `<input>` を置くのは、HTML として正しくないためである。
 - `［表（行）］` を使わず、入力項目を `［フォーム］` の直下に書いた場合は、1項目を1つの `<div>` にまとめる
   （`<div><label …>…</label> 入力欄 エラー表示</div>`）。
+- **`＜hidden＞` は、SPD に書いた位置に `<input type="hidden" th:field="*{f}">` を生成する。** 並べ替えず、`<div>` で囲まない
+  （上の例では `［表（行）］` の後に書いたので、`</table>` の後に置く）。
 
 **行の書き方**
 

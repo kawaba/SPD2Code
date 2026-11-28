@@ -1065,7 +1065,6 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
      └─更新する＜submit＞
 </code></pre>
 <pre><code class="language-html">&lt;form th:object=&quot;${memberForm}&quot; th:action=&quot;@{/members/update}&quot; method=&quot;post&quot;&gt;
-  &lt;input type=&quot;hidden&quot; th:field=&quot;*{id}&quot;&gt;
   &lt;table&gt;
     &lt;tr&gt;
       &lt;td&gt;会員番号&lt;/td&gt;
@@ -1079,12 +1078,14 @@ nav.back.bottom { margin: 24pt 0 0; padding-top: 9pt; border-top: 1px solid #d8e
       &lt;/td&gt;
     &lt;/tr&gt;
   &lt;/table&gt;
+  &lt;input type=&quot;hidden&quot; th:field=&quot;*{id}&quot;&gt;
   &lt;button type=&quot;submit&quot;&gt;更新する&lt;/button&gt;
 &lt;/form&gt;
 </code></pre>
 <ul>
 <li><strong><code>{…}</code> で書くのは画面に出す値、<code>：</code> の後にそのまま書くのは送る名前</strong>です。この違いが、表示と入力の違いになります。</li>
 <li>表示だけの項目は送信されません。値を送るには、別に <strong><code>＜hidden＞</code></strong> を書きます。</li>
+<li><code>＜hidden＞</code> は、SPD に書いた位置に生成されます。<strong><code>［表（行）］</code> の中には書けません</strong>（表の行の間に入力欄は置けないため）。<code>［表（行）］</code> の前か後に書きます。</li>
 <li>表示する値は、フォームの中でも <code>{memberForm.id}</code> のように受け取りの名前から書きます。生成するときに <code>*{id}</code> に変換されます。</li>
 </ul>
 <h3 id="64-ボタンを並べる"><a class="toc-back" href="#目次" title="クリックすると目次に戻ります">6.4 ボタンを並べる</a></h3>
