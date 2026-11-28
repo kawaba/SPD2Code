@@ -10,20 +10,6 @@
 | [Autosetup VS Code for C](https://github.com/kawaba/portable-c-vscode) | VS CodeによるC開発環境の自動セットアップスクリプトです |
 | [Autosetup VS Code for Python](https://github.com/kawaba/autosetup-vscode-python-book) | VS CodeによるPython開発環境の自動セットアップスクリプトです |
 | [Autosetup Eclipse for Java](https://github.com/kawaba/auto-setup-eclipse) | Eclipse（Java）を自動セットアップするスクリプトです |
-
-## このリポジトリについて
-
-AIエージェントが、SPDからプログラム言語のソースコードを生成するためのルールです。<br>
-Python版は安定版です。Java版は**SpringBoot**用のルールを追加しました（2026年内に完成予定です）。
-
-## 対象とするAIエージェント
-
-・GitHub Copilot
-
-・Gemini SKILL
-
-・Claude SKILL（claude.ai のウェブ版。Spring Boot 用・Python 用・Java 用・C 用）
-
 ## SPDの書き方（入門書）
 
 SPDの書き方を、言語ごとに説明した入門書をウェブで公開しています。
@@ -40,6 +26,19 @@ SPDの書き方を、言語ごとに説明した入門書をウェブで公開�
 
 ・[SPDによるテンプレートの書き方](https://kawaba.github.io/SPD2Code/docs/html/SPD%E3%81%AB%E3%82%88%E3%82%8B%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%E3%81%AE%E6%9B%B8%E3%81%8D%E6%96%B9.html)（Spring Boot の Thymeleaf テンプレート）
 
+
+## このリポジトリについて
+
+AIエージェントが、SPDからプログラム言語のソースコードを生成するためのルールです。<br>
+Python版は安定版です。Java版は**SpringBoot**用のルールを追加しました（2026年内に完成予定です）。
+
+## 対象とするAIエージェント
+
+・GitHub Copilot
+
+・Gemini SKILL
+
+・Claude SKILL（claude.ai のウェブ版。Spring Boot 用・Python 用・Java 用・C 用）
 
 ## フォルダとファイル
 　各言語別のフォルダには、Gemini-skillフォルダとGitHub-Copilotフォルダがあり、次のようなルールファイルが置かれています。
