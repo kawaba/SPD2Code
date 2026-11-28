@@ -238,10 +238,10 @@ ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
 </ul>
 <hr />
 <h2>2. 準備（最初に1回だけ）</h2>
-<p>スキルは「コード実行とファイル作成」の機能を使って動きます。この機能をオンにしておきます。</p>
+<p>スキルは「ファイルの作成と編集」の機能を使って動きます。この機能をオンにしておきます。</p>
 <ol>
-<li>claude.ai にログインし、左下のアカウント名から <strong>Settings（設定）</strong> を開きます。</li>
-<li><strong>Capabilities（機能）</strong> を開き、<strong>Code execution and file creation（コード実行とファイル作成）</strong> をオンにします。</li>
+<li>claude.ai にログインし、左下のアカウント名を押して、メニューの <strong>設定</strong> を開きます。</li>
+<li>設定の画面の左側の一覧で <strong>機能</strong> を開き、<strong>ファイルの作成と編集</strong> のスイッチをオン（青色）にします。すでにオンになっていれば、そのままでかまいません。</li>
 </ol>
 <h3>コードが崩れて表示されるとき（Edge）</h3>
 <p>生成されたコードの改行がつながったり、<code>return</code> が「帰還」、<code>"/date"</code> が「「/日付」」のように変わって表示されたりする場合は、ブラウザーの翻訳機能がページを機械翻訳しています。コピーボタンでコピーしたコードは正しいので、コード自体には問題ありません。Edge では、次の手順で英語のページを自動で翻訳しないようにします。</p>
@@ -252,14 +252,14 @@ ul.checklist li { text-indent: -1.4em; padding-left: 1.4em; }
 <hr />
 <h2>3. スキルの登録手順</h2>
 <ol>
-<li><strong>Customize（カスタマイズ）</strong> の <strong>Skills（スキル）</strong> を開きます。</li>
-<li><strong>＋</strong> を押し、<strong>Create skill（スキルを作成）</strong> → <strong>Upload a skill（スキルをアップロード）</strong> を選びます。</li>
-<li>ダウンロードした <code>spd-to-springboot-generator.zip</code> を選びます。</li>
-<li>スキルの一覧に <code>spd-to-springboot-generator</code> が表示され、オンになっていれば登録完了です。</li>
+<li>claude.ai の画面の左側のメニューで <strong>プラグイン</strong> を開きます。</li>
+<li>右上の <strong>追加</strong> を押し、<strong>プラグインをアップロード</strong> を選びます。</li>
+<li>ダウンロードした <code>spd-to-springboot-generator.zip</code> を、点線の枠にドラッグ＆ドロップするか、枠をクリックして選びます（zip は解凍しません）。プレビューにスキルの名前と説明が表示されたら、<strong>アップロード</strong> を押します。</li>
+<li>スキルの画面が開き、右上に <strong>追加済み</strong> と表示されれば登録完了です。</li>
 </ol>
 <p>画面の項目名は、表示の言語や画面の変更によって、上と少し違うことがあります。</p>
 <h3>スキルを新しくするとき</h3>
-<p>変換ルールが新しくなったときは、一覧から古い <code>spd-to-springboot-generator</code> を削除してから、新しい zip を登録します。</p>
+<p>変換ルールが新しくなったときは、<strong>プラグイン</strong> の画面で古い <code>spd-to-springboot-generator</code> を削除してから、新しい zip を登録します。</p>
 <hr />
 <h2>4. スキルの利用方法</h2>
 <h3>基本的な使い方</h3>

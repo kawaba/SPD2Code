@@ -128,7 +128,7 @@ Gemini SKILLでは、各言語の Gemini-skill フォルダにある `HowToGemin
 
 登録の詳細は `C/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。
 
-C の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。使い方は Gemini SKILL と同じで、SPDからのコード生成のほか、SPDのない依頼（コードの提案、要件定義からの仕様書作成）にも使えます。登録と使い方の詳細は `C/Claude-skill/HowToClaude.html` を見てください。規約の一部は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL の `SKILL.md` から `C/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
+C の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定の「機能」で「ファイルの作成と編集」をオンにする必要があります（スキルの登録は、claude.ai の画面の左側のメニューの「プラグイン」で行います）。使い方は Gemini SKILL と同じで、SPDからのコード生成のほか、SPDのない依頼（コードの提案、要件定義からの仕様書作成）にも使えます。登録と使い方の詳細は `C/Claude-skill/HowToClaude.html` を見てください。規約の一部は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL の `SKILL.md` から `C/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
 **表2**
 
@@ -140,7 +140,7 @@ C の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プ�
 
 登録の詳細は `Java/Gemini-skill/HowToGemini.html` を見てください。
 
-Java の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。使い方は Gemini SKILL と同じです。登録と使い方の詳細は `Java/Claude-skill/HowToClaude.html` を見てください。変換ルールは節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Java/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
+Java の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定の「機能」で「ファイルの作成と編集」をオンにする必要があります（スキルの登録は、claude.ai の画面の左側のメニューの「プラグイン」で行います）。使い方は Gemini SKILL と同じです。登録と使い方の詳細は `Java/Claude-skill/HowToClaude.html` を見てください。変換ルールは節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Java/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
 **表3**
 
@@ -154,7 +154,7 @@ Java の Claude SKILL は、claude.ai（ウェブ版）で使います。無料�
 
 Python の Gemini SKILL は2つあります。SPDからコードを生成するスキルと、要件定義から仕様書とコードを生成するスキルです。登録の詳細は `Python/Gemini-skill/HowToGemini.html` を見てください。
 
-Python の Claude SKILL も、Gemini SKILL と同じ2つです。claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。登録と使い方の詳細は `Python/Claude-skill/HowToClaude.html` を見てください。SPDからコードを生成するスキルの変換パターン集は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Python/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
+Python の Claude SKILL も、Gemini SKILL と同じ2つです。claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定の「機能」で「ファイルの作成と編集」をオンにする必要があります（スキルの登録は、claude.ai の画面の左側のメニューの「プラグイン」で行います）。登録と使い方の詳細は `Python/Claude-skill/HowToClaude.html` を見てください。SPDからコードを生成するスキルの変換パターン集は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL のファイルから `Python/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
 **表4**
 
@@ -166,7 +166,7 @@ Python の Claude SKILL も、Gemini SKILL と同じ2つです。claude.ai（ウ
 
 Spring Boot の Gemini SKILL は、1回に1ファイルずつ生成し、生成済みのファイルをチャットに添付して次のファイルを作る使い方を想定しています。登録と使い方の詳細は `SpringBoot/Gemini-skill/HowToGemini.html` を見てください。スキルのファイルは、Copilot 版の規約から `SpringBoot/Gemini-skill/build/build-skill.ps1` で作っています。
 
-Spring Boot の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定で「コード実行とファイル作成」をオンにする必要があります。使い方は Gemini SKILL と同じです。登録と使い方の詳細は `SpringBoot/Claude-skill/HowToClaude.html` を見てください。変換ルールは節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、`build-skill.ps1` を実行すると、続けて `SpringBoot/Claude-skill/build/build-claude.ps1` が Gemini SKILL のファイルから作ります。
+Spring Boot の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定の「機能」で「ファイルの作成と編集」をオンにする必要があります（スキルの登録は、claude.ai の画面の左側のメニューの「プラグイン」で行います）。使い方は Gemini SKILL と同じです。登録と使い方の詳細は `SpringBoot/Claude-skill/HowToClaude.html` を見てください。変換ルールは節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、`build-skill.ps1` を実行すると、続けて `SpringBoot/Claude-skill/build/build-claude.ps1` が Gemini SKILL のファイルから作ります。
 
 （注）pom.xmlファイルはサンプルです。Java SEベースのプログラムをコンパイル・リンクできます。AIエージェントはimport文を自動生成するために、pom.xmlファイルを読みます。
 
