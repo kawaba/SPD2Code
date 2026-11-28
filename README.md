@@ -125,7 +125,10 @@ Python版は安定版です。Java版は**SpringBoot**用のルールを追加�
 ## ルールファイルの使い方
 
 どのファイルもUTF-8でエンコードしています。内容を確認したい場合は、WindowsではUTF-8対応のエディタで開いてください（メモ帳がいいと思います）。
-Copilotでは、作業しているワークスペースに.githubという名前のフォルダを作って、その中にcopilot-instructions.mdファイルを置きます。ワークスペースごとに有効になります。
+Copilotでは、.githubという名前のフォルダを作って、その中にcopilot-instructions.mdファイルを置きます。置く場所は開発環境によって違います。
+
+- VS Code（C・Python）：ワークスペースのフォルダの直下（workspace/.github/）に置きます。ワークスペースごとに有効になります。
+- Eclipse（Java・Spring Boot）：プロジェクトのフォルダの直下（workspace/project/.github/）に置きます。プロジェクトごとに有効になります。プロジェクトが複数あるときは、それぞれのプロジェクトに置きます。Eclipse の workspace フォルダの直下に置いても読まれません。
 
 Gemini SKILLでは、各言語の Gemini-skill フォルダにある `HowToGemini.html`（C は `Geminiのskillとして設置する方法.md`）の手順に従って、ファイルをAIのチャットにアップロードし、スキルとして登録します。
 

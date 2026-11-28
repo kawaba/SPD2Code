@@ -1,25 +1,44 @@
 # Spring Boot 用 Copilot ガイドライン一式
 
 SE版（`part2`）の `copilot-instructions.md` v2.11.0 を分岐・再構成した、
-Spring Boot（MVC + JPA）ワークスペース用のガイドラインです。
+Spring Boot（MVC + JPA）プロジェクト用のガイドラインです。Eclipse の GitHub Copilot で使います。
 
 ## 設置方法
 
-`.github` フォルダごと、Spring Boot 用ワークスペースのルートに置いてください。
+`.github` フォルダごと、Spring Boot の**プロジェクトのフォルダの直下**（`pom.xml` がある場所）に置いてください。
+Eclipse の workspace フォルダの直下に置いても読まれません。プロジェクトが複数あるときは、それぞれのプロジェクトに置きます。
 
 ```
-<Spring Bootワークスペース>\
-  ├ .github\
-  │   ├ copilot-instructions.md
-  │   └ instructions\
-  │       ├ spd-core.instructions.md
-  │       ├ springboot-java.instructions.md
-  │       └ thymeleaf.instructions.md
-  ├ src\
-  └ pom.xml
+<Eclipseのworkspace>\
+  └ <プロジェクト>\
+      ├ .github\
+      │   ├ copilot-instructions.md
+      │   └ instructions\
+      │       ├ spd-core.instructions.md
+      │       ├ springboot-java.instructions.md
+      │       └ thymeleaf.instructions.md
+      ├ src\
+      └ pom.xml
 ```
 
-`.github/instructions` はVS Codeの既定の探索場所なので、追加の設定は不要です。
+追加の設定は不要です。Eclipse の Copilot Chat が `instructions` フォルダの3ファイルも読むことは、
+2026-11-28 に確かめました（規約にしか書いていない節の番号と内容を、正しく答えました）。
+
+### `.github` フォルダを表示する
+
+`.github` はドットで始まる名前なので、パッケージ・エクスプローラーでは隠されています。次の手順で表示します。
+
+1. パッケージ・エクスプローラーの右上の「︙」を押し、「フィルター(F)...」を選びます。
+2. 「Java 要素フィルター」のダイアログで、「.\* リソース」のチェックを外し、「OK」を押します。
+
+ファイルをエクスプローラーからコピーしたときは、プロジェクトを右クリックして「リフレッシュ」（F5）を押すと表示されます。
+
+### Claude のスキルが混ざることがある
+
+Copilot は、プロジェクトの `.github` のほかに、ユーザーのフォルダにあるスキル（`SKILL.md`）も読みます。
+Claude のアプリを入れたパソコンでは、claude.ai に登録したスキルが `C:\Users\<ユーザー名>\.claude\skills\` の下に同期され、
+Copilot がそれを読むことがあります（チャットに「Read file SKILL.md」と表示されます）。
+`.github` の規約だけで生成させたいときは、依頼文に「スキル（SKILL.md）は使わずに、.github の規約だけで生成してください」と書きます。
 
 ## ファイル構成
 
@@ -43,17 +62,6 @@ Spring Boot（MVC + JPA）ワークスペース用のガイドラインです。
 - `## 10` ガイドラインの構成と振り分け、`## 11` コントローラーとテンプレートの対応規約を新設
 - SPDの型定義タイトルに `コントローラー:` `サービス:` `リポジトリ:` `エンティティ:`
   `フォーム:` `テンプレート:` を追加
-
-## 必要なVS Code設定
-
-`settings.json` に次の1行を追加してください。
-
-```json
-"spring.initializr.openProjectAction": "Add to Workspace"
-```
-
-Spring Initializr が生成したプロジェクトを別ウィンドウで開くと、そのプロジェクトが
-ワークスペースのルートになり、`.github` 配下のガイドラインが読まれなくなります。
 
 ## 同期の運用
 
