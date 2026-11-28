@@ -34,7 +34,7 @@ AIエージェントごとに、ルールやスキルの設置方法と使い方
 |---|---|---|---|
 | Java | [HowToClaude](https://kawaba.github.io/SPD2Code/Java/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/Java/Gemini-skill/HowToGemini.html) | 下の「ルールファイルの使い方」の表2 |
 | Python | [HowToClaude](https://kawaba.github.io/SPD2Code/Python/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/Python/Gemini-skill/HowToGemini.html) | 下の「ルールファイルの使い方」の表3 |
-| C | [HowToClaude](https://kawaba.github.io/SPD2Code/C/Claude-skill/HowToClaude.html) | [Geminiのskillとして設置する方法](C/Gemini-skill/Gemini%E3%81%AEskill%E3%81%A8%E3%81%97%E3%81%A6%E8%A8%AD%E7%BD%AE%E3%81%99%E3%82%8B%E6%96%B9%E6%B3%95.md) | 下の「ルールファイルの使い方」の表1 |
+| C | [HowToClaude](https://kawaba.github.io/SPD2Code/C/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/C/Gemini-skill/HowToGemini.html) | 下の「ルールファイルの使い方」の表1 |
 | Spring Boot | [HowToClaude](https://kawaba.github.io/SPD2Code/SpringBoot/Claude-skill/HowToClaude.html) | [HowToGemini](https://kawaba.github.io/SPD2Code/SpringBoot/Gemini-skill/HowToGemini.html) | [README](SpringBoot/GitHub-Copilot/README.md) |
 
 
@@ -71,7 +71,7 @@ Python版は安定版です。Java版は**SpringBoot**用のルールを追加�
       │  │               └─build（Gemini SKILL のファイルから Claude SKILL を作る変換スクリプト）
       │  │
       │  ├─Gemini-skill ┬─SKILL.md
-      │  │               └─Geminiのskillとして設置する方法.md
+      │  │               └─HowToGemini.html
       │  │
       │  └─GitHub-Copilot──copilot-instructions.md
       │
@@ -130,17 +130,17 @@ Copilotでは、.githubという名前のフォルダを作って、その中に
 - VS Code（C・Python）：ワークスペースのフォルダの直下（workspace/.github/）に置きます。ワークスペースごとに有効になります。
 - Eclipse（Java・Spring Boot）：プロジェクトのフォルダの直下（workspace/project/.github/）に置きます。プロジェクトごとに有効になります。プロジェクトが複数あるときは、それぞれのプロジェクトに置きます。Eclipse の workspace フォルダの直下に置いても読まれません。
 
-Gemini SKILLでは、各言語の Gemini-skill フォルダにある `HowToGemini.html`（C は `Geminiのskillとして設置する方法.md`）の手順に従って、ファイルをAIのチャットにアップロードし、スキルとして登録します。
+Gemini SKILLでは、各言語の Gemini-skill フォルダにある `HowToGemini.html` の手順に従って、ファイルをAIのチャットにアップロードし、スキルとして登録します。
 
 **表1**
 
 | 言語 | AI | ファイル名 | 設置方法 |
 |---|---|---|---|
 | C | Copilot | copilot-instructions.md | workspace/.github/ フォルダに置く |
-| | Gemini SKILL | SKILL.md | `Geminiのskillとして設置する方法.md` の手順で、スキルとして登録する |
+| | Gemini SKILL | SKILL.md | `HowToGemini.html` の手順で、スキルとして登録する |
 | | Claude SKILL | spd-to-c-generator.zip | `HowToClaude.html` の手順で、zip を解凍せずにそのまま claude.ai に登録する |
 
-登録の詳細は `C/Gemini-skill/Geminiのskillとして設置する方法.md` を見てください。
+登録の詳細は `C/Gemini-skill/HowToGemini.html` を見てください。
 
 C の Claude SKILL は、claude.ai（ウェブ版）で使います。無料プランでも使えますが、設定の「機能」で「ファイルの作成と編集」をオンにする必要があります（スキルの登録は、claude.ai の画面の左側のメニューの「プラグイン」で行います）。使い方は Gemini SKILL と同じで、SPDからのコード生成のほか、SPDのない依頼（コードの提案、要件定義からの仕様書作成）にも使えます。登録と使い方の詳細は `C/Claude-skill/HowToClaude.html` を見てください。規約の一部は節ごとのファイルに分けてあり、AIは必要なファイルだけを読みます。スキルのファイルは、Gemini SKILL の `SKILL.md` から `C/Claude-skill/build/build-claude.ps1` で作ります。Gemini SKILL のファイルを直したら、このスクリプトを実行してください。
 
